@@ -10,6 +10,7 @@ import { HowToUse } from "@/components/sections/how-to-use";
 import { Community } from "@/components/sections/community";
 import { CTA } from "@/components/sections/cta";
 import { Footer } from "@/components/sections/footer";
+import { Pricing } from "@/components/sections/pricing";
 
 export const metadata: Metadata = {
   description:
@@ -29,6 +30,7 @@ export default async function Home() {
       <WhatIsRag />
       <WhySupavec />
       <HowToUse />
+      <Pricing />
       <Community />
       <CTA />
       <Footer />
