@@ -56,7 +56,27 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
+  // Fetch API usage for the current month
+  const { count: apiUsageCount } = await supabase
+    .from("api_usage_logs")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", data?.id)
+    .gte(
+      "created_at",
+      new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+    );
+
   const hasProSubscription = data?.stripe_is_subscribed ?? false;
+
+  // Set API call limits based on subscription status
+  const apiCallLimit = hasProSubscription ? 1000 : 100;
+  const apiCallUsage = apiUsageCount || 0;
+  const apiCallPercentage = Math.min(100, (apiCallUsage / apiCallLimit) * 100);
+
+  // Calculate storage usage (placeholder for now)
+  const storageLimit = hasProSubscription ? 10 * 1024 : 1024; // MB
+  const storageUsage = 0; // This would need to be calculated from actual file sizes
+  const storagePercentage = Math.min(100, (storageUsage / storageLimit) * 100);
 
   return (
     <SidebarProvider>
@@ -121,10 +141,13 @@ export default async function Page() {
                         AI Generations
                       </div>
                       <div className="font-medium">
-                        {hasProSubscription ? "0 / 1000" : "0 / 100"}
+                        {apiCallUsage} / {apiCallLimit}
                       </div>
                       <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                        <div className="h-full w-0 rounded-full bg-primary"></div>
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-300"
+                          style={{ width: `${apiCallPercentage}%` }}
+                        ></div>
                       </div>
                     </div>
                     <div>
@@ -132,10 +155,14 @@ export default async function Page() {
                         Storage
                       </div>
                       <div className="font-medium">
-                        {hasProSubscription ? "0 MB / 10 GB" : "0 MB / 1 GB"}
+                        {storageUsage} MB /{" "}
+                        {hasProSubscription ? "10 GB" : "1 GB"}
                       </div>
                       <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                        <div className="h-full w-0 rounded-full bg-primary"></div>
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-300"
+                          style={{ width: `${storagePercentage}%` }}
+                        ></div>
                       </div>
                     </div>
                   </div>
