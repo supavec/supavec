@@ -85,7 +85,7 @@ export async function POST(
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: lineItems,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing/success`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings/success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
     });
 

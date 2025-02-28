@@ -15,7 +15,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 
-export default function BillingLoading() {
+export default function SettingsLoading() {
   return (
     <SidebarProvider>
       <AppSidebar user={null} team={null} />

@@ -27,11 +27,12 @@ import Link from "next/link";
 import { ManageSubscriptionButton } from "./manage-subscription-button";
 
 export const metadata = {
-  title: "Billing",
-  description: "Manage your subscription and billing information",
+  title: "Settings",
+  description:
+    "Manage your account settings, subscription and billing information",
 };
 
-export default async function BillingPage() {
+export default async function SettingsPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -71,7 +72,7 @@ export default async function BillingPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Billing</BreadcrumbPage>
+                  <BreadcrumbPage>Settings</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -80,9 +81,9 @@ export default async function BillingPage() {
 
         <div className="py-10 px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">Billing</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
             <p className="text-muted-foreground">
-              Manage your subscription and billing information
+              Manage your account settings, subscription and billing information
             </p>
           </div>
 

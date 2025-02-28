@@ -135,7 +135,7 @@ export function NavUser({
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />

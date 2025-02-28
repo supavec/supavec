@@ -22,25 +22,25 @@ export async function createStripePortalLink() {
       .match({ id: user.id })
       .single();
 
-    const session = await stripe.billingPortal.sessions.create({
+    const { url } = await stripe.billingPortal.sessions.create({
       customer: userData?.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings`,
     });
 
     if (error) {
       console.error("Error fetching user data:", error);
-      redirect("/dashboard/billing?error=user_data_fetch_error");
+      redirect("/dashboard/settings?error=user_data_fetch_error");
     }
 
-    if (session) {
-      return { url: session.url };
+    if (url) {
+      return { url };
     }
 
-    // For now, redirect back to the billing page
+    // For now, redirect back to the settings page
     console.log("Stripe portal link creation not implemented yet");
-    redirect("/dashboard/billing?error=not_implemented");
+    redirect("/dashboard/settings?error=not_implemented");
   } catch (error) {
-    console.error("Error creating Stripe portal link:", error);
-    redirect("/dashboard/billing?error=stripe_portal_error");
+    console.error("Error creating Stripe portal session:", error);
+    redirect("/dashboard/settings?error=stripe_portal_error");
   }
 }

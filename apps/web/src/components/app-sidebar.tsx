@@ -6,7 +6,7 @@ import {
   SquareTerminal,
   GalleryVerticalEnd,
   Video,
-  CreditCard,
+  Settings,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -41,7 +41,7 @@ export function AppSidebar({
   const pathname = usePathname();
 
   const isDashboardActive = pathname === "/dashboard";
-  const isBillingActive = pathname === "/dashboard/billing";
+  const isSettingsActive = pathname === "/dashboard/settings";
 
   const data = {
     teams: [
@@ -66,10 +66,10 @@ export function AppSidebar({
       },
       {
         isExternal: false,
-        title: "Billing",
-        url: "/dashboard/billing",
-        icon: CreditCard,
-        isActive: isBillingActive,
+        title: "Settings",
+        url: "/dashboard/settings",
+        icon: Settings,
+        isActive: isSettingsActive,
       },
       {
         title: "Documentation",
