@@ -206,6 +206,7 @@ export type Database = {
           id: string
           name: string | null
           onboarding_at: string | null
+          stripe_customer_id: string | null
         }
         Insert: {
           created_at?: string
@@ -213,6 +214,7 @@ export type Database = {
           id?: string
           name?: string | null
           onboarding_at?: string | null
+          stripe_customer_id?: string | null
         }
         Update: {
           created_at?: string
@@ -220,6 +222,7 @@ export type Database = {
           id?: string
           name?: string | null
           onboarding_at?: string | null
+          stripe_customer_id?: string | null
         }
         Relationships: []
       }
@@ -589,3 +592,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

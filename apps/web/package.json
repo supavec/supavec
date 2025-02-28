@@ -9,7 +9,9 @@
     "lint": "next lint",
     "_with-env": "dotenv -e .env -c -- ",
     "_genType": "bunx supabase gen types typescript --project-id $NEXT_PUBLIC_SUPABASE_PROJECT_ID --schema public > src/types/supabase.ts",
-    "genType": "bun run _with-env bun run _genType"
+    "genType": "bun run _with-env bun run _genType",
+    "generate": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts",
+    "g": "bun run generate"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.5",
@@ -51,6 +53,7 @@
     "react-use-measure": "^2.1.1",
     "redaxios": "^0.5.1",
     "sonner": "^1.7.1",
+    "stripe": "^17.7.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
