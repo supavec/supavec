@@ -20,6 +20,8 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { UploadFormWrapper } from "./upload-form-wrappper";
 import { ChatInterface } from "./chat-interface";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/components/link";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",
@@ -68,6 +70,13 @@ export default async function Page() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
+          </div>
+          <div className="ml-auto mr-4">
+            {!hasProSubscription && (
+              <Button asChild>
+                <Link href="/pricing">Upgrade</Link>
+              </Button>
+            )}
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
