@@ -209,6 +209,7 @@ export type Database = {
           stripe_customer_id: string | null
           stripe_interval: string | null
           stripe_is_subscribed: boolean
+          stripe_subscribed_product_id: string | null
         }
         Insert: {
           created_at?: string
@@ -219,6 +220,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_interval?: string | null
           stripe_is_subscribed?: boolean
+          stripe_subscribed_product_id?: string | null
         }
         Update: {
           created_at?: string
@@ -229,6 +231,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_interval?: string | null
           stripe_is_subscribed?: boolean
+          stripe_subscribed_product_id?: string | null
         }
         Relationships: []
       }
