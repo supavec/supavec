@@ -108,7 +108,7 @@ export function PricingClient() {
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   {tab === "yearly" && (
                     <span className="ml-2 text-xs font-semibold text-green-500">
-                      Save 25%
+                      2 months free
                     </span>
                   )}
                 </TabsTrigger>

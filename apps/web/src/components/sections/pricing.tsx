@@ -176,13 +176,13 @@ export function Pricing() {
         <div className="grid grid-rows-1 gap-y-10 p-10">
           <div className="text-center">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-balance">
-              Simple pricing for everyone.
+              Simple pricing for every developer.
             </h2>
 
             <p className="mt-6 text-balance text-muted-foreground">
-              Choose an <strong>affordable plan</strong> that&apos;s packed with
-              the best features for engaging your audience, creating customer
-              loyalty, and driving sales.
+              Choose a plan that fits your API usage needs, from experimenting
+              to building production-ready applications with Supavec&apos;s
+              powerful vector embedding capabilities.
             </p>
           </div>
           <Tabs
@@ -202,7 +202,7 @@ export function Pricing() {
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                     {tab === "yearly" && (
                       <span className="ml-2 text-xs font-semibold text-green-500">
-                        Save 25%
+                        2 months free
                       </span>
                     )}
                   </TabsTrigger>
