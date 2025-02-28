@@ -29,7 +29,7 @@ export default async function Page() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, name, email, onboarding_at")
+    .select("id, name, email, onboarding_at, is_subscribed")
     .single();
 
   if (!data?.onboarding_at) {
@@ -47,8 +47,7 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
-  // This is a placeholder - you'll need to implement this based on your database schema
-  const hasProSubscription = false; // Replace with actual logic
+  const hasProSubscription = data?.is_subscribed ?? false;
 
   return (
     <SidebarProvider>
