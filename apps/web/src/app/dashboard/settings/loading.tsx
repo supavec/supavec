@@ -56,30 +56,6 @@ export default function SettingsLoading() {
                 <Skeleton className="h-9 w-40" />
               </CardFooter>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-24 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Skeleton className="h-4 w-32 mb-2" />
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-2 w-full mt-1" />
-                  </div>
-                  <div>
-                    <Skeleton className="h-4 w-24 mb-2" />
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-2 w-full mt-1" />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-9 w-40" />
-              </CardFooter>
-            </Card>
           </div>
         </div>
       </SidebarInset>
