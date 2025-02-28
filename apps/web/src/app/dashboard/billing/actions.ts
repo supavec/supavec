@@ -2,6 +2,10 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import initStripe from "stripe";
+
+// @ts-expect-error - Stripe is not typed
+const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
 
 export async function createStripePortalLink() {
   try {
@@ -12,12 +16,25 @@ export async function createStripePortalLink() {
       redirect("/login");
     }
 
-    // This is a placeholder - you'll need to implement Stripe integration
-    // 1. Install Stripe: npm install stripe
-    // 2. Initialize Stripe with your secret key
-    // 3. Get the user's Stripe customer ID from your database
-    // 4. Create a Stripe customer portal session
-    // 5. Redirect to the Stripe customer portal
+    const { data: userData, error } = await supabase
+      .from("profiles")
+      .select("stripe_customer_id")
+      .match({ id: user.id })
+      .single();
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: userData?.stripe_customer_id,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+    });
+
+    if (error) {
+      console.error("Error fetching user data:", error);
+      redirect("/dashboard/billing?error=user_data_fetch_error");
+    }
+
+    if (session) {
+      return { url: session.url };
+    }
 
     // For now, redirect back to the billing page
     console.log("Stripe portal link creation not implemented yet");

@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createStripePortalLink } from "./actions";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -25,6 +24,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { ManageSubscriptionButton } from "./manage-subscription-button";
 
 export const metadata = {
   title: "Billing",
@@ -123,9 +123,7 @@ export default async function BillingPage() {
               </CardContent>
               <CardFooter>
                 {stripeCustomerId ? (
-                  <form action={createStripePortalLink}>
-                    <Button type="submit">Manage Subscription</Button>
-                  </form>
+                  <ManageSubscriptionButton />
                 ) : (
                   <Button asChild>
                     <a href="/pricing">Upgrade Plan</a>
