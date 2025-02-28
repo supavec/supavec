@@ -86,7 +86,7 @@ export async function POST(
       payment_method_types: ["card"],
       line_items: lineItems,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
     });
 
     return NextResponse.json({ result: "success", id: session.id });
