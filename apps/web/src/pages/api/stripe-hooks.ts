@@ -7,9 +7,10 @@ export const config = {
   api: { bodyParser: false },
 };
 
+// @ts-expect-error - Stripe is not typed
+const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  // @ts-expect-error - Stripe is not typed
-  const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
   const signature = req.headers["stripe-signature"];
   const signatureSecret = process.env.STRIPE_SIGNATURE_SECRET;
   const reqBuffer = await buffer(req);
