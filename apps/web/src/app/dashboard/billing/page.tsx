@@ -16,6 +16,7 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -23,6 +24,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export const metadata = {
   title: "Billing",
@@ -64,8 +66,9 @@ export default async function BillingPage() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <a href="/dashboard">Dashboard</a>
+                  <Link href="/dashboard">Dashboard</Link>
                 </BreadcrumbItem>
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbPage>Billing</BreadcrumbPage>
                 </BreadcrumbItem>
