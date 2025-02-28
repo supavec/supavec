@@ -8,6 +8,7 @@ import {
   Video,
   CreditCard,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -35,6 +36,11 @@ export function AppSidebar({
       }[]
     | null;
 }) {
+  const pathname = usePathname();
+
+  const isDashboardActive = pathname === "/dashboard";
+  const isBillingActive = pathname === "/dashboard/billing";
+
   const data = {
     teams: [
       {
@@ -54,14 +60,14 @@ export function AppSidebar({
         title: "Dashboard",
         url: "/dashboard",
         icon: SquareTerminal,
-        isActive: true,
+        isActive: isDashboardActive,
       },
       {
         isExternal: false,
         title: "Billing",
         url: "/dashboard/billing",
         icon: CreditCard,
-        isActive: false,
+        isActive: isBillingActive,
       },
       {
         title: "Documentation",
