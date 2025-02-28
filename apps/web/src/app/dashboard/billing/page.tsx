@@ -43,17 +43,15 @@ export default async function BillingPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, name, email")
+    .select("id, name, email, is_subscribed, stripe_customer_id")
     .single();
 
   const { data: teamMemberships } = await supabase
     .from("team_memberships")
     .select("id, teams(name, id)");
 
-  // This is a placeholder - you'll need to implement this based on your database schema
-  // Assuming you'll add these fields to your profiles table
-  const hasSubscription = false; // Replace with actual logic
-  const stripeCustomerId = null; // Replace with actual logic
+  const hasSubscription = profile?.is_subscribed ?? false;
+  const stripeCustomerId = profile?.stripe_customer_id ?? null;
 
   return (
     <SidebarProvider>
