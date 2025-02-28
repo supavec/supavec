@@ -6,6 +6,7 @@ import {
   SquareTerminal,
   GalleryVerticalEnd,
   Video,
+  CreditCard,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -54,6 +55,13 @@ export function AppSidebar({
         url: "/dashboard",
         icon: SquareTerminal,
         isActive: true,
+      },
+      {
+        isExternal: false,
+        title: "Billing",
+        url: "/dashboard/billing",
+        icon: CreditCard,
+        isActive: false,
       },
       {
         title: "Documentation",
