@@ -43,7 +43,7 @@ export default async function BillingPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, name, email, stripe_is_subscribed, stripe_customer_id")
+    .select("id, name, email, stripe_is_subscribed")
     .single();
 
   const { data: teamMemberships } = await supabase
@@ -51,7 +51,6 @@ export default async function BillingPage() {
     .select("id, teams(name, id)");
 
   const hasSubscription = profile?.stripe_is_subscribed ?? false;
-  const stripeCustomerId = profile?.stripe_customer_id ?? null;
 
   return (
     <SidebarProvider>
@@ -122,7 +121,7 @@ export default async function BillingPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                {stripeCustomerId ? (
+                {hasSubscription ? (
                   <ManageSubscriptionButton />
                 ) : (
                   <Button asChild>
