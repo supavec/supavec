@@ -86,7 +86,7 @@ export default async function Page() {
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min p-4">
             <div className="flex">
-              <div className="p-4 rounded-xl border basis-full md:basis-1/2 bg-muted/50">
+              <div className="p-4 rounded-xl border basis-full md:basis-1/2 bg-muted/10">
                 <h3 className="text-xl font-semibold mb-4">
                   API Key Generation
                 </h3>
