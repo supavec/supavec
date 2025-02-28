@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useState } from "react";
+import { subscribe } from "./subscribe";
 
 type TabsProps = {
   activeTab: string;
@@ -179,6 +180,9 @@ export function PricingClient() {
               </CardContent>
 
               <Button
+                onClick={async () => {
+                  await subscribe("price_1QxOjsA13IrRt1YH4r44h3xg");
+                }}
                 size="lg"
                 className={cn(
                   "w-full rounded-none shadow-none",
