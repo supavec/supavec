@@ -131,44 +131,6 @@ export default async function SettingsPage() {
                 )}
               </CardFooter>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Usage</CardTitle>
-                <CardDescription>Your current usage and limits</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground">
-                      AI Generations
-                    </div>
-                    <div className="font-medium">
-                      {hasSubscription ? "0 / 1000" : "0 / 100"}
-                    </div>
-                    <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                      <div className="h-full w-0 rounded-full bg-primary"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground">
-                      Storage
-                    </div>
-                    <div className="font-medium">
-                      {hasSubscription ? "0 MB / 10 GB" : "0 MB / 1 GB"}
-                    </div>
-                    <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                      <div className="h-full w-0 rounded-full bg-primary"></div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" asChild>
-                  <a href="/dashboard">Back to Dashboard</a>
-                </Button>
-              </CardFooter>
-            </Card>
           </div>
         </div>
       </SidebarInset>
