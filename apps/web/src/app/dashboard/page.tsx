@@ -47,9 +47,16 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
+  // This is a placeholder - you'll need to implement this based on your database schema
+  const hasProSubscription = false; // Replace with actual logic
+
   return (
     <SidebarProvider>
-      <AppSidebar user={data} team={teamMemberships} />
+      <AppSidebar
+        user={data}
+        team={teamMemberships}
+        hasProSubscription={hasProSubscription}
+      />
       <SidebarInset>
         <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

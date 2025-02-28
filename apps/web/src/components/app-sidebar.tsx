@@ -24,6 +24,7 @@ import {
 export function AppSidebar({
   user,
   team,
+  hasProSubscription = false,
 }: {
   user: { id: string; name: string | null; email: string | null } | null;
   team:
@@ -35,6 +36,7 @@ export function AppSidebar({
         };
       }[]
     | null;
+  hasProSubscription?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -46,7 +48,7 @@ export function AppSidebar({
       {
         name: team?.[0]?.teams?.name ?? "Your team",
         logo: GalleryVerticalEnd,
-        plan: "Beta",
+        plan: hasProSubscription ? "Pro" : "Free",
       },
     ],
     user: {
@@ -93,7 +95,7 @@ export function AppSidebar({
         <NavMain items={data.navMain} team={data.teams[0]} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={data.user} hasProSubscription={hasProSubscription} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
