@@ -3,6 +3,12 @@ import { resolve } from "path";
 
 dotenv.config({ path: resolve(__dirname, "../.env") });
 
+// Load .env.local in development mode
+if (process.env.NODE_ENV === "development") {
+  console.log("Loading .env.local");
+  dotenv.config({ path: resolve(__dirname, "../.env.local"), override: true });
+}
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
