@@ -6,9 +6,10 @@ import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { subscribe } from "./subscribe";
+import { toast } from "sonner";
 
 type TabsProps = {
   activeTab: string;
@@ -84,9 +85,25 @@ export function PricingClient() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "yearly"
   );
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
   const handleTabChange = (tab: "yearly" | "monthly") => {
     setBillingCycle(tab);
+  };
+
+  const handleSubscribe = async (priceId: string, tierName: string) => {
+    try {
+      setLoadingTier(tierName);
+      await subscribe(priceId);
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast.error("Subscription failed", {
+        description:
+          "There was an error processing your subscription. Please try again.",
+      });
+    } finally {
+      setLoadingTier(null);
+    }
   };
 
   return (
@@ -180,9 +197,10 @@ export function PricingClient() {
               </CardContent>
 
               <Button
-                onClick={async () => {
-                  await subscribe(tier.priceId[billingCycle]);
-                }}
+                onClick={() =>
+                  handleSubscribe(tier.priceId[billingCycle], tier.name)
+                }
+                disabled={loadingTier !== null}
                 size="lg"
                 className={cn(
                   "focus:ring-0 w-full rounded-none shadow-none",
@@ -191,7 +209,11 @@ export function PricingClient() {
                     : "bg-muted text-foreground hover:bg-muted/80"
                 )}
               >
-                {tier.cta}
+                {loadingTier === tier.name ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  tier.cta
+                )}
               </Button>
             </div>
           </div>
