@@ -29,7 +29,7 @@ export default async function Page() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, name, email, onboarding_at, is_subscribed")
+    .select("id, name, email, onboarding_at, stripe_is_subscribed")
     .single();
 
   if (!data?.onboarding_at) {
@@ -47,7 +47,7 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
-  const hasProSubscription = data?.is_subscribed ?? false;
+  const hasProSubscription = data?.stripe_is_subscribed ?? false;
 
   return (
     <SidebarProvider>

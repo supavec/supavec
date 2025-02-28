@@ -43,14 +43,14 @@ export default async function BillingPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, name, email, is_subscribed, stripe_customer_id")
+    .select("id, name, email, stripe_is_subscribed, stripe_customer_id")
     .single();
 
   const { data: teamMemberships } = await supabase
     .from("team_memberships")
     .select("id, teams(name, id)");
 
-  const hasSubscription = profile?.is_subscribed ?? false;
+  const hasSubscription = profile?.stripe_is_subscribed ?? false;
   const stripeCustomerId = profile?.stripe_customer_id ?? null;
 
   return (

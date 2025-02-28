@@ -204,28 +204,31 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
-          is_subscribed: boolean
           name: string | null
           onboarding_at: string | null
           stripe_customer_id: string | null
+          stripe_interval: string | null
+          stripe_is_subscribed: boolean
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
-          is_subscribed?: boolean
           name?: string | null
           onboarding_at?: string | null
           stripe_customer_id?: string | null
+          stripe_interval?: string | null
+          stripe_is_subscribed?: boolean
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
-          is_subscribed?: boolean
           name?: string | null
           onboarding_at?: string | null
           stripe_customer_id?: string | null
+          stripe_interval?: string | null
+          stripe_is_subscribed?: boolean
         }
         Relationships: []
       }
