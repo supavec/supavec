@@ -181,7 +181,7 @@ export function PricingClient() {
 
               <Button
                 onClick={async () => {
-                  await subscribe("price_1QxOjsA13IrRt1YH4r44h3xg");
+                  await subscribe(tier.priceId[billingCycle]);
                 }}
                 size="lg"
                 className={cn(

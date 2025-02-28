@@ -101,6 +101,14 @@ export const siteConfig = {
       name: "Free",
       price: { monthly: "$0", yearly: "$0" },
       frequency: { monthly: "month", yearly: "year" },
+      priceId: {
+        monthly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_FREE_MONTHLY ||
+          "price_free_monthly",
+        yearly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_FREE_YEARLY ||
+          "price_free_yearly",
+      },
       description: "Try Supavec with limited usage.",
       features: [
         "100 API calls per month",
@@ -115,6 +123,14 @@ export const siteConfig = {
       name: "Basic",
       price: { monthly: "$19", yearly: "$190" },
       frequency: { monthly: "month", yearly: "year" },
+      priceId: {
+        monthly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY ||
+          "price_1QxOjsA13IrRt1YH4r44h3xg",
+        yearly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY ||
+          "price_1QxOjsA13IrRt1YHFG9nxlbY",
+      },
       description: "For developers with regular usage needs.",
       features: [
         "750 API calls per month",
@@ -131,6 +147,14 @@ export const siteConfig = {
       name: "Enterprise",
       price: { monthly: "$149", yearly: "$1,490" },
       frequency: { monthly: "month", yearly: "year" },
+      priceId: {
+        monthly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_MONTHLY ||
+          "price_enterprise_monthly",
+        yearly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_YEARLY ||
+          "price_enterprise_yearly",
+      },
       description: "For businesses with high-volume needs.",
       features: [
         "5,000 API calls per month",
