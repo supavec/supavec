@@ -18,8 +18,14 @@ const tools = [
 
 const links = [
   {
+    title: "Pricing",
+    href: "/pricing",
+    external: false,
+  },
+  {
     title: "API Docs",
     href: "https://go.supavec.com/docs",
+    external: true,
   },
 ];
 
@@ -60,16 +66,19 @@ export function Footer() {
             <h6 className="text-sm text-secondary-foreground/80 font-semibold mb-2">
               Links
             </h6>
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
-              >
-                {link.title}
-              </Link>
-            ))}
+            <ul className="flex flex-col gap-y-2">
+              {links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>

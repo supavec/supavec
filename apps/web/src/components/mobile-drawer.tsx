@@ -33,6 +33,12 @@ export function MobileDrawer({ isLoggedIn }: { isLoggedIn: boolean }) {
           <DrawerDescription>{siteConfig.description}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
+          <Link
+            href="/pricing"
+            className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}
+          >
+            Pricing
+          </Link>
           <a
             href="https://docs.supavec.com/"
             target="_blank"
