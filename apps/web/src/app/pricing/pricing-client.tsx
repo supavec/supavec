@@ -185,7 +185,7 @@ export function PricingClient() {
                 }}
                 size="lg"
                 className={cn(
-                  "w-full rounded-none shadow-none",
+                  "focus:ring-0 w-full rounded-none shadow-none",
                   tier.popular
                     ? "bg-primary text-primary-foreground hover:bg-secondary-foreground"
                     : "bg-muted text-foreground hover:bg-muted/80"
