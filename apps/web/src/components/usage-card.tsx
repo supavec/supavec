@@ -13,41 +13,54 @@ import { createClient } from "@/utils/supabase/client";
 type UsageCardProps = {
   initialStorageUsage?: number;
   initialStorageLimit?: number;
-  initialHasProSubscription?: boolean;
+  initialSubscriptionTier?: "Free" | "Basic" | "Enterprise" | null;
 };
 
 export function UsageCard({
   initialStorageUsage = 0,
-  initialStorageLimit = 1024,
-  initialHasProSubscription = false,
+  initialStorageLimit = 250,
+  initialSubscriptionTier = null,
 }: UsageCardProps) {
   const supabase = createClient();
 
   const [apiCallUsage, setApiCallUsage] = useState(0);
-  const [apiCallLimit, setApiCallLimit] = useState(
-    initialHasProSubscription ? 1000 : 100
-  );
+  const [apiCallLimit, setApiCallLimit] = useState(100);
   const [storageUsage, setStorageUsage] = useState(initialStorageUsage);
   const [storageLimit, setStorageLimit] = useState(initialStorageLimit);
-  const [hasProSubscription, setHasProSubscription] = useState(
-    initialHasProSubscription
+  const [subscriptionTier, setSubscriptionTier] = useState<string | null>(
+    initialSubscriptionTier
   );
+
   const [isLoading, setIsLoading] = useState(true);
 
   const apiCallPercentage = Math.min(100, (apiCallUsage / apiCallLimit) * 100);
   const storagePercentage = Math.min(100, (storageUsage / storageLimit) * 100);
+
+  // Helper function to get limits based on subscription tier
+  const getLimits = (tier: string | null) => {
+    switch (tier) {
+      case "Basic":
+        return { apiCalls: 750, storage: 2 * 1024 }; // 750 API calls, 2GB
+      case "Enterprise":
+        return { apiCalls: 5000, storage: 15 * 1024 }; // 5000 API calls, 15GB
+      case "Free":
+      default:
+        return { apiCalls: 100, storage: 250 }; // 100 API calls, 250MB
+    }
+  };
 
   useEffect(() => {
     async function fetchUsageData() {
       try {
         setIsLoading(true);
 
-        const hasProSub = initialHasProSubscription;
-        setHasProSubscription(hasProSub);
+        const tier = initialSubscriptionTier;
+        setSubscriptionTier(tier);
 
-        // Set limits based on subscription status
-        setApiCallLimit(hasProSub ? 1000 : 100);
-        setStorageLimit(hasProSub ? 10 * 1024 : 1024); // 10GB or 1GB in MB
+        // Set limits based on subscription tier
+        const limits = getLimits(tier);
+        setApiCallLimit(limits.apiCalls);
+        setStorageLimit(limits.storage);
 
         // Fetch API usage for the current month
         const { count } = await supabase
@@ -63,7 +76,7 @@ export function UsageCard({
           );
 
         setApiCallUsage(count || 0);
-        setStorageUsage(0);
+        setStorageUsage(initialStorageUsage);
       } catch (error) {
         console.error("Error fetching usage data:", error);
       } finally {
@@ -72,12 +85,27 @@ export function UsageCard({
     }
 
     fetchUsageData();
-  }, [supabase, initialHasProSubscription]);
+  }, [supabase, initialSubscriptionTier, initialStorageUsage]);
+
+  // Helper function to format storage display
+  const formatStorage = (mbValue: number) => {
+    if (mbValue >= 1024) {
+      return `${(mbValue / 1024).toFixed(1)} GB`;
+    }
+    return `${mbValue} MB`;
+  };
 
   return (
     <Card className="basis-full md:basis-1/2">
       <CardHeader>
-        <CardTitle>Usage</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Usage</CardTitle>
+          {subscriptionTier && (
+            <span className="text-sm font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+              {subscriptionTier} Plan
+            </span>
+          )}
+        </div>
         <CardDescription>Your current usage and limits</CardDescription>
       </CardHeader>
       <CardContent>
@@ -103,7 +131,7 @@ export function UsageCard({
             <div className="font-medium">
               {isLoading
                 ? "Loading..."
-                : `${storageUsage} MB / ${hasProSubscription ? "10 GB" : "1 GB"}`}
+                : `${formatStorage(storageUsage)} / ${formatStorage(storageLimit)}`}
             </div>
             <div className="mt-1 h-2 w-full rounded-full bg-secondary">
               <div
