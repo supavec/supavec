@@ -60,6 +60,7 @@ export default async function Page() {
         user={data}
         team={teamMemberships}
         hasProSubscription={hasProSubscription}
+        subscribedProductId={data?.stripe_subscribed_product_id}
       />
       <SidebarInset>
         <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

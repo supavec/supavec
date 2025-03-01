@@ -44,7 +44,9 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, name, email, stripe_is_subscribed")
+    .select(
+      "id, name, email, stripe_is_subscribed, stripe_subscribed_product_id"
+    )
     .single();
 
   const { data: teamMemberships } = await supabase
@@ -53,12 +55,30 @@ export default async function SettingsPage() {
 
   const hasSubscription = profile?.stripe_is_subscribed ?? false;
 
+  // Determine the subscription tier based on the product ID
+  let subscriptionTier = "Free";
+
+  if (hasSubscription && profile?.stripe_subscribed_product_id) {
+    if (
+      profile.stripe_subscribed_product_id ===
+      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC
+    ) {
+      subscriptionTier = "Basic";
+    } else if (
+      profile.stripe_subscribed_product_id ===
+      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+    ) {
+      subscriptionTier = "Enterprise";
+    }
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar
         user={profile}
         team={teamMemberships}
         hasProSubscription={hasSubscription}
+        subscribedProductId={profile?.stripe_subscribed_product_id}
       />
       <SidebarInset>
         <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -102,7 +122,9 @@ export default async function SettingsPage() {
                       Current Plan
                     </div>
                     <div className="font-medium">
-                      {hasSubscription ? "Pro Plan" : "Free Plan"}
+                      {hasSubscription
+                        ? `${subscriptionTier} Plan`
+                        : "Free Plan"}
                     </div>
                   </div>
                   <div>

@@ -25,6 +25,7 @@ export function AppSidebar({
   user,
   team,
   hasProSubscription = false,
+  subscribedProductId = null,
 }: {
   user: { id: string; name: string | null; email: string | null } | null;
   team:
@@ -37,18 +38,31 @@ export function AppSidebar({
       }[]
     | null;
   hasProSubscription?: boolean;
+  subscribedProductId?: string | null;
 }) {
   const pathname = usePathname();
 
   const isDashboardActive = pathname === "/dashboard";
   const isSettingsActive = pathname === "/dashboard/settings";
 
+  let subscriptionTier = "Free";
+
+  if (hasProSubscription && subscribedProductId) {
+    if (subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+      subscriptionTier = "Basic";
+    } else if (
+      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+    ) {
+      subscriptionTier = "Enterprise";
+    }
+  }
+
   const data = {
     teams: [
       {
         name: team?.[0]?.teams?.name ?? "Your team",
         logo: GalleryVerticalEnd,
-        plan: hasProSubscription ? "Pro" : "Free",
+        plan: subscriptionTier,
       },
     ],
     user: {
