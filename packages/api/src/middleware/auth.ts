@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextFunction, Request, Response } from "express";
-import { Database } from "@supavec/web/src/types/supabase";
+import type { NextFunction, Request, Response } from "express";
+import { supabase } from "../utils/supabase";
 
 export interface AuthenticatedRequest extends Request {
   apiKey?: string;
@@ -21,14 +20,10 @@ export const apiKeyAuth = () => {
       });
     }
 
-    const supabase = createClient<Database>(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
-    const { data, error } = await supabase.from("api_keys").select("*").match({
-      api_key: authHeader,
-    })
+    const { data, error } = await supabase.from("api_keys").select("id")
+      .match({
+        api_key: authHeader,
+      })
       .single();
 
     if (error || !data) {
