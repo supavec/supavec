@@ -7,11 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "migration:diff": "npx supabase db diff -f ",
     "_with-env": "dotenv -e .env -c -- ",
     "_genType": "bunx supabase gen types typescript --project-id $NEXT_PUBLIC_SUPABASE_PROJECT_ID --schema public > src/types/supabase.ts",
     "genType": "bun run _with-env bun run _genType",
     "generate": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts",
-    "g": "bun run generate"
+    "g": "bun run generate",
+    "_deploy": "npx supabase db push",
+    "deploy": "bun run _with-env bun run _deploy"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.5",
