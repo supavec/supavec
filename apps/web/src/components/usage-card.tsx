@@ -119,7 +119,7 @@ export function UsageCard({
     <Card className="basis-full md:basis-1/2">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Usage</CardTitle>
+          <CardTitle>Usage (this month)</CardTitle>
           {subscriptionTier && (
             <span className="text-sm font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
               {subscriptionTier} Plan
