@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/types/supabase";
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -10,16 +11,18 @@ import {
 } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
 
+type SubscriptionTier = "Free" | "Basic" | "Enterprise" | null;
+
 type UsageCardProps = {
   initialStorageUsage?: number;
   initialStorageLimit?: number;
-  initialSubscriptionTier?: "Free" | "Basic" | "Enterprise" | null;
+  subscribedProductId: Tables<"profiles">["stripe_subscribed_product_id"];
 };
 
 export function UsageCard({
   initialStorageUsage = 0,
   initialStorageLimit = 250,
-  initialSubscriptionTier = null,
+  subscribedProductId = null,
 }: UsageCardProps) {
   const supabase = createClient();
 
@@ -27,9 +30,29 @@ export function UsageCard({
   const [apiCallLimit, setApiCallLimit] = useState(100);
   const [storageUsage, setStorageUsage] = useState(initialStorageUsage);
   const [storageLimit, setStorageLimit] = useState(initialStorageLimit);
-  const [subscriptionTier, setSubscriptionTier] = useState<string | null>(
-    initialSubscriptionTier
-  );
+
+  // Map the stripe_subscribed_product_id to the appropriate tier name
+  let subscriptionTier: SubscriptionTier = null;
+
+  if (subscribedProductId) {
+    if (
+      // Check if it's a Basic tier product
+      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC
+    ) {
+      subscriptionTier = "Basic";
+    } else if (
+      // Check if it's an Enterprise tier product
+      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+    ) {
+      subscriptionTier = "Enterprise";
+    } else {
+      // Default to Free if we don't recognize the product ID
+      subscriptionTier = "Free";
+    }
+  } else {
+    // No subscription, so Free tier
+    subscriptionTier = "Free";
+  }
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,11 +77,8 @@ export function UsageCard({
       try {
         setIsLoading(true);
 
-        const tier = initialSubscriptionTier;
-        setSubscriptionTier(tier);
-
         // Set limits based on subscription tier
-        const limits = getLimits(tier);
+        const limits = getLimits(subscriptionTier);
         setApiCallLimit(limits.apiCalls);
         setStorageLimit(limits.storage);
 
@@ -85,7 +105,7 @@ export function UsageCard({
     }
 
     fetchUsageData();
-  }, [supabase, initialSubscriptionTier, initialStorageUsage]);
+  }, [supabase, initialStorageUsage, subscriptionTier]);
 
   // Helper function to format storage display
   const formatStorage = (mbValue: number) => {

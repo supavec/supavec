@@ -54,31 +54,6 @@ export default async function Page() {
 
   const hasProSubscription = data?.stripe_is_subscribed ?? false;
 
-  // Map the stripe_subscribed_product_id to the appropriate tier name
-  let subscriptionTier: "Free" | "Basic" | "Enterprise" | null = null;
-
-  if (data?.stripe_subscribed_product_id) {
-    if (
-      // Check if it's a Basic tier product
-      data.stripe_subscribed_product_id ===
-      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC
-    ) {
-      subscriptionTier = "Basic";
-    } else if (
-      // Check if it's an Enterprise tier product
-      data.stripe_subscribed_product_id ===
-      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
-    ) {
-      subscriptionTier = "Enterprise";
-    } else {
-      // Default to Free if we don't recognize the product ID
-      subscriptionTier = "Free";
-    }
-  } else {
-    // No subscription, so Free tier
-    subscriptionTier = "Free";
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar
@@ -128,7 +103,9 @@ export default async function Page() {
                 )}
               </div>
 
-              <UsageCard initialSubscriptionTier={subscriptionTier} />
+              <UsageCard
+                subscribedProductId={data?.stripe_subscribed_product_id}
+              />
             </div>
             {Array.isArray(apiKeys) && apiKeys?.length > 0 && (
               <div className="flex gap-4 flex-col">
