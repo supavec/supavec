@@ -22,13 +22,7 @@ import { UploadFormWrapper } from "./upload-form-wrappper";
 import { ChatInterface } from "./chat-interface";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { UsageCard } from "@/components/usage-card";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",
@@ -60,7 +54,7 @@ export default async function Page() {
   const { count: apiUsageCount } = await supabase
     .from("api_usage_logs")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", data?.id)
+    .match({ user_id: data?.id })
     .gte(
       "created_at",
       new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
@@ -71,12 +65,6 @@ export default async function Page() {
   // Set API call limits based on subscription status
   const apiCallLimit = hasProSubscription ? 1000 : 100;
   const apiCallUsage = apiUsageCount || 0;
-  const apiCallPercentage = Math.min(100, (apiCallUsage / apiCallLimit) * 100);
-
-  // Calculate storage usage (placeholder for now)
-  const storageLimit = hasProSubscription ? 10 * 1024 : 1024; // MB
-  const storageUsage = 0; // This would need to be calculated from actual file sizes
-  const storagePercentage = Math.min(100, (storageUsage / storageLimit) * 100);
 
   return (
     <SidebarProvider>
@@ -127,47 +115,11 @@ export default async function Page() {
                 )}
               </div>
 
-              <Card className="basis-full md:basis-1/2">
-                <CardHeader>
-                  <CardTitle>Usage</CardTitle>
-                  <CardDescription>
-                    Your current usage and limits
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">
-                        AI Generations
-                      </div>
-                      <div className="font-medium">
-                        {apiCallUsage} / {apiCallLimit}
-                      </div>
-                      <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                        <div
-                          className="h-full rounded-full bg-primary transition-all duration-300"
-                          style={{ width: `${apiCallPercentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">
-                        Storage
-                      </div>
-                      <div className="font-medium">
-                        {storageUsage} MB /{" "}
-                        {hasProSubscription ? "10 GB" : "1 GB"}
-                      </div>
-                      <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-                        <div
-                          className="h-full rounded-full bg-primary transition-all duration-300"
-                          style={{ width: `${storagePercentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <UsageCard
+                initialApiCallUsage={apiCallUsage}
+                initialApiCallLimit={apiCallLimit}
+                initialHasProSubscription={hasProSubscription}
+              />
             </div>
             {Array.isArray(apiKeys) && apiKeys?.length > 0 && (
               <div className="flex gap-4 flex-col">
