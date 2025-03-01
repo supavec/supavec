@@ -112,9 +112,9 @@ export const siteConfig = {
       description: "Try Supavec with limited usage.",
       features: [
         "100 API calls per month",
-        "250MB file storage",
         "All supported file types",
         "5 requests per minute",
+        "Community support",
       ],
       cta: "Get Started",
     },
@@ -133,10 +133,9 @@ export const siteConfig = {
       description: "For developers with regular usage needs.",
       features: [
         "750 API calls per month",
-        "2GB file storage",
         "All supported file types",
         "15 requests per minute",
-        "Priority email support",
+        "Email support",
       ],
       popular: true,
       cta: "Get Started",
@@ -156,7 +155,6 @@ export const siteConfig = {
       description: "For businesses with high-volume needs.",
       features: [
         "5,000 API calls per month",
-        "15GB file storage",
         "50 requests per minute",
         "Priority processing",
         "Priority email support",
