@@ -10,23 +10,23 @@ import {
 } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
 
-interface UsageCardProps {
-  initialApiCallUsage?: number;
-  initialApiCallLimit?: number;
+type UsageCardProps = {
   initialStorageUsage?: number;
   initialStorageLimit?: number;
   initialHasProSubscription?: boolean;
-}
+};
 
 export function UsageCard({
-  initialApiCallUsage = 0,
-  initialApiCallLimit = 100,
   initialStorageUsage = 0,
   initialStorageLimit = 1024,
   initialHasProSubscription = false,
 }: UsageCardProps) {
-  const [apiCallUsage, setApiCallUsage] = useState(initialApiCallUsage);
-  const [apiCallLimit, setApiCallLimit] = useState(initialApiCallLimit);
+  const supabase = createClient();
+
+  const [apiCallUsage, setApiCallUsage] = useState(0);
+  const [apiCallLimit, setApiCallLimit] = useState(
+    initialHasProSubscription ? 1000 : 100
+  );
   const [storageUsage, setStorageUsage] = useState(initialStorageUsage);
   const [storageLimit, setStorageLimit] = useState(initialStorageLimit);
   const [hasProSubscription, setHasProSubscription] = useState(
@@ -41,42 +41,29 @@ export function UsageCard({
     async function fetchUsageData() {
       try {
         setIsLoading(true);
-        const supabase = createClient();
 
-        // Get user profile data
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("id, stripe_is_subscribed")
-          .single();
+        const hasProSub = initialHasProSubscription;
+        setHasProSubscription(hasProSub);
 
-        if (profileData) {
-          const hasProSub = profileData.stripe_is_subscribed ?? false;
-          setHasProSubscription(hasProSub);
+        // Set limits based on subscription status
+        setApiCallLimit(hasProSub ? 1000 : 100);
+        setStorageLimit(hasProSub ? 10 * 1024 : 1024); // 10GB or 1GB in MB
 
-          // Set limits based on subscription status
-          setApiCallLimit(hasProSub ? 1000 : 100);
-          setStorageLimit(hasProSub ? 10 * 1024 : 1024); // 10GB or 1GB in MB
+        // Fetch API usage for the current month
+        const { count } = await supabase
+          .from("api_usage_logs")
+          .select("id", { count: "exact", head: true })
+          .gte(
+            "created_at",
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              1
+            ).toISOString()
+          );
 
-          // Fetch API usage for the current month
-          const { count } = await supabase
-            .from("api_usage_logs")
-            .select("*", { count: "exact", head: true })
-            .match({ user_id: profileData.id })
-            .gte(
-              "created_at",
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                1
-              ).toISOString()
-            );
-
-          setApiCallUsage(count || 0);
-
-          // TODO: Calculate actual storage usage from files
-          // This would need to be implemented based on your data model
-          setStorageUsage(0);
-        }
+        setApiCallUsage(count || 0);
+        setStorageUsage(0);
       } catch (error) {
         console.error("Error fetching usage data:", error);
       } finally {
@@ -84,13 +71,8 @@ export function UsageCard({
       }
     }
 
-    // Only fetch if we don't have initial data
-    if (initialApiCallUsage === 0 && initialStorageUsage === 0) {
-      fetchUsageData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [initialApiCallUsage, initialStorageUsage]);
+    fetchUsageData();
+  }, [supabase, initialHasProSubscription]);
 
   return (
     <Card className="basis-full md:basis-1/2">
@@ -102,7 +84,7 @@ export function UsageCard({
         <div className="space-y-4">
           <div>
             <div className="text-sm font-medium text-muted-foreground">
-              AI Generations
+              API Calls
             </div>
             <div className="font-medium">
               {isLoading ? "Loading..." : `${apiCallUsage} / ${apiCallLimit}`}

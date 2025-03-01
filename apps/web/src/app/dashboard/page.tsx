@@ -50,21 +50,7 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
-  // Fetch API usage for the current month
-  const { count: apiUsageCount } = await supabase
-    .from("api_usage_logs")
-    .select("*", { count: "exact", head: true })
-    .match({ user_id: data?.id })
-    .gte(
-      "created_at",
-      new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
-    );
-
   const hasProSubscription = data?.stripe_is_subscribed ?? false;
-
-  // Set API call limits based on subscription status
-  const apiCallLimit = hasProSubscription ? 1000 : 100;
-  const apiCallUsage = apiUsageCount || 0;
 
   return (
     <SidebarProvider>
@@ -115,11 +101,7 @@ export default async function Page() {
                 )}
               </div>
 
-              <UsageCard
-                initialApiCallUsage={apiCallUsage}
-                initialApiCallLimit={apiCallLimit}
-                initialHasProSubscription={hasProSubscription}
-              />
+              <UsageCard initialHasProSubscription={hasProSubscription} />
             </div>
             {Array.isArray(apiKeys) && apiKeys?.length > 0 && (
               <div className="flex gap-4 flex-col">
