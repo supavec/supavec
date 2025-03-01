@@ -1,6 +1,7 @@
 import initStripe from "stripe";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
 // @ts-expect-error - Stripe is not typed
 const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
@@ -62,7 +63,7 @@ export async function POST(
       }
 
       console.log(`Save Stripe customer ID of this user ${user.email}`);
-      const { error: saveStirpeCustomerIdError } = await supabase
+      const { error: saveStirpeCustomerIdError } = await supabaseAdmin
         .from("profiles")
         .update({
           stripe_customer_id: stripeCustomerId,
