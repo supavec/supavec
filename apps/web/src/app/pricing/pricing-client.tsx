@@ -10,6 +10,8 @@ import { Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { subscribe } from "./subscribe";
 import { toast } from "sonner";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 type TabsProps = {
   activeTab: string;
@@ -86,6 +88,8 @@ export function PricingClient() {
     "yearly"
   );
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleTabChange = (tab: "yearly" | "monthly") => {
     setBillingCycle(tab);
@@ -94,6 +98,13 @@ export function PricingClient() {
   const handleSubscribe = async (priceId: string, tierName: string) => {
     try {
       setLoadingTier(tierName);
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        router.push("/login");
+        return;
+      }
+
       await subscribe(priceId);
     } catch (error) {
       console.error("Subscription error:", error);
