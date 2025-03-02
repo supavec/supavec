@@ -10,6 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
+import { getNextUsageResetDate } from "@/lib/utils";
 
 type SubscriptionTier = "Free" | "Basic" | "Enterprise" | null;
 
@@ -17,12 +18,14 @@ type UsageCardProps = {
   initialStorageUsage?: number;
   initialStorageLimit?: number;
   subscribedProductId: Tables<"profiles">["stripe_subscribed_product_id"];
+  lastUsageResetAt?: string | null;
 };
 
 export function UsageCard({
   initialStorageUsage = 0,
   initialStorageLimit = 250,
   subscribedProductId = null,
+  lastUsageResetAt = null,
 }: UsageCardProps) {
   const supabase = createClient();
 
@@ -30,6 +33,7 @@ export function UsageCard({
   const [apiCallLimit, setApiCallLimit] = useState(100);
   const [storageUsage, setStorageUsage] = useState(initialStorageUsage);
   const [storageLimit, setStorageLimit] = useState(initialStorageLimit);
+  const nextUsageResetDate = getNextUsageResetDate(lastUsageResetAt);
 
   // Map the stripe_subscribed_product_id to the appropriate tier name
   let subscriptionTier: SubscriptionTier = null;
@@ -127,6 +131,16 @@ export function UsageCard({
           )}
         </div>
         <CardDescription>Your current usage and limits</CardDescription>
+        {nextUsageResetDate && (
+          <CardDescription className="mt-1">
+            Usage will reset{" "}
+            {new Date(nextUsageResetDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

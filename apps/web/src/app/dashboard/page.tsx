@@ -33,7 +33,7 @@ export default async function Page() {
   const { data } = await supabase
     .from("profiles")
     .select(
-      "id, name, email, onboarding_at, stripe_is_subscribed, stripe_subscribed_product_id"
+      "id, name, email, onboarding_at, stripe_is_subscribed, stripe_subscribed_product_id, last_usage_reset_at"
     )
     .single();
 
@@ -106,6 +106,7 @@ export default async function Page() {
 
               <UsageCard
                 subscribedProductId={data?.stripe_subscribed_product_id}
+                lastUsageResetAt={data?.last_usage_reset_at}
               />
             </div>
             {Array.isArray(apiKeys) && apiKeys?.length > 0 && (
