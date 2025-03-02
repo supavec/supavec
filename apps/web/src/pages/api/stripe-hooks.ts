@@ -39,6 +39,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           stripe_is_subscribed: true,
           stripe_interval: event.data.object.items.data[0].plan.interval,
           stripe_subscribed_product_id: event.data.object.plan.product,
+          last_usage_reset_at: new Date().toISOString(),
         })
         .match({
           stripe_customer_id: event.data.object.customer,
@@ -58,6 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           stripe_is_subscribed: false,
           stripe_interval: null,
           stripe_subscribed_product_id: null,
+          last_usage_reset_at: null,
         })
         .match({
           stripe_customer_id: event.data.object.customer,
