@@ -13,6 +13,63 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
+addEventListener("beforeunload", () => {
+  console.log("Reset API usage function will be shutdown");
+});
+
+/**
+ * Resets API usage for users whose last reset was more than a month ago
+ */
+async function resetApiUsage() {
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+  console.log(
+    `Finding users with last_usage_reset_date before ${oneMonthAgo.toISOString()}`,
+  );
+
+  // Search for users to reset
+  // Find users whose last_usage_reset_date is more than 1 month ago
+  const { data: usersToReset, error: selectError } = await supabaseAdmin
+    .from("profiles")
+    .select("id, email, last_usage_reset_at")
+    .lt("last_usage_reset_at", oneMonthAgo.toISOString());
+
+  if (selectError) {
+    throw new Error(`Error selecting users: ${selectError.message}`);
+  }
+
+  console.log(`Found ${usersToReset?.length || 0} users to reset`);
+
+  // If there are no users to reset, return a message
+  if (!usersToReset || usersToReset.length === 0) {
+    return {
+      success: true,
+      message: "No users to reset",
+      count: 0,
+    };
+  }
+
+  const now = new Date().toISOString();
+  const userIds = usersToReset.map((user: User) => user.id);
+
+  const { error: updateError } = await supabaseAdmin
+    .from("profiles")
+    .update({ last_usage_reset_at: now })
+    .in("id", userIds);
+
+  if (updateError) {
+    throw new Error(`Error updating users: ${updateError.message}`);
+  }
+
+  return {
+    success: true,
+    message: "API usage reset successful",
+    count: usersToReset.length,
+    users: usersToReset.map((u: User) => ({ id: u.id, email: u.email })),
+  };
+}
+
 serve(async (req) => {
   try {
     const reqJson = await req.json();
@@ -23,59 +80,28 @@ serve(async (req) => {
       );
     }
 
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-    console.log(
-      `Finding users with last_usage_reset_date before ${oneMonthAgo.toISOString()}`,
-    );
-
-    // Search for users to reset
-    // Find users whose last_usage_reset_date is more than 1 month ago
-    const { data: usersToReset, error: selectError } = await supabaseAdmin
-      .from("profiles")
-      .select("id, email, last_usage_reset_at")
-      .lt("last_usage_reset_at", oneMonthAgo.toISOString());
-
-    if (selectError) {
-      throw new Error(`Error selecting users: ${selectError.message}`);
-    }
-
-    console.log(`Found ${usersToReset?.length || 0} users to reset`);
-
-    // If there are no users to reset, return a message
-    if (!usersToReset || usersToReset.length === 0) {
-      return new Response(
-        JSON.stringify({ message: "No users to reset", count: 0 }),
-        { headers: { "Content-Type": "application/json" } },
-      );
-    }
-
-    const now = new Date().toISOString();
-    const userIds = usersToReset.map((user: User) => user.id);
-
-    const { error: updateError } = await supabaseAdmin
-      .from("profiles")
-      .update({ last_usage_reset_at: now })
-      .in("id", userIds);
-
-    if (updateError) {
-      throw new Error(`Error updating users: ${updateError.message}`);
-    }
+    // Use EdgeRuntime.waitUntil to run the reset in the background
+    // @ts-expect-error EdgeRuntime is available in Deno
+    EdgeRuntime.waitUntil(resetApiUsage());
 
     return new Response(
       JSON.stringify({
-        message: "API usage reset successful",
-        count: usersToReset.length,
-        users: usersToReset.map((u: User) => ({ id: u.id, email: u.email })),
+        success: true,
+        message: "API usage reset process started in the background",
       }),
-      { headers: { "Content-Type": "application/json" } },
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 202,
+      },
     );
   } catch (error) {
     console.error("Error in reset-api-usage function:", error);
 
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
