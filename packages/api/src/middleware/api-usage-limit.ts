@@ -1,0 +1,184 @@
+import { NextFunction, Response } from "express";
+import { supabase } from "../utils/supabase";
+import { AuthenticatedRequest } from "./auth";
+
+const API_CALL_LIMITS = {
+  FREE: 100, // Free tier: 100 API calls per month
+  BASIC: 750, // Basic tier: 750 API calls per month
+  ENTERPRISE: 5000, // Enterprise tier: 5,000 API calls per month
+};
+
+export const apiUsageLimit = () => {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const requestPath = req.path;
+    const requestMethod = req.method;
+    const requestId = req.headers["x-request-id"] || `req_${Date.now()}`;
+
+    console.log(
+      `[API-LIMIT][${requestId}] Processing request ${requestMethod} ${requestPath}`,
+    );
+
+    try {
+      if (!req.apiKey) {
+        console.warn(
+          `[API-LIMIT][${requestId}] Request rejected: Missing API key`,
+        );
+        return res.status(401).json({
+          success: false,
+          error: "API key is required",
+        });
+      }
+
+      console.log(
+        `[API-LIMIT][${requestId}] Validating API key: ${
+          req.apiKey.substring(0, 8)
+        }...`,
+      );
+
+      const { data: apiKeyData, error: apiKeyError } = await supabase
+        .from("api_keys")
+        .select("id, team_id, user_id")
+        .match({ api_key: req.apiKey })
+        .single();
+
+      if (apiKeyError || !apiKeyData) {
+        console.warn(
+          `[API-LIMIT][${requestId}] Invalid API key: ${
+            apiKeyError?.message || "No data returned"
+          }`,
+        );
+        return res.status(401).json({
+          success: false,
+          error: "Invalid API key",
+        });
+      }
+
+      const userId = apiKeyData.user_id;
+      const teamId = apiKeyData.team_id;
+      const keyId = apiKeyData.id;
+
+      console.log(
+        `[API-LIMIT][${requestId}] API key validated - User: ${userId}, Team: ${
+          teamId || "N/A"
+        }, Key ID: ${keyId}`,
+      );
+
+      if (!userId) {
+        console.error(
+          `[API-LIMIT][${requestId}] User ID not found for API key ${keyId}`,
+        );
+        return next();
+      }
+
+      console.log(
+        `[API-LIMIT][${requestId}] Fetching subscription data for user ${userId}`,
+      );
+
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("stripe_is_subscribed, stripe_subscribed_product_id")
+        .match({ id: userId })
+        .single();
+
+      if (profileError) {
+        console.error(
+          `[API-LIMIT][${requestId}] Error fetching profile data: ${profileError.message}`,
+        );
+        return next();
+      }
+
+      // Determine the subscription tier and corresponding API call limit
+      let apiCallLimit = API_CALL_LIMITS.FREE; // Default to Free tier
+      let tierName = "FREE";
+
+      const hasSubscription = profileData?.stripe_is_subscribed ?? false;
+      const productId = profileData?.stripe_subscribed_product_id;
+
+      if (hasSubscription && productId) {
+        if (productId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+          apiCallLimit = API_CALL_LIMITS.BASIC;
+          tierName = "BASIC";
+        } else if (
+          productId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+        ) {
+          apiCallLimit = API_CALL_LIMITS.ENTERPRISE;
+          tierName = "ENTERPRISE";
+        }
+      }
+
+      console.log(
+        `[API-LIMIT][${requestId}] User subscription tier: ${tierName}, API call limit: ${apiCallLimit}`,
+      );
+
+      // Get the current month's start date
+      const currentDate = new Date();
+      const monthStart = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1,
+      );
+
+      console.log(
+        `[API-LIMIT][${requestId}] Counting API usage since ${monthStart.toISOString()}`,
+      );
+
+      // Count API calls for the current month
+      const { count, error: countError } = await supabase
+        .from("api_usage_logs")
+        .select("id", { count: "exact", head: true })
+        .match({ user_id: userId })
+        .gte("created_at", monthStart.toISOString());
+
+      if (countError) {
+        console.error(
+          `[API-LIMIT][${requestId}] Error counting API usage: ${countError.message}`,
+        );
+        return next();
+      }
+
+      const apiCallCount = count || 0;
+      const remainingCalls = apiCallLimit - apiCallCount;
+      const usagePercentage = ((apiCallCount / apiCallLimit) * 100).toFixed(2);
+
+      console.log(
+        `[API-LIMIT][${requestId}] API usage: ${apiCallCount}/${apiCallLimit} (${usagePercentage}%), Remaining: ${remainingCalls}`,
+      );
+
+      // Check if the user has exceeded their API call limit
+      if (apiCallCount >= apiCallLimit) {
+        console.warn(
+          `[API-LIMIT][${requestId}] API call limit exceeded for user ${userId} - Usage: ${apiCallCount}/${apiCallLimit}`,
+        );
+        return res.status(429).json({
+          success: false,
+          error: "API call limit exceeded for this month",
+          limit: apiCallLimit,
+          usage: apiCallCount,
+        });
+      }
+
+      // Log when users are approaching their limit (80% or more)
+      if (apiCallCount >= apiCallLimit * 0.8) {
+        console.warn(
+          `[API-LIMIT][${requestId}] User ${userId} approaching API limit - Usage: ${apiCallCount}/${apiCallLimit} (${usagePercentage}%)`,
+        );
+      }
+
+      console.log(`[API-LIMIT][${requestId}] Request allowed to proceed`);
+      return next();
+    } catch (error) {
+      const errorMessage = error instanceof Error
+        ? error.message
+        : String(error);
+      console.error(
+        `[API-LIMIT][${requestId}] Unexpected error in API usage limit middleware: ${errorMessage}`,
+        error,
+      );
+      return next();
+    }
+  };
+};
