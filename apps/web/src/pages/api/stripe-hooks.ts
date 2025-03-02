@@ -33,14 +33,39 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "customer.subscription.updated":
       console.log("event", "customer.subscription.updated");
 
+      // First, check if the user already has last_usage_reset_at set
+      const { data: userData, error: userFetchError } = await supabaseAdmin
+        .from("profiles")
+        .select("last_usage_reset_at")
+        .match({ stripe_customer_id: event.data.object.customer })
+        .single();
+
+      if (userFetchError) {
+        console.error(`Error fetching user data: ${userFetchError.message}`);
+      }
+
+      // Only set last_usage_reset_at if it's null or this is a new subscription
+      const updateData: {
+        stripe_is_subscribed: boolean;
+        stripe_interval: string;
+        stripe_subscribed_product_id: string;
+        last_usage_reset_at?: string;
+      } = {
+        stripe_is_subscribed: true,
+        stripe_interval: event.data.object.items.data[0].plan.interval,
+        stripe_subscribed_product_id: event.data.object.plan.product,
+      };
+
+      // Add last_usage_reset_at if it's null or this is a new subscription
+      if (
+        !userData?.last_usage_reset_at
+      ) {
+        updateData.last_usage_reset_at = new Date().toISOString();
+      }
+
       const { error: subscriptionUpdateError } = await supabaseAdmin
         .from("profiles")
-        .update({
-          stripe_is_subscribed: true,
-          stripe_interval: event.data.object.items.data[0].plan.interval,
-          stripe_subscribed_product_id: event.data.object.plan.product,
-          last_usage_reset_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .match({
           stripe_customer_id: event.data.object.customer,
         });
