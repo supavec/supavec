@@ -49,7 +49,7 @@ export async function POST(
 
       if (customers.data.length === 0) {
         console.log(
-          `This user ${user.email} doesn't exist on Stripe. Thus creating...`
+          `This user ${user.id} doesn't exist on Stripe. Thus creating...`
         );
         const res = await stripe.customers.create({
           email: user.email,
@@ -58,12 +58,12 @@ export async function POST(
         stripeCustomerId = res.id;
       } else {
         console.log(
-          `It seems this user ${user.email} exists on Stripe but the customer ID isn't exist on our Supabase DB. Thus it's going to use the existing Stripe customer ID instead of creating a new one.`
+          `It seems this user ${user.id} exists on Stripe but the customer ID isn't exist on our Supabase DB. Thus it's going to use the existing Stripe customer ID instead of creating a new one.`
         );
         stripeCustomerId = customers.data[0].id;
       }
 
-      console.log(`Save Stripe customer ID of this user ${user.email}`);
+      console.log(`Save Stripe customer ID of this user ${user.id}`);
       const { error: saveStirpeCustomerIdError } = await supabaseAdmin
         .from("profiles")
         .update({
@@ -79,9 +79,7 @@ export async function POST(
         );
     }
 
-    console.log(
-      `The Stripe customer ID for ${user.email} is ${stripeCustomerId}`
-    );
+    console.log(`Creating Stripe checkout session for user ${user.id}`);
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: "subscription",
