@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Ripple } from "@/components/ui/ripple";
 import { siteConfig } from "@/lib/config";
+import { cn } from "@/lib/utils";
 
 const contributors = [
   {
@@ -30,9 +31,9 @@ const contributors = [
   },
 ];
 
-export function Community() {
+export function Community({ className }: { className?: string }) {
   return (
-    <Section id="community" title="Community">
+    <Section id="community" title="Community" className={cn(className)}>
       <div className="border-x border-t overflow-hidden relative">
         <Ripple />
         <div className="p-6 text-center py-12">
