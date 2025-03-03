@@ -47,3 +47,7 @@ next-env.d.ts
 
 # cursor
 .cursor/mcp.json
+
+
+# misc
+/scripts
