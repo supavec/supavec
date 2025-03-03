@@ -3,6 +3,7 @@ import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { CTA } from "@/components/sections/cta";
 import { PricingClient } from "./pricing-client";
+import { Testimonials } from "./testimonials";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -28,6 +29,8 @@ export default async function PricingPage() {
           </div>
 
           <PricingClient />
+
+          <Testimonials />
         </div>
         <CTA />
       </main>
