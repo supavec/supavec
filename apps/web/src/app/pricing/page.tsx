@@ -7,7 +7,7 @@ import { PricingClient } from "./pricing-client";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Simple pricing for everyone. Choose an affordable plan that&apos;s packed with the best features.",
+    "Simple pricing for everyone. Choose an affordable plan that's packed with the best features.",
 };
 
 export default async function PricingPage() {
