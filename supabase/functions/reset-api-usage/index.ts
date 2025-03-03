@@ -24,7 +24,8 @@ async function resetApiUsage() {
   console.log("Starting API usage reset background process");
 
   const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  oneMonthAgo.setUTCMonth(oneMonthAgo.getUTCMonth() - 1);
+  oneMonthAgo.setUTCHours(0, 0, 0, 0); // Reset time to start of day in UTC
 
   console.log(
     `Finding users with last_usage_reset_date before ${oneMonthAgo.toISOString()}`,

@@ -93,9 +93,7 @@ export function UsageCard({
           .gte(
             "created_at",
             new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              1
+              Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)
             ).toISOString()
           );
 

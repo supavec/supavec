@@ -114,13 +114,13 @@ export const apiUsageLimit = () => {
         `[API-LIMIT][${requestId}] User subscription tier: ${tierName}, API call limit: ${apiCallLimit}`,
       );
 
-      // Get the current month's start date
+      // Get the current month's start date in UTC
       const currentDate = new Date();
-      const monthStart = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
+      const monthStart = new Date(Date.UTC(
+        currentDate.getUTCFullYear(),
+        currentDate.getUTCMonth(),
         1,
-      );
+      ));
 
       console.log(
         `[API-LIMIT][${requestId}] Counting API usage since ${monthStart.toISOString()}`,
