@@ -29,7 +29,13 @@ export async function POST(
       .match({ id: user.id })
       .single();
 
-    if (error) console.error(error.message);
+    if (error) {
+      console.error(error.message);
+      return NextResponse.json(
+        { result: "error", message: "Failed to fetch user profile" },
+        { status: 500 }
+      );
+    }
 
     const priceId = (await params).priceId;
     const lineItems = [
@@ -39,7 +45,7 @@ export async function POST(
       },
     ];
 
-    let stripeCustomerId = data!.stripe_customer_id as string | null;
+    let stripeCustomerId = data.stripe_customer_id ?? null;
 
     if (!stripeCustomerId) {
       // search if Stripe already has this customer on their end
