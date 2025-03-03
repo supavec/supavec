@@ -36,9 +36,8 @@ export async function createStripePortalLink() {
       return { url };
     }
 
-    // For now, redirect back to the settings page
-    console.log("Stripe portal link creation not implemented yet");
-    redirect("/dashboard/settings?error=not_implemented");
+    console.error("Failed to create Stripe portal URL with no specific error");
+    redirect("/dashboard/settings?error=unknown_error");
   } catch (error) {
     console.error("Error creating Stripe portal session:", error);
     redirect("/dashboard/settings?error=stripe_portal_error");
