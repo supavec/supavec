@@ -123,12 +123,8 @@ export const siteConfig = {
       price: { monthly: "$19", yearly: "$190" },
       frequency: { monthly: "month", yearly: "year" },
       priceId: {
-        monthly:
-          process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY ||
-          "price_1QxOjsA13IrRt1YH4r44h3xg",
-        yearly:
-          process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY ||
-          "price_1QxOjsA13IrRt1YHFG9nxlbY",
+        monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY,
+        yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY,
       },
       description: "For developers with regular usage needs.",
       features: [
