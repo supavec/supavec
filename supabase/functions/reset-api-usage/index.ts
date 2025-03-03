@@ -8,6 +8,36 @@ type User = {
   last_usage_reset_at: string;
 };
 
+/**
+ * Calculates the next usage reset date based on the last usage reset date.
+ * Follows Stripe's monthly cycle logic (e.g., Jan 2 → Feb 2).
+ * Handles edge cases like month end dates properly.
+ *
+ * @param lastUsageResetAt - ISO string date of the last usage reset
+ * @returns ISO string of the next usage reset date
+ */
+function getNextUsageResetDate(lastUsageResetAt: string | null): string | null {
+  if (!lastUsageResetAt) return null;
+
+  const resetDate = new Date(lastUsageResetAt);
+  const day = resetDate.getUTCDate();
+  const month = resetDate.getUTCMonth();
+  const year = resetDate.getUTCFullYear();
+
+  // Create a new date for the next month with the same day
+  const nextResetDate = new Date(Date.UTC(year, month + 1, day));
+
+  // Handle edge cases (e.g., Jan 31 → Feb 28/29)
+  // If the day doesn't match, it means we've rolled over to the next month
+  // due to the target month not having enough days
+  if (nextResetDate.getUTCDate() !== day) {
+    // Set to the last day of the target month
+    nextResetDate.setUTCDate(0);
+  }
+
+  return nextResetDate.toISOString();
+}
+
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -57,17 +87,19 @@ async function resetApiUsage() {
 
   console.log(`Processing reset for ${usersToReset.length} users`);
 
-  const now = new Date().toISOString();
-  const userIds = usersToReset.map((user: User) => user.id);
+  // Process each user individually to calculate their next reset date
+  for (const user of usersToReset) {
+    const nextResetDate = getNextUsageResetDate(user.last_usage_reset_at);
+    if (!nextResetDate) continue;
 
-  const { error: updateError } = await supabaseAdmin
-    .from("profiles")
-    .update({ last_usage_reset_at: now })
-    .in("id", userIds);
+    const { error: updateError } = await supabaseAdmin
+      .from("profiles")
+      .update({ last_usage_reset_at: nextResetDate })
+      .match({ id: user.id });
 
-  if (updateError) {
-    console.error(`Error updating users: ${updateError.message}`);
-    throw new Error(`Error updating users: ${updateError.message}`);
+    if (updateError) {
+      console.error(`Error updating user ${user.id}: ${updateError.message}`);
+    }
   }
 
   console.log(`Successfully reset API usage for ${usersToReset.length} users`);
