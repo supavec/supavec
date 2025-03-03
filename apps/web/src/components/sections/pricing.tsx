@@ -8,25 +8,26 @@ import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
-interface TabsProps {
+type TabsProps = {
   activeTab: string;
   setActiveTab: (tab: "yearly" | "monthly") => void;
   className?: string;
   children: (activeTab: string) => React.ReactNode;
-}
+};
 
-interface TabsListProps {
+type TabsListProps = {
   children: React.ReactNode;
-}
+};
 
-interface TabsTriggerProps {
+type TabsTriggerProps = {
   value: string;
   onClick: () => void;
   children: React.ReactNode;
   isActive: boolean;
-}
+};
 
 const Tabs = ({ activeTab, className, children }: TabsProps) => {
   return (
@@ -146,15 +147,16 @@ function PricingTier({
         </CardContent>
 
         <Button
+          asChild
           size="lg"
           className={cn(
-            "w-full rounded-none shadow-none",
+            "focus:ring-0 w-full rounded-none shadow-none",
             tier.popular
               ? "bg-primary text-primary-foreground hover:bg-secondary-foreground"
               : "bg-muted text-foreground hover:bg-muted/80"
           )}
         >
-          {tier.cta}
+          <Link href="/login">{tier.cta}</Link>
         </Button>
       </div>
     </div>
