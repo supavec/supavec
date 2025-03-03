@@ -21,6 +21,8 @@ addEventListener("beforeunload", () => {
  * Resets API usage for users whose last reset was more than a month ago
  */
 async function resetApiUsage() {
+  console.log("Starting API usage reset background process");
+
   const oneMonthAgo = new Date();
   oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
@@ -36,6 +38,7 @@ async function resetApiUsage() {
     .lt("last_usage_reset_at", oneMonthAgo.toISOString());
 
   if (selectError) {
+    console.error(`Error selecting users: ${selectError.message}`);
     throw new Error(`Error selecting users: ${selectError.message}`);
   }
 
@@ -43,12 +46,15 @@ async function resetApiUsage() {
 
   // If there are no users to reset, return a message
   if (!usersToReset || usersToReset.length === 0) {
+    console.log("No users need API usage reset at this time");
     return {
       success: true,
       message: "No users to reset",
       count: 0,
     };
   }
+
+  console.log(`Processing reset for ${usersToReset.length} users`);
 
   const now = new Date().toISOString();
   const userIds = usersToReset.map((user: User) => user.id);
@@ -59,8 +65,11 @@ async function resetApiUsage() {
     .in("id", userIds);
 
   if (updateError) {
+    console.error(`Error updating users: ${updateError.message}`);
     throw new Error(`Error updating users: ${updateError.message}`);
   }
+
+  console.log(`Successfully reset API usage for ${usersToReset.length} users`);
 
   return {
     success: true,
@@ -72,17 +81,24 @@ async function resetApiUsage() {
 
 serve(async (req) => {
   try {
+    console.log("Received request to reset API usage");
+
     const reqJson = await req.json();
     if (reqJson.API_ROUTE_SECRET !== process.env.API_ROUTE_SECRET) {
+      console.warn("Unauthorized access attempt to reset API usage");
       return new Response(
         JSON.stringify({ message: "Not authorized" }),
         { headers: { "Content-Type": "application/json" } },
       );
     }
 
+    console.log("Starting background process for API usage reset");
+
     // Use EdgeRuntime.waitUntil to run the reset in the background
     // @ts-expect-error EdgeRuntime is available in Deno
     EdgeRuntime.waitUntil(resetApiUsage());
+
+    console.log("Background process initiated successfully");
 
     return new Response(
       JSON.stringify({
@@ -109,15 +125,3 @@ serve(async (req) => {
     );
   }
 });
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/reset-api-usage' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
