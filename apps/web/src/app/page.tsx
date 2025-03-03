@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { createClient } from "@/utils/supabase/server";
 import { Header } from "@/components/sections/header";
 import { Hero } from "@/components/sections/hero";
 import { FeaturedSection } from "@/components/sections/featured-section";
@@ -18,12 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const supabase = await createClient();
-  const { data: user } = await supabase.auth.getUser();
-
   return (
     <main>
-      <Header isLoggedIn={!!user?.user} />
+      <Header />
       <Hero />
       <FeaturedSection />
       <WhyIBuit />

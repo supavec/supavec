@@ -1,12 +1,15 @@
 "use client";
 
 import { MobileDrawer } from "@/components/mobile-drawer";
+import { useAuth } from "@/hooks/use-auth";
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function Header() {
+  const { isLoggedIn } = useAuth();
+
   return (
     <header className="sticky top-0 h-[var(--header-height)] z-50 p-0 bg-background/60 backdrop-blur">
       <div className="flex justify-between items-center container mx-auto p-2">
