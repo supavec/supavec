@@ -18,7 +18,9 @@
         "API_ROUTE_SECRET",
         "LOOPS_API_KEY",
         "DEMO_SUPA_API_KEY",
-        "OPENAI_API_KEY"
+        "OPENAI_API_KEY",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_SIGNATURE_SECRET"
       ]
     },
     "lint": {},
