@@ -1,15 +1,18 @@
 "use client";
 
+import { subscribe } from "@/app/pricing/subscribe";
 import { Section } from "@/components/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
-import Link from "next/link";
+import { Check, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type TabsProps = {
   activeTab: string;
@@ -90,6 +93,31 @@ function PricingTier({
   tier: (typeof siteConfig.pricing)[0];
   billingCycle: "monthly" | "yearly";
 }) {
+  const { isLoggedIn } = useAuth();
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSubscribe = async (priceId: string, tierName: string) => {
+    try {
+      setLoadingTier(tierName);
+
+      if (!isLoggedIn) {
+        router.push("/login");
+        return;
+      }
+
+      await subscribe(priceId);
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast.error("Subscription failed", {
+        description:
+          "There was an error processing your subscription. Please try again.",
+      });
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -149,8 +177,9 @@ function PricingTier({
         </CardContent>
 
         <Button
-          asChild
           size="lg"
+          disabled={loadingTier !== null}
+          onClick={() => handleSubscribe(tier.priceId[billingCycle], tier.name)}
           className={cn(
             "focus:ring-0 w-full rounded-none shadow-none",
             tier.popular
@@ -158,7 +187,11 @@ function PricingTier({
               : "bg-muted text-foreground hover:bg-muted/80"
           )}
         >
-          <Link href="/login">{tier.cta}</Link>
+          {loadingTier === tier.name ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            tier.cta
+          )}
         </Button>
       </div>
     </div>
