@@ -8,7 +8,7 @@ const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(
   req: Request,
-  { params }: { params: { priceId: string } }
+  { params }: { params: Promise<{ priceId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -31,9 +31,10 @@ export async function POST(
 
     if (error) console.error(error.message);
 
+    const priceId = (await params).priceId;
     const lineItems = [
       {
-        price: params.priceId,
+        price: priceId,
         quantity: 1,
       },
     ];
