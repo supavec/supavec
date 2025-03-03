@@ -32,6 +32,8 @@ type TabsTriggerProps = {
 const Tabs = ({ activeTab, className, children }: TabsProps) => {
   return (
     <div
+      role="tablist"
+      aria-orientation="horizontal"
       className={cn(
         "mx-auto flex w-full items-center justify-center",
         className
