@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { createClient } from "@/utils/supabase/server";
 import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { CTA } from "@/components/sections/cta";
@@ -12,12 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const supabase = await createClient();
-  const { data: user } = await supabase.auth.getUser();
-
   return (
     <>
-      <Header isLoggedIn={!!user?.user} />
+      <Header />
       <main className="bg-background text-foreground">
         <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="text-center mb-12">
