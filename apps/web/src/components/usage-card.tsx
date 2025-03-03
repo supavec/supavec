@@ -16,14 +16,12 @@ type SubscriptionTier = "Free" | "Basic" | "Enterprise" | null;
 
 type UsageCardProps = {
   initialStorageUsage?: number;
-  initialStorageLimit?: number;
   subscribedProductId: Tables<"profiles">["stripe_subscribed_product_id"];
   lastUsageResetAt?: string | null;
 };
 
 export function UsageCard({
   initialStorageUsage = 0,
-  initialStorageLimit = 250,
   subscribedProductId = null,
   lastUsageResetAt = null,
 }: UsageCardProps) {
@@ -31,8 +29,6 @@ export function UsageCard({
 
   const [apiCallUsage, setApiCallUsage] = useState(0);
   const [apiCallLimit, setApiCallLimit] = useState(100);
-  const [storageUsage, setStorageUsage] = useState(initialStorageUsage);
-  const [storageLimit, setStorageLimit] = useState(initialStorageLimit);
   const nextUsageResetDate = getNextUsageResetDate(lastUsageResetAt);
 
   // Map the stripe_subscribed_product_id to the appropriate tier name
@@ -61,8 +57,6 @@ export function UsageCard({
   const [isLoading, setIsLoading] = useState(true);
 
   const apiCallPercentage = Math.min(100, (apiCallUsage / apiCallLimit) * 100);
-  const storagePercentage = Math.min(100, (storageUsage / storageLimit) * 100);
-
   // Helper function to get limits based on subscription tier
   const getLimits = (tier: string | null) => {
     switch (tier) {
@@ -84,7 +78,6 @@ export function UsageCard({
         // Set limits based on subscription tier
         const limits = getLimits(subscriptionTier);
         setApiCallLimit(limits.apiCalls);
-        setStorageLimit(limits.storage);
 
         // Fetch API usage for the current month
         const { count } = await supabase
@@ -98,7 +91,6 @@ export function UsageCard({
           );
 
         setApiCallUsage(count || 0);
-        setStorageUsage(initialStorageUsage);
       } catch (error) {
         console.error("Error fetching usage data:", error);
       } finally {
@@ -108,14 +100,6 @@ export function UsageCard({
 
     fetchUsageData();
   }, [supabase, initialStorageUsage, subscriptionTier]);
-
-  // Helper function to format storage display
-  const formatStorage = (mbValue: number) => {
-    if (mbValue >= 1024) {
-      return `${(mbValue / 1024).toFixed(1)} GB`;
-    }
-    return `${mbValue} MB`;
-  };
 
   return (
     <Card className="basis-full md:basis-1/2">
@@ -153,22 +137,6 @@ export function UsageCard({
               <div
                 className="h-full rounded-full bg-primary transition-all duration-300"
                 style={{ width: `${isLoading ? 0 : apiCallPercentage}%` }}
-              ></div>
-            </div>
-          </div>
-          <div>
-            <div className="text-sm font-medium text-muted-foreground">
-              Storage
-            </div>
-            <div className="font-medium">
-              {isLoading
-                ? "Loading..."
-                : `${formatStorage(storageUsage)} / ${formatStorage(storageLimit)}`}
-            </div>
-            <div className="mt-1 h-2 w-full rounded-full bg-secondary">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-300"
-                style={{ width: `${isLoading ? 0 : storagePercentage}%` }}
               ></div>
             </div>
           </div>
