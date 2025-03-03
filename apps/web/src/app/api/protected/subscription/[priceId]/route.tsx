@@ -64,7 +64,7 @@ export async function POST(
       }
 
       console.log(`Save Stripe customer ID of this user ${user.id}`);
-      const { error: saveStirpeCustomerIdError } = await supabaseAdmin
+      const { error: saveStripeCustomerIdError } = await supabaseAdmin
         .from("profiles")
         .update({
           stripe_customer_id: stripeCustomerId,
@@ -73,10 +73,19 @@ export async function POST(
           id: user.id,
         });
 
-      if (saveStirpeCustomerIdError)
+      if (saveStripeCustomerIdError) {
         console.error(
-          `saveStirpeCustomerIdError: ${saveStirpeCustomerIdError.message}`
+          `saveStirpeCustomerIdError: ${saveStripeCustomerIdError.message}`
         );
+
+        return NextResponse.json(
+          {
+            result: "error",
+            message: "Failed to save Stripe customer ID",
+          },
+          { status: 500 }
+        );
+      }
     }
 
     console.log(`Creating Stripe checkout session for user ${user.id}`);
