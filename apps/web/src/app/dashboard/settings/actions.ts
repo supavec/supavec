@@ -22,15 +22,15 @@ export async function createStripePortalLink() {
       .match({ id: user.id })
       .single();
 
-    const { url } = await stripe.billingPortal.sessions.create({
-      customer: userData?.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings`,
-    });
-
     if (error) {
       console.error("Error fetching user data:", error);
       redirect("/dashboard/settings?error=user_data_fetch_error");
     }
+
+    const { url } = await stripe.billingPortal.sessions.create({
+      customer: userData?.stripe_customer_id,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings`,
+    });
 
     if (url) {
       return { url };
