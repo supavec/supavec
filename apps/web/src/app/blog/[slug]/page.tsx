@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { Metadata } from "next";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 export const dynamicParams = false;
 
@@ -60,7 +62,10 @@ export default async function Page({
       </header>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+        >
           {post.content}
         </ReactMarkdown>
       </div>
