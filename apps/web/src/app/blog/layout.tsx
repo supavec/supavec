@@ -1,6 +1,5 @@
-import React from "react";
-import Link from "next/link";
 import type { Metadata } from "next";
+import React from "react";
 import { APP_NAME } from "../consts";
 import { Footer } from "@/components/sections/footer";
 import { Header } from "@/components/sections/header";
@@ -16,12 +15,14 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <>
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <main className="mb-12">{children}</main>
+      <div className="min-h-screen py-12 md:py-20">
+        <div className="container mx-auto py-8">
+          <main className="mb-12">{children}</main>
+        </div>
       </div>
       <Footer className="border-t" />
-    </div>
+    </>
   );
 }

@@ -45,7 +45,7 @@ export default function BlogPage() {
   const posts = getBlogPosts();
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full mx-auto">
       <h1 className="text-4xl font-bold mb-2">Supavec Blog</h1>
       <p className="text-gray-600 dark:text-gray-400 mb-8">
         Articles, tutorials, and updates from the Supavec team
