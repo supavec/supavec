@@ -7,6 +7,8 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import "highlight.js/styles/github-dark.css";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 export const dynamicParams = false;
 
@@ -45,6 +47,15 @@ export default async function Page({
 
   return (
     <article className="max-w-3xl mx-auto">
+      <div className="mb-6">
+        <Link
+          href="/blog"
+          className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Back to Blog
+        </Link>
+      </div>
       <header className="mb-8">
         <h1 className="text-3xl font-bold mb-2">{post.title}</h1>
         <div className="text-gray-500 dark:text-gray-400 mb-4">

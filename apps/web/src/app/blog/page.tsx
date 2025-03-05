@@ -47,15 +47,15 @@ export default function BlogPage() {
   return (
     <div className="w-full mx-auto">
       <h1 className="text-4xl font-bold mb-2">Supavec Blog</h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
+      <p className="text-muted-foreground mb-8">
         Articles, tutorials, and updates from the Supavec team
       </p>
 
       <h2 className="text-3xl font-bold mb-8">Blog Posts</h2>
       {posts.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="text-center py-12 bg-gray-800 rounded-lg">
           <h2 className="text-2xl font-semibold mb-4">No blog posts yet</h2>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Check back soon for new articles.
           </p>
         </div>
