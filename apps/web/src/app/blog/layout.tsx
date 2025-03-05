@@ -7,6 +7,9 @@ import { Header } from "@/components/sections/header";
 export const metadata: Metadata = {
   title: `Blog - ${APP_NAME}`,
   description: "Articles and updates from the Supavec team",
+  alternates: {
+    canonical: "/blog",
+  },
 };
 
 export default function BlogLayout({
