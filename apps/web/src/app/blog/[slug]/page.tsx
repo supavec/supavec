@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 export default async function Page({
   params,
 }: {
@@ -9,8 +12,20 @@ export default async function Page({
   return <Post />;
 }
 
-export function generateStaticParams() {
-  return [{ slug: "welcome" }];
+export async function generateStaticParams() {
+  const postsDirectory = path.join(process.cwd(), "src/content");
+
+  if (!fs.existsSync(postsDirectory)) {
+    return [];
+  }
+
+  const filenames = fs.readdirSync(postsDirectory);
+
+  return filenames
+    .filter((filename) => filename.endsWith(".mdx"))
+    .map((filename) => ({
+      slug: filename.replace(".mdx", ""),
+    }));
 }
 
 export const dynamicParams = false;
