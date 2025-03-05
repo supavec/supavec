@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+export const dynamicParams = false;
+
 function getBlogPost(slug: string) {
   const postsDirectory = path.join(process.cwd(), "src/content");
   const fullPath = path.join(postsDirectory, `${slug}.mdx`);
@@ -77,4 +79,21 @@ export async function generateStaticParams() {
     }));
 }
 
-export const dynamicParams = false;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const post = getBlogPost((await params).slug);
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+  };
+}
