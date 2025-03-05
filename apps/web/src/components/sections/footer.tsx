@@ -1,5 +1,6 @@
 import { BorderText } from "@/components/ui/border-number";
 import { siteConfig } from "@/lib/config";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const examples = [
@@ -23,9 +24,14 @@ const links = [
   },
 ];
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
   return (
-    <footer className="flex flex-col gap-y-5 rounded-lg px-7 py-5 container">
+    <footer
+      className={cn(
+        "flex flex-col gap-y-5 rounded-lg px-7 py-5 container",
+        className
+      )}
+    >
       <div className="flex gap-y-5 flex-col-reverse md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 md:items-start">
           <div className="flex items-center gap-x-2">

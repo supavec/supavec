@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_NAME } from "../consts";
+import { Footer } from "@/components/sections/footer";
 
 export const metadata: Metadata = {
   title: `Blog - ${APP_NAME}`,
@@ -45,11 +46,7 @@ export default function BlogLayout({
 
         <main className="mb-12">{children}</main>
 
-        <footer className="border-t border-gray-200 dark:border-gray-800 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>
-            © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-          </p>
-        </footer>
+        <Footer className="border-t" />
       </div>
     </div>
   );
