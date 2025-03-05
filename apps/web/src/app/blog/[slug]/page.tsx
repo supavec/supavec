@@ -1,5 +1,27 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
+
+function getBlogPost(slug: string) {
+  const postsDirectory = path.join(process.cwd(), "src/content");
+  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
+
+  if (!fs.existsSync(fullPath)) {
+    return null;
+  }
+
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+  const { data, content } = matter(fileContents);
+
+  return {
+    slug,
+    title: data.title || "Untitled Post",
+    date: data.date || new Date().toISOString(),
+    excerpt: data.excerpt || "",
+    author: data.author || "Anonymous",
+    content,
+  };
+}
 
 export default async function Page({
   params,
@@ -7,9 +29,36 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { default: Post } = await import(`@/content/${slug}.mdx`);
+  const post = getBlogPost(slug);
 
-  return <Post />;
+  if (!post) {
+    return <div>Post not found</div>;
+  }
+
+  return (
+    <article className="max-w-3xl mx-auto">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">{post.title}</h1>
+        <div className="text-gray-500 dark:text-gray-400 mb-4">
+          {new Date(post.date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+          {post.author && ` • ${post.author}`}
+        </div>
+        {post.excerpt && (
+          <p className="text-xl text-gray-600 dark:text-gray-300 italic">
+            {post.excerpt}
+          </p>
+        )}
+      </header>
+
+      <div className="prose prose-lg dark:prose-invert max-w-none">
+        {post.content}
+      </div>
+    </article>
+  );
 }
 
 export async function generateStaticParams() {
