@@ -4,6 +4,8 @@
 
 # [Supavec](https://www.supavec.com) - The open-source alternative to Carbon.ai. Build powerful RAG applications with any data source, at any scale.
 
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/MS9CjPeXF4)](https://discord.gg/https://discord.gg/MS9CjPeXF4)
+
 ## Cloud version
 
 https://www.supavec.com
