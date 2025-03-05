@@ -20,17 +20,22 @@ function getBlogPost(slug: string) {
     return null;
   }
 
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(fileContents);
-
-  return {
-    slug,
-    title: data.title || "Untitled Post",
-    date: data.date || new Date().toISOString(),
-    excerpt: data.excerpt || "",
-    author: data.author || "Anonymous",
-    content,
-  };
+  try {
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    const { data, content } = matter(fileContents);
+  
+    return {
+      slug,
+      title: data.title || "Untitled Post",
+      date: data.date || new Date().toISOString(),
+      excerpt: data.excerpt || "",
+      author: data.author || "Anonymous",
+      content,
+    };
+  } catch (error) {
+    console.error(`Error reading blog post ${slug}:`, error);
+    return null;
+  }
 }
 
 export default async function Page({
