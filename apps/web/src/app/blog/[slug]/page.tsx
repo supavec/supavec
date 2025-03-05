@@ -6,9 +6,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import "highlight.js/styles/github-dark.css";
+import rehypeSanitize from "rehype-sanitize";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import "highlight.js/styles/github-dark.css";
 
 export const dynamicParams = false;
 
@@ -23,7 +24,6 @@ function getBlogPost(slug: string) {
   try {
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data, content } = matter(fileContents);
-  
     return {
       slug,
       title: data.title || "Untitled Post",
@@ -81,7 +81,7 @@ export default async function Page({
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight, rehypeRaw]}
+          rehypePlugins={[rehypeHighlight, rehypeRaw, rehypeSanitize]}
         >
           {post.content}
         </ReactMarkdown>
