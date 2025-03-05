@@ -1,0 +1,101 @@
+---
+title: "Introducing Supavec MCP Server: Fetch relevant content from Supavec in LLMs"
+date: "2025-03-05"
+author: "Taishi"
+tags: ["Product updates"]
+description: "Supavec MCP Server is a new way to fetch relevant content from Supavec in LLMs"
+image: "/images/supavec-banner.png"
+---
+
+Supavec MCP Server is a new way to fetch relevant content from Supavec in LLMs.
+
+## What is MCP?
+
+
+[Model Context Protocol (MCP)](https://www.anthropic.com/news/model-context-protocol) is a protocol Anthropic came up with that connects AI to stuff like your Google Drive and websites.
+
+Think of it as a universal plug — just like how USB lets you connect different gadgets without needing special cables for everything.
+
+## The problems MCP solves
+
+The big problem it fixes? AI has been pretty isolated from real data. What good is a smart assistant if it can't even access your calendar?
+
+MCP creates a standard way for information to flow between systems, so AI can actually give useful answers.
+
+It's still a work in progress though — definitely not perfect yet. But I think it's pretty promising for making AI actually useful in day-to-day life. 
+
+## Fetch relevant content to your question from Supavec with LLMs
+
+Let's look at a simple example of how to use Supavec MCP servers on Claude Desktop app.
+
+### 1. Download the MCP server
+
+First, you need to download the MCP server from the [GitHub repository](https://github.com/taishikato/supavec-mcp-server).
+
+### 2. Build the MCP server
+
+```bash
+npm i && npm run build
+```
+
+### 3. Get your Supavec API key
+
+Sign up at [Supavec](https://www.supavec.com) and get your API key.
+
+### 4. Add the MCP Server to Claude for Desktop
+
+Add the following to your `~/Library/Application\Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+    "mcpServers": {
+      "supavec": {
+        "command": "node",
+        "args": ["path/to/supavec-mcp-server/build/index.js"],
+        "env": {
+            "SUPAVEC_API_KEY": "<your api key>"
+        }
+      }
+    }
+}
+```
+
+### 5. Let's try it out!
+
+Open the Claude Desktop app and ask it to fetch relevant content from Supavec.
+
+### Demo Video
+
+Here's a demonstration of Supavec MCP Server in action:
+
+<video src="https://qxxlcbvvszqlusrmczke.supabase.co/storage/v1/object/public/public-files/mcp-demo.mp4" controls width="100%" style="border-radius: 8px; margin-top: 1rem; margin-bottom: 1rem;">Your browser does not support the video tag.</video>
+
+## Looking Forward
+
+We're just getting started with Supavec. Our roadmap includes:
+
+- More document format support (Excel, Word, etc.)
+- Advanced query capabilities
+- Integration with popular frameworks and platforms
+- Enhanced visualization tools
+
+## Join the Community
+
+Supavec is not just a platform; it's a community of developers passionate about open-source AI infrastructure. We welcome contributions of all kinds:
+
+- Code contributions
+- Documentation improvements
+- Feature requests
+- Bug reports
+
+Join us on [GitHub](https://github.com/taishikato/supavec) and [Discord](https://go.supavec.com/discord) to be part of building the future of RAG technology.
+
+## Conclusion
+
+The sudden shutdown of Carbon.ai taught us a valuable lesson about the importance of open-source infrastructure for critical AI applications. With Supavec, we're building not just a replacement but a better, more sustainable approach to RAG.
+
+Try Supavec today and take control of your AI-powered document processing. Your data, your infrastructure, your rules.
+
+---
+
+*Ready to get started? [Sign up for Supavec](https://www.supavec.com/login) today or check out our [GitHub repository](https://github.com/taishikato/supavec) to explore the code.*

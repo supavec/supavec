@@ -57,6 +57,7 @@
     "react-use-measure": "^2.1.1",
     "redaxios": "^0.5.1",
     "rehype-highlight": "^7.0.2",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
