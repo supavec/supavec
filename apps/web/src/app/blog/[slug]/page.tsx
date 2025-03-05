@@ -97,13 +97,18 @@ export async function generateStaticParams() {
     return [];
   }
 
-  const filenames = fs.readdirSync(postsDirectory);
+  try {
+    const filenames = fs.readdirSync(postsDirectory);
 
-  return filenames
-    .filter((filename) => filename.endsWith(".mdx"))
-    .map((filename) => ({
-      slug: filename.replace(".mdx", ""),
-    }));
+    return filenames
+      .filter((filename) => filename.endsWith(".mdx"))
+      .map((filename) => ({
+        slug: filename.replace(".mdx", ""),
+      }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
 }
 
 export async function generateMetadata({
