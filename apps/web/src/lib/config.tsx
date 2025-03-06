@@ -15,6 +15,26 @@ import {
 
 export const BLUR_FADE_DELAY = 0.15;
 
+// Stripe product IDs
+export const STRIPE_PRODUCT_IDS = {
+  BASIC: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC,
+  ENTERPRISE: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE,
+};
+
+// API call limits for different subscription tiers
+export const API_CALL_LIMITS = {
+  FREE: 100, // Free tier: 100 API calls per month
+  BASIC: 750, // Basic tier: 750 API calls per month
+  ENTERPRISE: 5000, // Enterprise tier: 5,000 API calls per month
+};
+
+// Subscription tier names
+export enum SUBSCRIPTION_TIER {
+  FREE = "Free",
+  BASIC = "Basic",
+  ENTERPRISE = "Enterprise",
+}
+
 export const siteConfig = {
   name: "Supavec",
   description: "Connect your data to LLMs, no matter the source.",

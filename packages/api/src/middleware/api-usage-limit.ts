@@ -1,12 +1,11 @@
 import { NextFunction, Response } from "express";
 import { supabase } from "../utils/supabase";
 import { AuthenticatedRequest } from "./auth";
-
-const API_CALL_LIMITS = {
-  FREE: 100, // Free tier: 100 API calls per month
-  BASIC: 750, // Basic tier: 750 API calls per month
-  ENTERPRISE: 5000, // Enterprise tier: 5,000 API calls per month
-};
+import {
+  API_CALL_LIMITS,
+  STRIPE_PRODUCT_IDS,
+  SUBSCRIPTION_TIER,
+} from "../utils/config";
 
 /**
  * Gets the start date for counting API usage based on the user's last_usage_reset_at date
@@ -143,20 +142,20 @@ export const apiUsageLimit = () => {
 
       // Determine the subscription tier and corresponding API call limit
       let apiCallLimit = API_CALL_LIMITS.FREE; // Default to Free tier
-      let tierName = "FREE";
+      let tierName = SUBSCRIPTION_TIER.FREE;
 
       const hasSubscription = profileData?.stripe_is_subscribed ?? false;
       const productId = profileData?.stripe_subscribed_product_id;
 
       if (hasSubscription && productId) {
-        if (productId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+        if (productId === STRIPE_PRODUCT_IDS.BASIC) {
           apiCallLimit = API_CALL_LIMITS.BASIC;
-          tierName = "BASIC";
+          tierName = SUBSCRIPTION_TIER.BASIC;
         } else if (
-          productId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+          productId === STRIPE_PRODUCT_IDS.ENTERPRISE
         ) {
           apiCallLimit = API_CALL_LIMITS.ENTERPRISE;
-          tierName = "ENTERPRISE";
+          tierName = SUBSCRIPTION_TIER.ENTERPRISE;
         }
       }
 

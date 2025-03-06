@@ -11,8 +11,11 @@ import {
 } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
 import { getNextUsageResetDate } from "@/lib/utils";
-
-type SubscriptionTier = "Free" | "Basic" | "Enterprise" | null;
+import {
+  API_CALL_LIMITS,
+  STRIPE_PRODUCT_IDS,
+  SUBSCRIPTION_TIER,
+} from "@/lib/config";
 
 type UsageCardProps = {
   initialStorageUsage?: number;
@@ -78,45 +81,40 @@ export function UsageCard({
   const supabase = createClient();
 
   const [apiCallUsage, setApiCallUsage] = useState(0);
-  const [apiCallLimit, setApiCallLimit] = useState(100);
+  const [apiCallLimit, setApiCallLimit] = useState(API_CALL_LIMITS.FREE);
   const nextUsageResetDate = getNextUsageResetDate(lastUsageResetAt);
 
   // Map the stripe_subscribed_product_id to the appropriate tier name
-  let subscriptionTier: SubscriptionTier = null;
+  let subscriptionTier = SUBSCRIPTION_TIER.FREE; // Default to Free tier
 
   if (subscribedProductId) {
     if (
       // Check if it's a Basic tier product
-      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC
+      subscribedProductId === STRIPE_PRODUCT_IDS.BASIC
     ) {
-      subscriptionTier = "Basic";
+      subscriptionTier = SUBSCRIPTION_TIER.BASIC;
     } else if (
       // Check if it's an Enterprise tier product
-      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+      subscribedProductId === STRIPE_PRODUCT_IDS.ENTERPRISE
     ) {
-      subscriptionTier = "Enterprise";
-    } else {
-      // Default to Free if we don't recognize the product ID
-      subscriptionTier = "Free";
+      subscriptionTier = SUBSCRIPTION_TIER.ENTERPRISE;
     }
-  } else {
-    // No subscription, so Free tier
-    subscriptionTier = "Free";
   }
 
   const [isLoading, setIsLoading] = useState(true);
 
   const apiCallPercentage = Math.min(100, (apiCallUsage / apiCallLimit) * 100);
+
   // Helper function to get limits based on subscription tier
   const getLimits = (tier: string | null) => {
     switch (tier) {
-      case "Basic":
-        return { apiCalls: 750, storage: 2 * 1024 }; // 750 API calls, 2GB
-      case "Enterprise":
-        return { apiCalls: 5000, storage: 15 * 1024 }; // 5000 API calls, 15GB
-      case "Free":
+      case SUBSCRIPTION_TIER.BASIC:
+        return { apiCalls: API_CALL_LIMITS.BASIC, storage: 2 * 1024 }; // 750 API calls, 2GB
+      case SUBSCRIPTION_TIER.ENTERPRISE:
+        return { apiCalls: API_CALL_LIMITS.ENTERPRISE, storage: 15 * 1024 }; // 5000 API calls, 15GB
+      case SUBSCRIPTION_TIER.FREE:
       default:
-        return { apiCalls: 100, storage: 250 }; // 100 API calls, 250MB
+        return { apiCalls: API_CALL_LIMITS.FREE, storage: 250 }; // 100 API calls, 250MB
     }
   };
 
@@ -131,7 +129,6 @@ export function UsageCard({
 
         // Get usage start date based on last_usage_reset_at
         const usageStartDate = getStartDateForApiUsage(lastUsageResetAt);
-        console.log({ usageStartDate });
 
         // Fetch API usage since the last usage reset date
         const { count } = await supabase
