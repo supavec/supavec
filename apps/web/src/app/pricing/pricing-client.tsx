@@ -208,8 +208,8 @@ export function PricingClient() {
               </CardContent>
 
               <Button
-                onClick={() =>
-                  handleSubscribe(tier.priceId[billingCycle], tier.name)
+                onClick={async () =>
+                  await handleSubscribe(tier.priceId[billingCycle], tier.name)
                 }
                 disabled={loadingTier !== null}
                 size="lg"

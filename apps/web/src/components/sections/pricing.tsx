@@ -179,7 +179,9 @@ function PricingTier({
         <Button
           size="lg"
           disabled={loadingTier !== null}
-          onClick={() => handleSubscribe(tier.priceId[billingCycle], tier.name)}
+          onClick={async () =>
+            await handleSubscribe(tier.priceId[billingCycle], tier.name)
+          }
           className={cn(
             "focus:ring-0 w-full rounded-none shadow-none",
             tier.popular
