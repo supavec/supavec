@@ -71,7 +71,11 @@ export const apiUsageLimit = () => {
         console.error(
           `[API-LIMIT][${requestId}] User ID not found for API key ${keyId}`,
         );
-        return next();
+
+        return res.status(401).json({
+          success: false,
+          error: "No user ID found for the provided API key.",
+        });
       }
 
       console.log(
