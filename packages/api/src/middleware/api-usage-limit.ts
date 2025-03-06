@@ -189,7 +189,10 @@ export const apiUsageLimit = () => {
         `[API-LIMIT][${requestId}] Unexpected error in API usage limit middleware: ${errorMessage}`,
         error,
       );
-      return next();
+      return res.status(500).json({
+        success: false,
+        error: "Unexpected error in API usage limit middleware.",
+      });
     }
   };
 };
