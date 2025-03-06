@@ -29,6 +29,7 @@ export const Testimonials = () => {
         <a
           href="https://www.producthunt.com/posts/supavec?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-supavec"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -42,6 +43,7 @@ export const Testimonials = () => {
         <a
           href="https://www.producthunt.com/posts/supavec?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-supavec"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -55,6 +57,7 @@ export const Testimonials = () => {
         <a
           href="https://www.producthunt.com/posts/supavec?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-supavec"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
