@@ -9,6 +9,7 @@ import rehypeRaw from "rehype-raw";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import "highlight.js/styles/github-dark.css";
+import { cn } from "@/lib/utils";
 
 export const dynamicParams = false;
 
@@ -81,6 +82,19 @@ export default async function Page({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
+          components={{
+            code(props) {
+              const { children, className, ...rest } = props;
+              return (
+                <code
+                  className={cn("break-words hyphens-auto", className)}
+                  {...rest}
+                >
+                  {children}
+                </code>
+              );
+            },
+          }}
         >
           {post.content}
         </ReactMarkdown>

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import React from "react";
-import { APP_NAME } from "../consts";
 import { Footer } from "@/components/sections/footer";
 import { Header } from "@/components/sections/header";
 
 export const metadata: Metadata = {
-  title: `Blog - ${APP_NAME}`,
+  title: "Blog",
   description: "Articles and updates from the Supavec team",
   alternates: {
     canonical: "/blog",
