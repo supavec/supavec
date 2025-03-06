@@ -8,6 +8,8 @@ export const env = createEnv({
     LOOPS_API_KEY: z.string().min(1),
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_SIGNATURE_SECRET: z.string().min(1),
+    OPENAI_API_KEY: z.string().min(1),
+    API_ROUTE_SECRET: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z
@@ -21,6 +23,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
     NEXT_PUBLIC_GOOGLE_ANALYTICS: z.string().min(1),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().min(1),
     NEXT_PUBLIC_API_URL: z.string().url(),
     NEXT_PUBLIC_APP_URL: z.string().url(),
     // Stripe
@@ -38,6 +41,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY,
