@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
+import { fileURLToPath } from "node:url";
+import createJiti from "jiti";
+const jiti = createJiti(fileURLToPath(import.meta.url));
+
+jiti("./src/env");
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
