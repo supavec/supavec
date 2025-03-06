@@ -17,6 +17,7 @@
     "deploy": "bun run _with-env bun run _deploy"
   },
   "dependencies": {
+    "@supavec/common": "workspace:*",
     "@ai-sdk/openai": "^1.1.5",
     "@ai-sdk/react": "^1.1.17",
     "@headlessui/react": "^2.2.0",

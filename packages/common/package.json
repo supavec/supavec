@@ -11,10 +11,14 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "lint": "eslint \"src/**/*.ts\"",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./usage": {
+      "types": "./src/usage.ts",
+      "default": "./dist/usage.js"
+    }
   },
   "devDependencies": {
     "typescript": "^5.2.2",
