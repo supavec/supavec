@@ -15,6 +15,53 @@ import {
 
 export const BLUR_FADE_DELAY = 0.15;
 
+/**
+ * Validates that all required environment variables are set
+ * @throws {Error} If any required environment variables are missing
+ */
+export function validateEnvironmentVariables(): void {
+  if (!process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_PRODUCT_BASIC"
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE"
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_STRIPE_KEY) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_KEY"
+    );
+  }
+}
+
+// Validate environment variables on import
+validateEnvironmentVariables();
+
+// Stripe product IDs
+export const STRIPE_PRODUCT_IDS = {
+  BASIC: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC,
+  ENTERPRISE: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE,
+};
+
+// API call limits for different subscription tiers
+export const API_CALL_LIMITS = {
+  FREE: 100, // Free tier: 100 API calls per month
+  BASIC: 750, // Basic tier: 750 API calls per month
+  ENTERPRISE: 5000, // Enterprise tier: 5,000 API calls per month
+};
+
+// Subscription tier names
+export enum SUBSCRIPTION_TIER {
+  FREE = "Free",
+  BASIC = "Basic",
+  ENTERPRISE = "Enterprise",
+}
+
 export const siteConfig = {
   name: "Supavec",
   description: "Connect your data to LLMs, no matter the source.",
@@ -98,47 +145,65 @@ export const siteConfig = {
   ],
   pricing: [
     {
-      name: "Basic",
-      price: { monthly: "$9", yearly: "$99" },
+      name: "Free",
+      price: { monthly: "$0", yearly: "$0" },
       frequency: { monthly: "month", yearly: "year" },
-      description: "Perfect for individuals and small projects.",
+      priceId: {
+        monthly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_FREE_MONTHLY ||
+          "price_free_monthly",
+        yearly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_FREE_YEARLY ||
+          "price_free_yearly",
+      },
+      description: "Try Supavec with limited usage.",
       features: [
-        "100 AI generations per month",
-        "Basic text-to-image conversion",
-        "Email support",
-        "Access to community forum",
+        "100 API calls per month",
+        "All supported file types",
+        "5 requests per minute",
+        "Community support",
       ],
       cta: "Get Started",
     },
     {
-      name: "Pro",
-      price: { monthly: "$29", yearly: "$290" },
+      name: "Basic",
+      price: { monthly: "$19", yearly: "$190" },
       frequency: { monthly: "month", yearly: "year" },
-      description: "Ideal for professionals and growing businesses.",
+      priceId: {
+        monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY as string,
+        yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY as string,
+      },
+      description: "For developers with regular usage needs.",
       features: [
-        "1000 AI generations per month",
-        "Advanced text-to-image conversion",
-        "Priority email support",
-        "API access",
-        "Custom AI model fine-tuning",
-        "Collaboration tools",
+        "750 API calls per month",
+        "All supported file types",
+        "15 requests per minute",
+        "Email support",
       ],
+      popular: true,
       cta: "Get Started",
     },
     {
       name: "Enterprise",
-      price: { monthly: "$999", yearly: "Custom" },
+      price: { monthly: "$149", yearly: "$1,490" },
       frequency: { monthly: "month", yearly: "year" },
-      description: "Tailored solutions for large organizations.",
+      priceId: {
+        monthly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_MONTHLY ||
+          "price_enterprise_monthly",
+        yearly:
+          process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_YEARLY ||
+          "price_enterprise_yearly",
+      },
+      description: "For businesses with high-volume needs.",
       features: [
-        "Unlimited AI generations",
-        "Dedicated account manager",
-        "24/7 phone and email support",
-        "Custom AI model development",
-        "On-premises deployment option",
-        "Advanced analytics and reporting",
+        "5,000 API calls per month",
+        "50 requests per minute",
+        "Priority processing",
+        "Priority email support",
+        "Team access with multiple API keys",
+        "Dedicated infrastructure",
       ],
-      popular: true,
       cta: "Get Started",
     },
   ],

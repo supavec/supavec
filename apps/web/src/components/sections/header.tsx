@@ -23,6 +23,15 @@ export function Header() {
           <span className="font-semibold text-lg">{siteConfig.name}</span>
         </Link>
         <div className="hidden lg:flex gap-x-4">
+          <Link
+            href="/pricing"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "rounded-lg h-8 tracking-tight font-medium"
+            )}
+          >
+            Pricing
+          </Link>
           <a
             href="https://docs.supavec.com/"
             target="_blank"

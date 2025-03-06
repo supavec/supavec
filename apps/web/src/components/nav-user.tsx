@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Mail } from "lucide-react";
+import { ChevronsUpDown, Mail, Sparkles } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
 import { toast } from "sonner";
 
@@ -23,21 +23,35 @@ import { signOut } from "@/app/login/actions";
 import { LogoutButton } from "./logout-button";
 import { Icons } from "./icons";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function NavUser({
   user,
+  hasProSubscription = false,
 }: {
   user: {
     name: string;
     email: string;
     avatar: string;
   };
+  hasProSubscription?: boolean;
 }) {
   const { isMobile } = useSidebar();
   const posthog = usePostHog();
 
   return (
     <SidebarMenu>
+      {!hasProSubscription && (
+        <SidebarMenuItem>
+          <Button asChild className="w-full" variant="default">
+            <Link href="/pricing">
+              <Sparkles className="size-4" />
+              <span>Get Supavec Pro</span>
+            </Link>
+          </Button>
+        </SidebarMenuItem>
+      )}
+
       <SidebarMenuItem>
         <SidebarMenuButton asChild tooltip="Contact Us">
           <Link
@@ -121,7 +135,7 @@ export function NavUser({
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />

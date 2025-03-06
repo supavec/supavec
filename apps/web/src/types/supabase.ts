@@ -204,22 +204,37 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          last_usage_reset_at: string | null
           name: string | null
           onboarding_at: string | null
+          stripe_customer_id: string | null
+          stripe_interval: string | null
+          stripe_is_subscribed: boolean
+          stripe_subscribed_product_id: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
+          last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_interval?: string | null
+          stripe_is_subscribed?: boolean
+          stripe_subscribed_product_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
+          last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null
+          stripe_customer_id?: string | null
+          stripe_interval?: string | null
+          stripe_is_subscribed?: boolean
+          stripe_subscribed_product_id?: string | null
         }
         Relationships: []
       }
@@ -589,3 +604,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

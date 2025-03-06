@@ -26,7 +26,6 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
-// Add beforeunload event listener to handle shutdown gracefully
 addEventListener("beforeunload", () => {
   console.log("Physical deletion function will be shutdown");
 });

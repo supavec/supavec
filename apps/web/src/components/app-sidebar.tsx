@@ -6,7 +6,9 @@ import {
   SquareTerminal,
   GalleryVerticalEnd,
   Video,
+  Settings,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -18,10 +20,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { STRIPE_PRODUCT_IDS } from "@/lib/config";
 
 export function AppSidebar({
   user,
   team,
+  hasProSubscription = false,
+  subscribedProductId = null,
 }: {
   user: { id: string; name: string | null; email: string | null } | null;
   team:
@@ -33,13 +38,30 @@ export function AppSidebar({
         };
       }[]
     | null;
+  hasProSubscription?: boolean;
+  subscribedProductId?: string | null;
 }) {
+  const pathname = usePathname();
+
+  const isDashboardActive = pathname === "/dashboard";
+  const isSettingsActive = pathname === "/dashboard/settings";
+
+  let subscriptionTier = "Free";
+
+  if (hasProSubscription && subscribedProductId) {
+    if (subscribedProductId === STRIPE_PRODUCT_IDS.BASIC) {
+      subscriptionTier = "Basic";
+    } else if (subscribedProductId === STRIPE_PRODUCT_IDS.ENTERPRISE) {
+      subscriptionTier = "Enterprise";
+    }
+  }
+
   const data = {
     teams: [
       {
         name: team?.[0]?.teams?.name ?? "Your team",
         logo: GalleryVerticalEnd,
-        plan: "Beta",
+        plan: subscriptionTier,
       },
     ],
     user: {
@@ -53,7 +75,14 @@ export function AppSidebar({
         title: "Dashboard",
         url: "/dashboard",
         icon: SquareTerminal,
-        isActive: true,
+        isActive: isDashboardActive,
+      },
+      {
+        isExternal: false,
+        title: "Settings",
+        url: "/dashboard/settings",
+        icon: Settings,
+        isActive: isSettingsActive,
       },
       {
         title: "Documentation",
@@ -79,7 +108,7 @@ export function AppSidebar({
         <NavMain items={data.navMain} team={data.teams[0]} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={data.user} hasProSubscription={hasProSubscription} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

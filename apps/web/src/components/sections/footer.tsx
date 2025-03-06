@@ -19,6 +19,11 @@ const tools = [
 
 const links = [
   {
+    title: "Pricing",
+    href: "/pricing",
+    external: false,
+  },
+  {
     title: "Blog",
     href: `${process.env.NEXT_PUBLIC_APP_URL}/blog`,
     external: false,
@@ -72,7 +77,7 @@ export function Footer({ className }: { className?: string }) {
             <h6 className="text-sm text-secondary-foreground/80 font-semibold mb-2">
               Links
             </h6>
-            <ul>
+            <ul className="flex flex-col gap-y-2">
               {links.map((link) => (
                 <li key={link.href}>
                   <Link

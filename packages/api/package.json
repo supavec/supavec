@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
+    "@supavec/common": "workspace:*",
     "@langchain/community": "0.3.22",
     "@langchain/openai": "^0.3.16",
     "@supabase/supabase-js": "^2.47.10",

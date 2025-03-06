@@ -10,6 +10,7 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Community } from "@/components/sections/community";
 import { CTA } from "@/components/sections/cta";
 import { Footer } from "@/components/sections/footer";
+import { Pricing } from "@/components/sections/pricing";
 
 export const metadata: Metadata = {
   description:
@@ -27,6 +28,7 @@ export default async function Home() {
       <WhySupavec />
       <HowToUse />
       <Testimonials />
+      <Pricing />
       <Community className="mt-[-49px] bg-background relative z-10" />
       <CTA />
       <Footer />

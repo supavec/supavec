@@ -20,6 +20,8 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { UploadFormWrapper } from "./upload-form-wrappper";
 import { ChatInterface } from "./chat-interface";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/components/link";
 import { UsageCard } from "@/components/usage-card";
 
 export const metadata: Metadata = {
@@ -30,7 +32,9 @@ export default async function Page() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, name, email, onboarding_at")
+    .select(
+      "id, name, email, onboarding_at, stripe_is_subscribed, stripe_subscribed_product_id, last_usage_reset_at"
+    )
     .single();
 
   if (!data?.onboarding_at) {
@@ -48,9 +52,16 @@ export default async function Page() {
     .from("team_memberships")
     .select("id, teams(name, id)");
 
+  const hasProSubscription = data?.stripe_is_subscribed ?? false;
+
   return (
     <SidebarProvider>
-      <AppSidebar user={data} team={teamMemberships} />
+      <AppSidebar
+        user={data}
+        team={teamMemberships}
+        hasProSubscription={hasProSubscription}
+        subscribedProductId={data?.stripe_subscribed_product_id}
+      />
       <SidebarInset>
         <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -63,6 +74,13 @@ export default async function Page() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
+          </div>
+          <div className="ml-auto mr-4">
+            {!hasProSubscription && (
+              <Button asChild>
+                <Link href="/pricing">Upgrade</Link>
+              </Button>
+            )}
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -86,7 +104,10 @@ export default async function Page() {
                 )}
               </div>
 
-              <UsageCard />
+              <UsageCard
+                subscribedProductId={data?.stripe_subscribed_product_id}
+                lastUsageResetAt={data?.last_usage_reset_at}
+              />
             </div>
             {Array.isArray(apiKeys) && apiKeys?.length > 0 && (
               <div className="flex gap-4 flex-col">
