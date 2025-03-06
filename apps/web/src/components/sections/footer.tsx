@@ -35,6 +35,17 @@ const links = [
   },
 ];
 
+const legal = [
+  {
+    title: "Privacy Policy",
+    href: "/legal/privacy-policy",
+  },
+  {
+    title: "Terms of Service",
+    href: "/legal/tos",
+  },
+];
+
 export function Footer({ className }: { className?: string }) {
   return (
     <footer
@@ -94,33 +105,58 @@ export function Footer({ className }: { className?: string }) {
 
           <div>
             <h6 className="text-sm text-secondary-foreground/80 font-semibold mb-2">
+              Legal
+            </h6>
+            <ul className="flex flex-col gap-y-2">
+              {legal.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h6 className="text-sm text-secondary-foreground/80 font-semibold mb-2">
               Examples
             </h6>
-            {examples.map((example) => (
-              <Link
-                key={example.href}
-                href={example.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
-              >
-                {example.title}
-              </Link>
-            ))}
+            <ul className="flex flex-col gap-y-2">
+              {examples.map((example) => (
+                <li key={example.href}>
+                  <Link
+                    href={example.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
+                  >
+                    {example.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>
             <h6 className="text-sm text-secondary-foreground/80 font-semibold mb-2">
               Tools
             </h6>
-            {tools.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                target="_blank"
-                className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
-              >
-                {tool.title}
-              </Link>
-            ))}
+            <ul className="flex flex-col gap-y-2">
+              {tools.map((tool) => (
+                <li key={tool.href}>
+                  <Link
+                    href={tool.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-color ease-linear"
+                  >
+                    {tool.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
