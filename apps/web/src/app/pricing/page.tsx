@@ -26,6 +26,10 @@ export default async function PricingPage() {
               features for engaging your audience, creating customer loyalty,
               and driving sales.
             </p>
+            <p className="mt-4 text-lg text-primary font-medium max-w-3xl mx-auto">
+              100% refund within 14 days if you don&apos;t love it. No questions
+              asked.
+            </p>
           </div>
 
           <PricingClient />
