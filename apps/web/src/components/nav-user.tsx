@@ -24,6 +24,7 @@ import { LogoutButton } from "./logout-button";
 import { Icons } from "./icons";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { APP_NAME } from "@/app/consts";
 
 export function NavUser({
   user,
@@ -46,7 +47,7 @@ export function NavUser({
           <Button asChild className="w-full" variant="default">
             <Link href="/pricing">
               <Sparkles className="size-4" />
-              <span>Get Supavec Pro</span>
+              <span>Upgrade {APP_NAME}</span>
             </Link>
           </Button>
         </SidebarMenuItem>
