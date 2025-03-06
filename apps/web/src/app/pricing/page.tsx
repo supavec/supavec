@@ -11,6 +11,29 @@ export const metadata: Metadata = {
     "Simple pricing for everyone. Choose an affordable plan that's packed with the best features.",
 };
 
+const faqItems = [
+  {
+    question: "How does the 14-day refund policy work?",
+    answer:
+      "If you&apos;re not satisfied with our service for any reason, simply contact our support team within 14 days of your purchase for a full refund. No questions asked.",
+  },
+  {
+    question: "Can I switch between plans?",
+    answer:
+      "Yes, you can upgrade or downgrade your plan at any time. When upgrading, you&apos;ll be prorated for the remainder of your billing cycle. When downgrading, changes will take effect at the start of your next billing cycle.",
+  },
+  {
+    question: "Do you offer team discounts?",
+    answer:
+      "Yes, we offer special pricing for teams of 5 or more. Contact our sales team for more information about team discounts and enterprise plans.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept all major credit cards, PayPal, and bank transfers for annual plans. All payments are securely processed and your information is never stored on our servers.",
+  },
+];
+
 export default async function PricingPage() {
   return (
     <>
@@ -35,6 +58,20 @@ export default async function PricingPage() {
           <PricingClient />
 
           <Testimonials />
+
+          <div className="mt-24">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:gap-10 max-w-5xl mx-auto">
+              {faqItems.map((item, index) => (
+                <div key={index} className="space-y-3">
+                  <h3 className="text-xl font-semibold">{item.question}</h3>
+                  <p className="text-muted-foreground">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <CTA />
       </main>
