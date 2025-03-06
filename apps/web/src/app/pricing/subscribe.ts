@@ -1,11 +1,11 @@
 import axios from "redaxios";
 import { loadStripe } from "@stripe/stripe-js";
 
-// @ts-expect-error - Stripe is not typed
-const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
-
 export const subscribe = async (priceId: string) => {
   try {
+    // @ts-expect-error - Stripe is not typed
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
+
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/protected/subscription/${priceId}`,
       {
