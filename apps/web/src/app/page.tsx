@@ -28,8 +28,8 @@ export default async function Home() {
       <WhySupavec />
       <HowToUse />
       <Testimonials />
-      <Pricing />
-      <Community className="mt-[-49px] bg-background relative z-10" />
+      <Pricing className="mt-[-49px] bg-background relative z-10" />
+      <Community />
       <CTA />
       <Footer />
     </main>

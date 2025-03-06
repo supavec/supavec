@@ -200,7 +200,7 @@ function PricingTier({
   );
 }
 
-export function Pricing() {
+export function Pricing({ className }: { className?: string }) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "yearly"
   );
@@ -210,7 +210,7 @@ export function Pricing() {
   };
 
   return (
-    <Section id="pricing" title="Pricing">
+    <Section id="pricing" title="Pricing" className={cn(className)}>
       <div className="border border-b-0 grid grid-rows-1">
         <div className="grid grid-rows-1 gap-y-10 p-10">
           <div className="text-center">
