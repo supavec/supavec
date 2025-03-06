@@ -90,7 +90,11 @@ export const apiUsageLimit = () => {
         console.error(
           `[API-LIMIT][${requestId}] Error fetching profile data: ${profileError.message}`,
         );
-        return next();
+
+        return res.status(500).json({
+          success: false,
+          error: "Could not retrieve user subscription profile.",
+        });
       }
 
       // Determine the subscription tier and corresponding API call limit
