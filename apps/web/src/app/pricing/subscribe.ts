@@ -8,7 +8,18 @@ export const subscribe = async (priceId: string) => {
   try {
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/protected/subscription/${priceId}`,
+      {
+        timeout: 10000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     );
+
+    if (!data || !data.id) {
+      throw new Error("Invalid response from subscription API");
+    }
+
     await stripe?.redirectToCheckout({ sessionId: data.id });
   } catch (err) {
     throw new Error((err as Error).message);
