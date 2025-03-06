@@ -8,6 +8,54 @@ const API_CALL_LIMITS = {
   ENTERPRISE: 5000, // Enterprise tier: 5,000 API calls per month
 };
 
+/**
+ * Gets the start date for counting API usage based on the user's last_usage_reset_at date
+ */
+function getStartDateForApiUsage(lastUsageResetAt: string | null): Date {
+  if (!lastUsageResetAt) {
+    // Fallback to first day of current month if no reset date is available
+    const currentDate = new Date();
+    return new Date(Date.UTC(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth(),
+      1,
+    ));
+  }
+
+  const resetDate = new Date(lastUsageResetAt);
+  const currentDate = new Date();
+
+  // Create date with same day in current month
+  const currentMonthResetDay = new Date(Date.UTC(
+    currentDate.getUTCFullYear(),
+    currentDate.getUTCMonth(),
+    resetDate.getUTCDate(),
+  ));
+
+  // If we're past the reset day in the current month, use current month's reset day
+  // Otherwise, use last month's reset day
+  if (currentDate.getTime() >= currentMonthResetDay.getTime()) {
+    return currentMonthResetDay;
+  } else {
+    // Use the previous month's reset day
+    const lastMonthResetDay = new Date(Date.UTC(
+      currentDate.getUTCMonth() === 0
+        ? currentDate.getUTCFullYear() - 1
+        : currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth() === 0 ? 11 : currentDate.getUTCMonth() - 1,
+      resetDate.getUTCDate(),
+    ));
+
+    // Handle edge cases (e.g., Jan 31 → Feb 28/29)
+    if (lastMonthResetDay.getUTCDate() !== resetDate.getUTCDate()) {
+      // Set to the last day of the target month
+      lastMonthResetDay.setUTCDate(0);
+    }
+
+    return lastMonthResetDay;
+  }
+}
+
 export const apiUsageLimit = () => {
   return async (
     req: AuthenticatedRequest,
@@ -80,7 +128,9 @@ export const apiUsageLimit = () => {
 
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("stripe_is_subscribed, stripe_subscribed_product_id")
+        .select(
+          "stripe_is_subscribed, stripe_subscribed_product_id, last_usage_reset_at",
+        )
         .match({ id: userId })
         .single();
 
@@ -114,24 +164,22 @@ export const apiUsageLimit = () => {
         `[API-LIMIT][${requestId}] User subscription tier: ${tierName}, API call limit: ${apiCallLimit}`,
       );
 
-      // Get the current month's start date in UTC
-      const currentDate = new Date();
-      const monthStart = new Date(Date.UTC(
-        currentDate.getUTCFullYear(),
-        currentDate.getUTCMonth(),
-        1,
-      ));
+      // Get usage start date based on last_usage_reset_at
+      const lastUsageResetAt = profileData?.last_usage_reset_at;
+      const usageStartDate = getStartDateForApiUsage(lastUsageResetAt);
 
       console.log(
-        `[API-LIMIT][${requestId}] Counting API usage since ${monthStart.toISOString()}`,
+        `[API-LIMIT][${requestId}] Counting API usage since ${usageStartDate.toISOString()} (based on last_usage_reset_at: ${
+          lastUsageResetAt || "not set"
+        })`,
       );
 
-      // Count API calls for the current month
+      // Count API calls since the last usage reset date
       const { count, error: countError } = await supabase
         .from("api_usage_logs")
         .select("id", { count: "exact", head: true })
         .match({ user_id: userId })
-        .gte("created_at", monthStart.toISOString());
+        .gte("created_at", usageStartDate.toISOString());
 
       if (countError) {
         console.error(

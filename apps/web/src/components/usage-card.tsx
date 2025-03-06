@@ -20,6 +20,56 @@ type UsageCardProps = {
   lastUsageResetAt?: string | null;
 };
 
+/**
+ * Gets the start date for counting API usage based on the user's last_usage_reset_at date
+ */
+function getStartDateForApiUsage(lastUsageResetAt: string | null): Date {
+  if (!lastUsageResetAt) {
+    // Fallback to first day of current month if no reset date is available
+    const currentDate = new Date();
+    return new Date(
+      Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), 1)
+    );
+  }
+
+  const resetDate = new Date(lastUsageResetAt);
+  const currentDate = new Date();
+
+  // Create date with same day in current month
+  const currentMonthResetDay = new Date(
+    Date.UTC(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth(),
+      resetDate.getUTCDate()
+    )
+  );
+
+  // If we're past the reset day in the current month, use current month's reset day
+  // Otherwise, use last month's reset day
+  if (currentDate.getTime() >= currentMonthResetDay.getTime()) {
+    return currentMonthResetDay;
+  } else {
+    // Use the previous month's reset day
+    const lastMonthResetDay = new Date(
+      Date.UTC(
+        currentDate.getUTCMonth() === 0
+          ? currentDate.getUTCFullYear() - 1
+          : currentDate.getUTCFullYear(),
+        currentDate.getUTCMonth() === 0 ? 11 : currentDate.getUTCMonth() - 1,
+        resetDate.getUTCDate()
+      )
+    );
+
+    // Handle edge cases (e.g., Jan 31 → Feb 28/29)
+    if (lastMonthResetDay.getUTCDate() !== resetDate.getUTCDate()) {
+      // Set to the last day of the target month
+      lastMonthResetDay.setUTCDate(0);
+    }
+
+    return lastMonthResetDay;
+  }
+}
+
 export function UsageCard({
   initialStorageUsage = 0,
   subscribedProductId = null,
@@ -79,16 +129,15 @@ export function UsageCard({
         const limits = getLimits(subscriptionTier);
         setApiCallLimit(limits.apiCalls);
 
-        // Fetch API usage for the current month
+        // Get usage start date based on last_usage_reset_at
+        const usageStartDate = getStartDateForApiUsage(lastUsageResetAt);
+        console.log({ usageStartDate });
+
+        // Fetch API usage since the last usage reset date
         const { count } = await supabase
           .from("api_usage_logs")
           .select("id", { count: "exact", head: true })
-          .gte(
-            "created_at",
-            new Date(
-              Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)
-            ).toISOString()
-          );
+          .gte("created_at", usageStartDate.toISOString());
 
         setApiCallUsage(count || 0);
       } catch (error) {
@@ -99,13 +148,13 @@ export function UsageCard({
     }
 
     fetchUsageData();
-  }, [supabase, initialStorageUsage, subscriptionTier]);
+  }, [supabase, initialStorageUsage, subscriptionTier, lastUsageResetAt]);
 
   return (
     <Card className="basis-full md:basis-1/2">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Usage (this month)</CardTitle>
+          <CardTitle>Usage (this period)</CardTitle>
           {subscriptionTier && (
             <span className="text-sm font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
               {subscriptionTier} Plan
