@@ -10,7 +10,14 @@ export const env = createEnv({
     STRIPE_SIGNATURE_SECRET: z.string().min(1),
   },
   client: {
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+    NEXT_PUBLIC_SUPABASE_URL: z
+      .string()
+      .url()
+      .refine(
+        (url) =>
+          url.includes(".supabase.co") || url.startsWith("http://localhost"),
+        "NEXT_PUBLIC_SUPABASE_URL must be a valid Supabase URL",
+      ),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
     NEXT_PUBLIC_GOOGLE_ANALYTICS: z.string().min(1),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
