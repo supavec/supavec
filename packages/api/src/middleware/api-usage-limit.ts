@@ -141,7 +141,10 @@ export const apiUsageLimit = () => {
         console.error(
           `[API-LIMIT][${requestId}] Error counting API usage: ${countError.message}`,
         );
-        return next();
+        return res.status(500).json({
+          success: false,
+          error: "Could not retrieve usage logs",
+        });
       }
 
       const apiCallCount = count || 0;
