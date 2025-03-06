@@ -15,6 +15,33 @@ import {
 
 export const BLUR_FADE_DELAY = 0.15;
 
+/**
+ * Validates that all required environment variables are set
+ * @throws {Error} If any required environment variables are missing
+ */
+export function validateEnvironmentVariables(): void {
+  if (!process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_PRODUCT_BASIC"
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE"
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_STRIPE_KEY) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_STRIPE_KEY"
+    );
+  }
+}
+
+// Validate environment variables on import
+validateEnvironmentVariables();
+
 // Stripe product IDs
 export const STRIPE_PRODUCT_IDS = {
   BASIC: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC,

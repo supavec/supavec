@@ -20,6 +20,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { STRIPE_PRODUCT_IDS } from "@/lib/config";
 
 export function AppSidebar({
   user,
@@ -48,11 +49,9 @@ export function AppSidebar({
   let subscriptionTier = "Free";
 
   if (hasProSubscription && subscribedProductId) {
-    if (subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC) {
+    if (subscribedProductId === STRIPE_PRODUCT_IDS.BASIC) {
       subscriptionTier = "Basic";
-    } else if (
-      subscribedProductId === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
-    ) {
+    } else if (subscribedProductId === STRIPE_PRODUCT_IDS.ENTERPRISE) {
       subscriptionTier = "Enterprise";
     }
   }

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ManageSubscriptionButton } from "./manage-subscription-button";
+import { STRIPE_PRODUCT_IDS } from "@/lib/config";
 
 export const metadata = {
   title: "Settings",
@@ -59,14 +60,10 @@ export default async function SettingsPage() {
   let subscriptionTier = "Free";
 
   if (hasSubscription && profile?.stripe_subscribed_product_id) {
-    if (
-      profile.stripe_subscribed_product_id ===
-      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_BASIC
-    ) {
+    if (profile.stripe_subscribed_product_id === STRIPE_PRODUCT_IDS.BASIC) {
       subscriptionTier = "Basic";
     } else if (
-      profile.stripe_subscribed_product_id ===
-      process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE
+      profile.stripe_subscribed_product_id === STRIPE_PRODUCT_IDS.ENTERPRISE
     ) {
       subscriptionTier = "Enterprise";
     }
