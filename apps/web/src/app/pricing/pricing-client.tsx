@@ -99,7 +99,13 @@ export function PricingClient() {
 
   const handleSubscribe = async (priceId: string, tierName: string) => {
     try {
+      if (tierName === "Free") {
+        router.push("/dashboard");
+        return;
+      }
+
       setLoadingTier(tierName);
+
       const { data } = await supabase.auth.getUser();
 
       if (!data.user) {

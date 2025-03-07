@@ -101,6 +101,11 @@ function PricingTier({
 
   const handleSubscribe = async (priceId: string, tierName: string) => {
     try {
+      if (tierName === "Free") {
+        router.push("/dashboard");
+        return;
+      }
+
       setLoadingTier(tierName);
 
       if (!isLoggedIn) {
