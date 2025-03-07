@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -93,9 +94,10 @@ function PricingTier({
   tier: (typeof siteConfig.pricing)[0];
   billingCycle: "monthly" | "yearly";
 }) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const router = useRouter();
+  const posthog = usePostHog();
 
   const handleSubscribe = async (priceId: string, tierName: string) => {
     try {
@@ -107,11 +109,23 @@ function PricingTier({
       }
 
       await subscribe(priceId);
+      posthog.capture("Subscription initiated", {
+        tier: tierName,
+        billing_cycle: billingCycle,
+        price_id: priceId,
+        user_id: user?.id,
+      });
     } catch (error) {
       console.error("Subscription error:", error);
       toast.error("Subscription failed", {
         description:
           "There was an error processing your subscription. Please try again.",
+      });
+      posthog.capture("Subscription failed", {
+        tier: tierName,
+        billing_cycle: billingCycle,
+        price_id: priceId,
+        user_id: user?.id,
       });
     } finally {
       setLoadingTier(null);

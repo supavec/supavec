@@ -12,6 +12,7 @@ import { subscribe } from "./subscribe";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 
 type TabsProps = {
   activeTab: string;
@@ -90,6 +91,7 @@ export function PricingClient() {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
+  const posthog = usePostHog();
 
   const handleTabChange = (tab: "yearly" | "monthly") => {
     setBillingCycle(tab);
@@ -106,11 +108,25 @@ export function PricingClient() {
       }
 
       await subscribe(priceId);
+
+      posthog.capture("Subscription initiated", {
+        tier: tierName,
+        billing_cycle: billingCycle,
+        price_id: priceId,
+        user_id: data.user.id,
+      });
     } catch (error) {
       console.error("Subscription error:", error);
       toast.error("Subscription failed", {
         description:
           "There was an error processing your subscription. Please try again.",
+      });
+
+      posthog.capture("Subscription failed", {
+        tier: tierName,
+        billing_cycle: billingCycle,
+        price_id: priceId,
+        error: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setLoadingTier(null);
