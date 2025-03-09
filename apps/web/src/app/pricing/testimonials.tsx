@@ -4,13 +4,27 @@ import { useEffect, useRef } from "react";
 
 export const Testimonials = () => {
   const senjaContainerRef = useRef<HTMLDivElement>(null);
+  const senjaContainerRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // This ensures the widget only loads on the client side after hydration
     if (senjaContainerRef.current) {
       const script = document.createElement("script");
       script.src =
         "https://widget.senja.io/widget/fbd84a7e-61cb-4140-80c5-746dc0c3b3eb/platform.js";
+      script.async = true;
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (senjaContainerRef2.current) {
+      const script = document.createElement("script");
+      script.src =
+        "https://widget.senja.io/widget/99489516-c9b7-4162-9558-50851e82e446/platform.js";
       script.async = true;
       document.body.appendChild(script);
 
@@ -70,8 +84,16 @@ export const Testimonials = () => {
         </a>
       </div>
       <div
-        ref={senjaContainerRef}
+        ref={senjaContainerRef2}
         className="senja-embed"
+        data-id="99489516-c9b7-4162-9558-50851e82e446"
+        data-mode="shadow"
+        data-lazyload="false"
+        style={{ display: "block", marginTop: "2rem" }}
+      ></div>
+      <div
+        ref={senjaContainerRef}
+        className="senja-embed mt-[-30px]"
         data-id="fbd84a7e-61cb-4140-80c5-746dc0c3b3eb"
         data-mode="shadow"
         data-lazyload="false"
