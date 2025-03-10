@@ -22,15 +22,6 @@ router.post(
   uploadFile,
 );
 router.post("/upload_text", apiKeyAuth(), apiUsageLimit(), uploadText);
-router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
-router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
-router.post(
-  "/delete_file",
-  apiKeyAuth(),
-  apiUsageLimit(),
-  validateDeleteRequestMiddleware(),
-  deleteFile,
-);
 router.post(
   "/resync_file",
   apiKeyAuth(),
@@ -38,3 +29,13 @@ router.post(
   validateResyncRequestMiddleware(),
   resyncFile,
 );
+router.post(
+  "/delete_file",
+  apiKeyAuth(),
+  apiUsageLimit(),
+  validateDeleteRequestMiddleware(),
+  deleteFile,
+);
+
+router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
+router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
