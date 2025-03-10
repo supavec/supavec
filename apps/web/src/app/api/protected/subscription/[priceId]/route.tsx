@@ -102,6 +102,7 @@ export async function POST(
       line_items: lineItems,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings/success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      allow_promotion_codes: true,
     });
 
     return NextResponse.json({ result: "success", id: session.id });
