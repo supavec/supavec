@@ -6,11 +6,13 @@ import { getEmbeddings } from "../controllers/embeddings";
 import { userFiles } from "../controllers/user-files";
 import { deleteFile } from "../controllers/delete-file";
 import { resyncFile } from "../controllers/resync-file";
+import { overwriteText } from "../controllers/overwrite-text";
 import { upload } from "../middleware/upload";
 import { apiKeyAuth } from "../middleware/auth";
 import { apiUsageLimit } from "../middleware/api-usage-limit";
 import { validateRequestMiddleware as validateDeleteRequestMiddleware } from "../middleware/delete-file/validate-request";
 import { validateRequestMiddleware as validateResyncRequestMiddleware } from "../middleware/resync-file/validate-request";
+import { validateRequestMiddleware as validateOverwriteRequestMiddleware } from "../middleware/overwrite-text/validate-request";
 
 export const router: IRouter = Router();
 
@@ -39,3 +41,11 @@ router.post(
 
 router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
 router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
+
+router.post(
+  "/overwrite_text",
+  apiKeyAuth(),
+  apiUsageLimit(),
+  validateOverwriteRequestMiddleware(),
+  overwriteText,
+);
