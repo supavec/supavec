@@ -21,9 +21,9 @@ export async function POST(request: Request) {
     return new Response("No user message found", { status: 400 });
   }
 
-  // Call supavec embeddings API
-  const embeddingsResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/embeddings`,
+  // Call supavec search API
+  const searchResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/search`,
     {
       method: "POST",
       headers: {
@@ -37,15 +37,15 @@ export async function POST(request: Request) {
     }
   );
 
-  if (!embeddingsResponse.ok) {
-    const errorData = await embeddingsResponse.json();
-    console.error("Embeddings API error:", errorData);
-    return new Response("Failed to get embeddings", {
-      status: embeddingsResponse.status,
+  if (!searchResponse.ok) {
+    const errorData = await searchResponse.json();
+    console.error("Search API error:", errorData);
+    return new Response("Failed to search documents", {
+      status: searchResponse.status,
     });
   }
 
-  const embeddings = await embeddingsResponse.json();
+  const searchResults = await searchResponse.json();
 
   return createDataStreamResponse({
     execute: (dataStream) => {
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         model: openai("gpt-4o-mini"),
         system:
           "You are a helpful assistant that can answer questions and help with tasks.\n\nRelevant context from the document:\n" +
-          embeddings.documents
+          searchResults.documents
             .map((doc: { content: string }) => doc.content)
             .join("\n"),
         messages,
