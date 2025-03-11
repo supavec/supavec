@@ -7,9 +7,11 @@ import { Icons } from "../icons";
 import { APP_NAME } from "@/app/consts";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 
 export function SenjaTestimonials() {
   const senjaContainerRef = useRef<HTMLDivElement>(null);
+  const posthog = usePostHog();
 
   useEffect(() => {
     if (senjaContainerRef.current) {
@@ -24,6 +26,13 @@ export function SenjaTestimonials() {
       };
     }
   }, []);
+
+  const handleTryForFreeClick = () => {
+    posthog.capture("Testimonials CTA Clicked", {
+      source: "senja-testimonials",
+      cta_text: `Try ${APP_NAME} for free`,
+    });
+  };
 
   return (
     <Section id="senja-testimonials">
@@ -40,6 +49,7 @@ export function SenjaTestimonials() {
           <div className="bg-background py-8 w-full flex justify-center items-center mt-[-76px] relative z-10 rounded-none">
             <Link
               href="/login"
+              onClick={handleTryForFreeClick}
               className={cn(
                 buttonVariants({ variant: "default" }),
                 "w-full sm:w-auto text-background flex gap-2 rounded-lg"
