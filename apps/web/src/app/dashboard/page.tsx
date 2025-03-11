@@ -96,7 +96,7 @@ export default async function Page() {
                 </h3>
                 <p>Your API key will appear here once generated.</p>
                 {Array.isArray(apiKeys) && apiKeys?.length > 0 ? (
-                  <span className="p-1 text-sm bg-muted-foreground/20 rounded-md">
+                  <span className="p-1 text-sm bg-muted-foreground/20 rounded-md select-all">
                     {apiKeys[0].api_key}
                   </span>
                 ) : (
