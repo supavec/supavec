@@ -6,11 +6,13 @@ import { getEmbeddings } from "../controllers/embeddings";
 import { userFiles } from "../controllers/user-files";
 import { deleteFile } from "../controllers/delete-file";
 import { resyncFile } from "../controllers/resync-file";
+import { overwriteText } from "../controllers/overwrite-text";
 import { upload } from "../middleware/upload";
 import { apiKeyAuth } from "../middleware/auth";
 import { apiUsageLimit } from "../middleware/api-usage-limit";
 import { validateRequestMiddleware as validateDeleteRequestMiddleware } from "../middleware/delete-file/validate-request";
 import { validateRequestMiddleware as validateResyncRequestMiddleware } from "../middleware/resync-file/validate-request";
+import { validateRequestMiddleware as validateOverwriteRequestMiddleware } from "../middleware/overwrite-text/validate-request";
 
 export const router: IRouter = Router();
 
@@ -22,8 +24,13 @@ router.post(
   uploadFile,
 );
 router.post("/upload_text", apiKeyAuth(), apiUsageLimit(), uploadText);
-router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
-router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
+router.post(
+  "/resync_file",
+  apiKeyAuth(),
+  apiUsageLimit(),
+  validateResyncRequestMiddleware(),
+  resyncFile,
+);
 router.post(
   "/delete_file",
   apiKeyAuth(),
@@ -31,10 +38,14 @@ router.post(
   validateDeleteRequestMiddleware(),
   deleteFile,
 );
+
+router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
+router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
+
 router.post(
-  "/resync_file",
+  "/overwrite_text",
   apiKeyAuth(),
   apiUsageLimit(),
-  validateResyncRequestMiddleware(),
-  resyncFile,
+  validateOverwriteRequestMiddleware(),
+  overwriteText,
 );
