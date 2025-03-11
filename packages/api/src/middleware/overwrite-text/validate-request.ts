@@ -7,8 +7,8 @@ const DEFAULT_CHUNK_OVERLAP = 200;
 
 const requestSchema = z.object({
   file_id: z.string().uuid(),
-  contents: z.string(),
-  name: z.string(),
+  contents: z.string().min(5, "Content must be at least 5 characters long"),
+  name: z.string().min(1).optional().default("Untitled Document"),
   chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
   chunk_overlap: z.number()
     .positive()
