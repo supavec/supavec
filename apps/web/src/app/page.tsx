@@ -11,6 +11,7 @@ import { Community } from "@/components/sections/community";
 import { CTA } from "@/components/sections/cta";
 import { Footer } from "@/components/sections/footer";
 import { Pricing } from "@/components/sections/pricing";
+import { SenjaTestimonials } from "@/components/sections/senja-testimonials";
 
 export const metadata: Metadata = {
   description:
@@ -26,6 +27,7 @@ export default async function Home() {
       <WhyIBuit />
       <WhatIsRag />
       <WhySupavec />
+      <SenjaTestimonials />
       <HowToUse />
       <Testimonials />
       <Pricing className="mt-[-49px] bg-background relative z-10" />

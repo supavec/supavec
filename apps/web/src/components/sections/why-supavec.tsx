@@ -2,9 +2,9 @@ import { Section } from "@/components/section";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
-export function WhySupavec() {
+export function WhySupavec({ className }: { className?: string }) {
   return (
-    <Section id="why-supavec" title="Why Supavec?">
+    <Section id="why-supavec" title="Why Supavec?" className={cn(className)}>
       <div className="border-x border-t">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {siteConfig.whySupavec.map(

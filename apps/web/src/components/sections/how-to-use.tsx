@@ -1,6 +1,7 @@
 import { APP_NAME } from "@/app/consts";
 import { StepsSelector } from "@/components/steps-selector";
 import { Section } from "@/components/section";
+import { cn } from "@/lib/utils";
 
 type StepOption = {
   id: number;
@@ -26,9 +27,13 @@ const steps: StepOption[] = [
   },
 ];
 
-export async function HowToUse() {
+export async function HowToUse({ className }: { className?: string }) {
   return (
-    <Section id="how-to-use" title={`How to use ${APP_NAME}`}>
+    <Section
+      id="how-to-use"
+      title={`How to use ${APP_NAME}`}
+      className={cn(className)}
+    >
       <div className="border-x border-t">
         <StepsSelector steps={steps} />
       </div>
