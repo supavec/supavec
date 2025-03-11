@@ -41,14 +41,19 @@ export const overwriteText = async (req: ValidatedRequest, res: Response) => {
       apiKeyData,
     } = req.body.validatedData;
 
-    // Delete file from storage
-    console.log("[OVERWRITE-TEXT] Deleting file from storage");
+    // check if file is a txt file
     const { data: file } = await supabase
       .from("files")
-      .select("storage_path")
+      .select("type, storage_path")
       .match({ file_id, team_id: teamId })
       .single();
 
+    if (file?.type !== "text") {
+      throw new Error("File is not a text file");
+    }
+
+    // Delete file from storage
+    console.log("[OVERWRITE-TEXT] Deleting file from storage");
     if (file?.storage_path) {
       const { error: deleteError } = await supabase.storage
         .from("user-documents")
