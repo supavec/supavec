@@ -1,3 +1,4 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import { Request, Response } from "express";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -69,17 +70,75 @@ export const overwriteText = async (req: ValidatedRequest, res: Response) => {
     // Soft delete existing documents
     console.log("[OVERWRITE-TEXT] Soft deleting existing documents");
     const now = new Date().toISOString();
-    const { error: documentsUpdateError } = await supabase
-      .from("documents")
-      .update({ deleted_at: now })
-      .filter("metadata->>file_id", "eq", file_id);
+
+    let documentsUpdateError: PostgrestError | Error | null = null;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount < maxRetries) {
+      try {
+        console.log(
+          `[OVERWRITE-TEXT] Attempting to update documents (attempt ${
+            retryCount + 1
+          }/${maxRetries})`,
+        );
+        const { error } = await supabase
+          .from("documents")
+          .update({ deleted_at: now })
+          .filter("metadata->>file_id", "eq", file_id);
+
+        if (!error) {
+          console.log(
+            "[OVERWRITE-TEXT] Existing embeddings marked as deleted successfully",
+          );
+          documentsUpdateError = null;
+          break;
+        } else {
+          documentsUpdateError = error;
+          console.log(
+            `[OVERWRITE-TEXT] Error updating documents (attempt ${
+              retryCount + 1
+            }/${maxRetries})`,
+            {
+              error: documentsUpdateError,
+            },
+          );
+
+          // Only retry if we haven't reached max retries yet
+          if (retryCount < maxRetries - 1) {
+            // Exponential backoff: 1s, 2s, 4s, etc.
+            const backoffTime = Math.pow(2, retryCount) * 1000;
+            console.log(`[OVERWRITE-TEXT] Retrying in ${backoffTime}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, backoffTime));
+          }
+        }
+      } catch (err) {
+        documentsUpdateError = err as Error;
+        console.log(
+          `[OVERWRITE-TEXT] Unexpected error updating documents (attempt ${
+            retryCount + 1
+          }/${maxRetries})`,
+          {
+            error: documentsUpdateError,
+          },
+        );
+
+        if (retryCount < maxRetries - 1) {
+          const backoffTime = Math.pow(2, retryCount) * 1000;
+          console.log(`[OVERWRITE-TEXT] Retrying in ${backoffTime}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, backoffTime));
+        }
+      }
+
+      retryCount++;
+    }
 
     if (documentsUpdateError) {
-      console.log("[OVERWRITE-TEXT] Error updating documents", {
+      console.log("[OVERWRITE-TEXT] All attempts to update documents failed", {
         error: documentsUpdateError,
       });
       throw new Error(
-        `Failed to update documents: ${documentsUpdateError.message}`,
+        `Failed to update documents after ${maxRetries} attempts: ${documentsUpdateError.message}`,
       );
     }
 
