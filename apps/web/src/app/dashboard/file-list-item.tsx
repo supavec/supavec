@@ -62,7 +62,12 @@ export function FileListItem({ file, apiKey }: FileListItemProps) {
       <div className="flex items-center space-x-3 w-full">
         <File className="h-5 w-5 text-blue-500" />
         <div className="flex items-center justify-between w-full">
-          <p className="font-medium">{file.file_name}</p>
+          <div className="flex flex-col gap-1">
+            <p className="font-medium">{file.file_name}</p>
+            <code className="bg-background/50 px-2 py-1 rounded text-sm select-all w-fit">
+              {file.file_id}
+            </code>
+          </div>
           <Button
             variant="ghost"
             size="icon"
