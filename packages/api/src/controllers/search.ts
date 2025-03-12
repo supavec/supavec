@@ -120,11 +120,12 @@ export const search = async (req: Request, res: Response) => {
       });
     }
 
-    const { query, k, file_ids } = validation.data!;
+    const { query, k, file_ids, include_embeddings } = validation.data!;
     console.log("[SEARCH] Processing search request", {
       query,
       k,
       fileIdsCount: file_ids.length,
+      includeEmbeddings: include_embeddings,
     });
 
     console.log("[SEARCH] Creating vector store");
@@ -142,19 +143,75 @@ export const search = async (req: Request, res: Response) => {
     );
 
     console.log("[SEARCH] Performing similarity search");
-    const similaritySearchWithScoreResults = await vectorStore
-      .similaritySearchWithScore(query, k);
-    console.log("[SEARCH] Similarity search completed", {
-      resultCount: similaritySearchWithScoreResults.length,
-    });
 
-    const documentsResponse = [];
-    for (const [doc, score] of similaritySearchWithScoreResults) {
-      documentsResponse.push({
+    let documentsResponse = [];
+
+    if (include_embeddings) {
+      // When embeddings are requested, we need to get the raw results
+      // which include the embedding field from match_documents
+      console.log("[SEARCH] Including embeddings in response");
+
+      // Generate embedding for the query
+      const embeddings = new OpenAIEmbeddings({
+        modelName: "text-embedding-3-small",
+        model: "text-embedding-3-small",
+      });
+      const embeddingArray = await embeddings.embedQuery(query);
+
+      // Convert the embedding array to a string format that Postgres vector type expects
+      const queryEmbedding = `[${embeddingArray.join(",")}]`;
+
+      // Define the type for raw results from match_documents
+      interface MatchDocumentResult {
+        id: number;
+        content: string;
+        metadata: { file_id: string; [key: string]: unknown };
+        embedding: unknown;
+        similarity: number;
+      }
+
+      // Execute raw query to get results with embeddings
+      const { data, error } = await supabase.rpc("match_documents", {
+        query_embedding: queryEmbedding,
+        match_count: k,
+        filter: file_ids ? { file_id: { in: file_ids } } : {},
+      });
+
+      if (error) {
+        throw new Error(`Error in similarity search: ${error.message}`);
+      }
+
+      // Type assertion for the results
+      const rawResults = data as MatchDocumentResult[] || [];
+
+      console.log({ rawResults: rawResults[0] });
+
+      console.log("[SEARCH] Raw similarity search completed", {
+        resultCount: rawResults.length,
+      });
+
+      // Format the response with embeddings
+      documentsResponse = rawResults.map((result) => ({
+        content: result.content,
+        file_id: result.metadata?.file_id || "",
+        score: result.similarity.toFixed(3),
+        embedding: result.embedding,
+      }));
+    } else {
+      // Use the standard LangChain approach when embeddings are not needed
+      const similaritySearchWithScoreResults = await vectorStore
+        .similaritySearchWithScore(query, k);
+      console.log("[SEARCH] Similarity search completed", {
+        resultCount: similaritySearchWithScoreResults.length,
+      });
+
+      documentsResponse = similaritySearchWithScoreResults.map((
+        [doc, score],
+      ) => ({
         content: doc.pageContent,
         file_id: doc.metadata.file_id,
         score: score.toFixed(3),
-      });
+      }));
     }
 
     console.log("[SEARCH] Capturing PostHog event");
