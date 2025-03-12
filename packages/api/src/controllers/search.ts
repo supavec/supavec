@@ -11,8 +11,7 @@ console.log("[SEARCH] Module loaded");
 const searchSchema = z.object({
   query: z.string().min(1, "Query is required"),
   k: z.number().int().positive().default(3),
-  include_vectors: z.boolean().optional(),
-  include_raw_file: z.boolean().optional(),
+  include_vectors: z.boolean().optional().default(false),
   file_ids: z.array(z.string().uuid()).min(
     1,
     "At least one file ID is required",
