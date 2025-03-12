@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useScrollToBottom } from "./use-scroll-to-bottom";
 
-type Embedding = {
+type SearchResult = {
   success: boolean;
   documents: {
     content: string;
@@ -34,7 +34,7 @@ export function ChatInterface({
 }) {
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [embeddingFromAPI, setEmbeddingFromAPI] = useState<
-    Embedding["documents"] | null
+    SearchResult["documents"] | null
   >(null);
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -71,24 +71,22 @@ export function ChatInterface({
     };
   }, [selectedFile, setMessages]);
 
-  const fetchEmbeddings = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/embeddings`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: apiKey,
-        },
-        body: JSON.stringify({ query: input, file_ids: [selectedFile] }),
-      }
-    );
+  const fetchSearchResults = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: apiKey,
+      },
+      body: JSON.stringify({ query: input, file_ids: [selectedFile] }),
+    });
 
     if (!response.ok) {
-      toast.error("Failed to fetch embeddings");
+      toast.error("Failed to search documents");
+      return;
     }
 
-    const data = (await response.json()) as Embedding;
+    const data = (await response.json()) as SearchResult;
     setEmbeddingFromAPI(data.documents);
   };
 
@@ -177,7 +175,7 @@ export function ChatInterface({
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            await Promise.all([handleSubmit(), fetchEmbeddings()]);
+            await Promise.all([handleSubmit(), fetchSearchResults()]);
           }}
           className="p-4 border-t"
         >

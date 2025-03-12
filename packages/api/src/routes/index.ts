@@ -3,6 +3,7 @@ import { Router } from "express";
 import { uploadFile } from "../controllers/upload-file";
 import { uploadText } from "../controllers/upload-text";
 import { getEmbeddings } from "../controllers/embeddings";
+import { search } from "../controllers/search";
 import { userFiles } from "../controllers/user-files";
 import { deleteFile } from "../controllers/delete-file";
 import { resyncFile } from "../controllers/resync-file";
@@ -40,6 +41,7 @@ router.post(
 );
 
 router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
+router.post("/search", apiKeyAuth(), apiUsageLimit(), search);
 router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
 
 router.post(
