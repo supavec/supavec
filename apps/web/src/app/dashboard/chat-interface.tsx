@@ -78,7 +78,11 @@ export function ChatInterface({
         "Content-Type": "application/json",
         Authorization: apiKey,
       },
-      body: JSON.stringify({ query: input, file_ids: [selectedFile] }),
+      body: JSON.stringify({
+        query: input,
+        file_ids: [selectedFile],
+        include_embeddings: true,
+      }),
     });
 
     if (!response.ok) {
@@ -200,7 +204,7 @@ export function ChatInterface({
         </form>
       </Card>
 
-      <Card className="col-span-2 md:col-span-1 h-[600px] flex flex-col bg-background">
+      <Card className="col-span-2 md:col-span-1 h-[600px] overflow-auto flex flex-col bg-background">
         <div className="p-4 border-b">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Code className="size-5" />
