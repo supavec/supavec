@@ -8,6 +8,14 @@ import { supabase } from "../utils/supabase";
 
 console.log("[SEARCH] Module loaded");
 
+type MatchDocumentResult = {
+  id: number;
+  content: string;
+  metadata: { file_id: string; [key: string]: unknown };
+  embedding: unknown;
+  similarity: number;
+};
+
 const searchSchema = z.object({
   query: z.string().min(1, "Query is required"),
   k: z.number().int().positive().default(3),
@@ -125,7 +133,7 @@ export const search = async (req: Request, res: Response) => {
       query,
       k,
       fileIdsCount: file_ids.length,
-      includeEmbeddings: include_embeddings,
+      include_embeddings,
     });
 
     console.log("[SEARCH] Creating vector store");
@@ -161,16 +169,6 @@ export const search = async (req: Request, res: Response) => {
       // Convert the embedding array to a string format that Postgres vector type expects
       const queryEmbedding = `[${embeddingArray.join(",")}]`;
 
-      // Define the type for raw results from match_documents
-      interface MatchDocumentResult {
-        id: number;
-        content: string;
-        metadata: { file_id: string; [key: string]: unknown };
-        embedding: unknown;
-        similarity: number;
-      }
-
-      // Execute raw query to get results with embeddings
       const { data, error } = await supabase.rpc("match_documents", {
         query_embedding: queryEmbedding,
         match_count: k,
@@ -181,16 +179,12 @@ export const search = async (req: Request, res: Response) => {
         throw new Error(`Error in similarity search: ${error.message}`);
       }
 
-      // Type assertion for the results
       const rawResults = data as MatchDocumentResult[] || [];
-
-      console.log({ rawResults: rawResults[0] });
 
       console.log("[SEARCH] Raw similarity search completed", {
         resultCount: rawResults.length,
       });
 
-      // Format the response with embeddings
       documentsResponse = rawResults.map((result) => ({
         content: result.content,
         file_id: result.metadata?.file_id || "",
@@ -198,7 +192,6 @@ export const search = async (req: Request, res: Response) => {
         embedding: result.embedding,
       }));
     } else {
-      // Use the standard LangChain approach when embeddings are not needed
       const similaritySearchWithScoreResults = await vectorStore
         .similaritySearchWithScore(query, k);
       console.log("[SEARCH] Similarity search completed", {
