@@ -83,6 +83,7 @@ export function ChatInterface({
 
     if (!response.ok) {
       toast.error("Failed to search documents");
+      return;
     }
 
     const data = (await response.json()) as SearchResult;
