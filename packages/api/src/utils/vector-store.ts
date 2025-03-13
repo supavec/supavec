@@ -22,7 +22,6 @@ export async function storeDocumentsWithFileId(
     batchSize,
   });
 
-  // Create embeddings instance
   const embeddings = new OpenAIEmbeddings({
     modelName: "text-embedding-3-small",
     model: "text-embedding-3-small",
@@ -52,18 +51,15 @@ export async function storeDocumentsWithFileId(
       const texts = batch.map((doc) => doc.pageContent);
       const embeddingResults = await embeddings.embedDocuments(texts);
 
-      // Prepare documents for insertion
       const documentsToInsert = batch.map((doc, idx) => {
         return {
           content: doc.pageContent,
           metadata: doc.metadata,
-          // Format embedding as a string in the format expected by pgvector
           embedding: `[${embeddingResults[idx].join(",")}]`,
-          file_id: file_id, // Set file_id directly during insertion
+          file_id: file_id,
         };
       });
 
-      // Insert documents with embeddings into Supabase
       const { error: insertError } = await supabase
         .from("documents")
         .insert(documentsToInsert);
