@@ -172,7 +172,7 @@ export const resyncFile = async (req: ValidatedRequest, res: Response) => {
         const { error } = await supabase
           .from("documents")
           .update({ deleted_at: now })
-          .filter("metadata->>file_id", "eq", file_id);
+          .match({ file_id });
 
         if (!error) {
           console.log(
