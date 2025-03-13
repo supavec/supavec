@@ -89,6 +89,7 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           embedding: string | null
+          file_id: string | null
           id: number
           metadata: Json | null
         }
@@ -97,6 +98,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           embedding?: string | null
+          file_id?: string | null
           id?: number
           metadata?: Json | null
         }
@@ -105,6 +107,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           embedding?: string | null
+          file_id?: string | null
           id?: number
           metadata?: Json | null
         }
