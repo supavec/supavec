@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { z } from "zod";
 import { randomUUID } from "crypto";
@@ -110,12 +109,6 @@ export const uploadText = async (req: Request, res: Response) => {
     }]);
     console.log("[UPLOAD-TEXT] Text split into chunks", {
       chunkCount: docs.length,
-    });
-
-    console.log("[UPLOAD-TEXT] Creating embeddings");
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "text-embedding-3-small",
-      model: "text-embedding-3-small",
     });
 
     console.log("[UPLOAD-TEXT] Storing documents in vector store");
