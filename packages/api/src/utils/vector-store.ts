@@ -1,4 +1,4 @@
-import { Document } from "@langchain/core/documents";
+import type { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { SupabaseClient } from "@supabase/supabase-js";
 
