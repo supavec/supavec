@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { unlink, writeFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -13,6 +11,7 @@ import { updateLoopsContact } from "../utils/loops";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
+import { storeDocumentsWithFileId } from "../utils/vector-store";
 
 console.log("[UPLOAD-FILE] Module loaded");
 
@@ -158,30 +157,21 @@ export const uploadFile = async (req: Request, res: Response) => {
       chunk.metadata.team_id = teamId;
     });
 
-    // Create embeddings
-    console.log("[UPLOAD-FILE] Creating embeddings");
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "text-embedding-3-small",
-      model: "text-embedding-3-small",
-    });
-
     try {
       console.log("[UPLOAD-FILE] Storing documents in vector store");
-      await SupabaseVectorStore.fromDocuments(chunks, embeddings, {
-        client: supabase,
-        tableName: "documents",
-      });
-      console.log("[UPLOAD-FILE] Documents stored in vector store");
+      const { success, insertedCount } = await storeDocumentsWithFileId(
+        chunks,
+        fileId,
+        supabase,
+      );
 
-      // Update the file_id column for the documents we just inserted
-      console.log("[UPLOAD-FILE] Updating file_id column");
-      supabase.from("documents")
-        .update({ file_id: fileId })
-        .eq("metadata->>file_id", fileId)
-        .is("file_id", null)
-        .then(() => {
-          console.log("[UPLOAD-FILE] File ID column updated successfully");
-        });
+      if (!success) {
+        throw new Error("Failed to store documents in vector store");
+      }
+
+      console.log(
+        `[UPLOAD-FILE] Documents stored successfully. Total inserted: ${insertedCount}`,
+      );
 
       console.log("[UPLOAD-FILE] Inserting file record");
       await supabase.from("files").insert({

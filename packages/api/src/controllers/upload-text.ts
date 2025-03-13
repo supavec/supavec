@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { updateLoopsContact } from "../utils/loops";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
+import { storeDocumentsWithFileId } from "../utils/vector-store";
 
 console.log("[UPLOAD-TEXT] Module loaded");
 
@@ -119,21 +119,19 @@ export const uploadText = async (req: Request, res: Response) => {
     });
 
     console.log("[UPLOAD-TEXT] Storing documents in vector store");
-    await SupabaseVectorStore.fromDocuments(docs, embeddings, {
-      client: supabase,
-      tableName: "documents",
-    });
-    console.log("[UPLOAD-TEXT] Documents stored in vector store");
+    const { success, insertedCount } = await storeDocumentsWithFileId(
+      docs,
+      fileId,
+      supabase,
+    );
 
-    // Update the file_id column for the documents we just inserted
-    console.log("[UPLOAD-TEXT] Updating file_id column");
-    supabase.from("documents")
-      .update({ file_id: fileId })
-      .eq("metadata->>file_id", fileId)
-      .is("file_id", null)
-      .then(() => {
-        console.log("[UPLOAD-TEXT] File ID column updated successfully");
-      });
+    if (!success) {
+      throw new Error("Failed to store documents in vector store");
+    }
+
+    console.log(
+      `[UPLOAD-TEXT] Documents stored successfully. Total inserted: ${insertedCount}`,
+    );
 
     console.log("[UPLOAD-TEXT] Inserting file record");
     await supabase.from("files").insert({
