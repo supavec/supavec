@@ -255,11 +255,15 @@ export const resyncFile = async (req: ValidatedRequest, res: Response) => {
       console.log("[RESYNC-FILE] Documents stored in vector store");
 
       // Update the file_id column for the documents we just inserted
+      // I don't want to wait for the vector store operation to complete cuz it could take time
       console.log("[RESYNC-FILE] Updating file_id column");
-      await supabase.from("documents")
+      supabase.from("documents")
         .update({ file_id: file_id })
         .eq("metadata->>file_id", file_id)
-        .is("file_id", null);
+        .is("file_id", null)
+        .then(() => {
+          console.log("[RESYNC-FILE] File ID column updated successfully");
+        });
 
       console.log("[RESYNC-FILE] Capturing PostHog event");
       client.capture({

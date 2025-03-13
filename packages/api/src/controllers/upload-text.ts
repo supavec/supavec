@@ -127,10 +127,13 @@ export const uploadText = async (req: Request, res: Response) => {
 
     // Update the file_id column for the documents we just inserted
     console.log("[UPLOAD-TEXT] Updating file_id column");
-    await supabase.from("documents")
+    supabase.from("documents")
       .update({ file_id: fileId })
       .eq("metadata->>file_id", fileId)
-      .is("file_id", null);
+      .is("file_id", null)
+      .then(() => {
+        console.log("[UPLOAD-TEXT] File ID column updated successfully");
+      });
 
     console.log("[UPLOAD-TEXT] Inserting file record");
     await supabase.from("files").insert({

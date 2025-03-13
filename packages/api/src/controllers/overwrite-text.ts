@@ -193,10 +193,13 @@ export const overwriteText = async (req: ValidatedRequest, res: Response) => {
 
     // Update the file_id column for the documents we just inserted
     console.log("[OVERWRITE-TEXT] Updating file_id column");
-    await supabase.from("documents")
+    supabase.from("documents")
       .update({ file_id: file_id })
       .eq("metadata->>file_id", file_id)
-      .is("file_id", null);
+      .is("file_id", null)
+      .then(() => {
+        console.log("[OVERWRITE-TEXT] File ID column updated successfully");
+      });
 
     // Update file record
     console.log("[OVERWRITE-TEXT] Updating file record");
