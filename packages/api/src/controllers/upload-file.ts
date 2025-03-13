@@ -173,6 +173,13 @@ export const uploadFile = async (req: Request, res: Response) => {
       });
       console.log("[UPLOAD-FILE] Documents stored in vector store");
 
+      // Update the file_id column for the documents we just inserted
+      console.log("[UPLOAD-FILE] Updating file_id column");
+      await supabase.from("documents")
+        .update({ file_id: fileId })
+        .eq("metadata->>file_id", fileId)
+        .is("file_id", null);
+
       console.log("[UPLOAD-FILE] Inserting file record");
       await supabase.from("files").insert({
         file_id: fileId,

@@ -254,6 +254,13 @@ export const resyncFile = async (req: ValidatedRequest, res: Response) => {
       });
       console.log("[RESYNC-FILE] Documents stored in vector store");
 
+      // Update the file_id column for the documents we just inserted
+      console.log("[RESYNC-FILE] Updating file_id column");
+      await supabase.from("documents")
+        .update({ file_id: file_id })
+        .eq("metadata->>file_id", file_id)
+        .is("file_id", null);
+
       console.log("[RESYNC-FILE] Capturing PostHog event");
       client.capture({
         distinctId: apiKeyData.profiles?.email as string,
