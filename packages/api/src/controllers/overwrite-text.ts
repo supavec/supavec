@@ -1,11 +1,10 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { Request, Response } from "express";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
+import { storeDocumentsWithFileId } from "../utils/vector-store";
 
 console.log("[OVERWRITE-TEXT] Module loaded");
 
@@ -178,28 +177,21 @@ export const overwriteText = async (req: ValidatedRequest, res: Response) => {
       chunkCount: docs.length,
     });
 
-    console.log("[OVERWRITE-TEXT] Creating embeddings");
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "text-embedding-3-small",
-      model: "text-embedding-3-small",
-    });
-
+    // Replace the existing embedding and storage logic with our utility function
     console.log("[OVERWRITE-TEXT] Storing documents in vector store");
-    await SupabaseVectorStore.fromDocuments(docs, embeddings, {
-      client: supabase,
-      tableName: "documents",
-    });
-    console.log("[OVERWRITE-TEXT] Documents stored in vector store");
+    const { success, insertedCount } = await storeDocumentsWithFileId(
+      docs,
+      file_id,
+      supabase,
+    );
 
-    // Update the file_id column for the documents we just inserted
-    console.log("[OVERWRITE-TEXT] Updating file_id column");
-    supabase.from("documents")
-      .update({ file_id: file_id })
-      .eq("metadata->>file_id", file_id)
-      .is("file_id", null)
-      .then(() => {
-        console.log("[OVERWRITE-TEXT] File ID column updated successfully");
-      });
+    if (!success) {
+      throw new Error("Failed to store documents in vector store");
+    }
+
+    console.log(
+      `[OVERWRITE-TEXT] All documents stored in vector store with file_id. Total inserted: ${insertedCount}`,
+    );
 
     // Update file record
     console.log("[OVERWRITE-TEXT] Updating file record");

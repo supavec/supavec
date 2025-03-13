@@ -1,8 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { Request, Response } from "express";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { unlink, writeFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -11,6 +9,7 @@ import { Document } from "@langchain/core/documents";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
+import { storeDocumentsWithFileId } from "../utils/vector-store";
 
 console.log("[RESYNC-FILE] Module loaded");
 
@@ -239,31 +238,21 @@ export const resyncFile = async (req: ValidatedRequest, res: Response) => {
       );
     }
 
-    // Create new embeddings
-    console.log("[RESYNC-FILE] Creating embeddings");
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "text-embedding-3-small",
-      model: "text-embedding-3-small",
-    });
-
     try {
       console.log("[RESYNC-FILE] Storing documents in vector store");
-      await SupabaseVectorStore.fromDocuments(chunks, embeddings, {
-        client: supabase,
-        tableName: "documents",
-      });
-      console.log("[RESYNC-FILE] Documents stored in vector store");
+      const { success, insertedCount } = await storeDocumentsWithFileId(
+        chunks,
+        file_id,
+        supabase,
+      );
 
-      // Update the file_id column for the documents we just inserted
-      // I don't want to wait for the vector store operation to complete cuz it could take time
-      console.log("[RESYNC-FILE] Updating file_id column");
-      supabase.from("documents")
-        .update({ file_id: file_id })
-        .eq("metadata->>file_id", file_id)
-        .is("file_id", null)
-        .then(() => {
-          console.log("[RESYNC-FILE] File ID column updated successfully");
-        });
+      if (!success) {
+        throw new Error("Failed to store documents in vector store");
+      }
+
+      console.log(
+        `[RESYNC-FILE] Documents stored successfully. Total inserted: ${insertedCount}`,
+      );
 
       console.log("[RESYNC-FILE] Capturing PostHog event");
       client.capture({
