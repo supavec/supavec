@@ -146,7 +146,7 @@ export const search = async (req: Request, res: Response) => {
         client: supabase,
         tableName: "documents",
         queryName: "match_documents",
-        filter: file_ids ? { file_id: { in: file_ids } } : undefined,
+        filter: { file_id: { in: file_ids } },
       },
     );
 
@@ -172,7 +172,7 @@ export const search = async (req: Request, res: Response) => {
       const { data, error } = await supabase.rpc("match_documents", {
         query_embedding: queryEmbedding,
         match_count: k,
-        filter: file_ids ? { file_id: { in: file_ids } } : {},
+        filter: { file_id: { in: file_ids } },
       });
 
       if (error) {
