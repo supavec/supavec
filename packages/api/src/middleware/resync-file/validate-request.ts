@@ -7,9 +7,19 @@ const DEFAULT_CHUNK_OVERLAP = 200;
 
 const requestSchema = z.object({
   file_id: z.string().uuid(),
-  chunk_size: z.number().positive().optional(),
-  chunk_overlap: z.number().positive().optional(),
-});
+  chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
+  chunk_overlap: z.number()
+    .positive()
+    .default(DEFAULT_CHUNK_OVERLAP),
+}).refine(
+  (data) => {
+    return data.chunk_overlap < data.chunk_size;
+  },
+  {
+    message: "chunk_overlap must be less than chunk_size",
+    path: ["chunk_overlap"],
+  },
+);
 
 export const validateRequestMiddleware = () => {
   return async (

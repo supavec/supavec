@@ -19,9 +19,19 @@ const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 
 const uploadQuerySchema = z.object({
-  chunk_size: z.coerce.number().positive().nullish(),
-  chunk_overlap: z.coerce.number().positive().nullish(),
-});
+  chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
+  chunk_overlap: z.number()
+    .positive()
+    .default(DEFAULT_CHUNK_OVERLAP),
+}).refine(
+  (data) => {
+    return data.chunk_overlap < data.chunk_size;
+  },
+  {
+    message: "chunk_overlap must be less than chunk_size",
+    path: ["chunk_overlap"],
+  },
+);
 
 export const uploadFile = async (req: Request, res: Response) => {
   console.log("[UPLOAD-FILE] Request received");
