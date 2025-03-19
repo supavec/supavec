@@ -1,7 +1,6 @@
 import multer from "multer";
 import { Request } from "express";
 
-// Configure multer for memory storage
 export const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -14,11 +13,13 @@ export const upload = multer({
   ) => {
     if (
       file.mimetype === "application/pdf" ||
-      file.mimetype === "text/plain"
+      file.mimetype === "text/plain" ||
+      file.mimetype === "text/markdown" ||
+      file.originalname.endsWith(".md")
     ) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF and text files are allowed"));
+      cb(new Error("Only PDF, text, and markdown files are allowed"));
     }
   },
 });

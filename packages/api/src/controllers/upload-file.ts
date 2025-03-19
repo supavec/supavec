@@ -88,14 +88,16 @@ export const uploadFile = async (req: Request, res: Response) => {
     const buffer = req.file.buffer;
     const fileId = randomUUID();
     const isTextFile = req.file.mimetype === "text/plain";
-    const fileExtension = isTextFile ? "txt" : "pdf";
+    const isMarkdownFile = req.file.mimetype === "text/markdown" ||
+      req.file.originalname.endsWith(".md");
+    const fileExtension = isTextFile ? "txt" : isMarkdownFile ? "md" : "pdf";
     const fileName = req.file.originalname;
     const tempFileName = `${fileId}.${fileExtension}`;
     const tempFilePath = join(tmpdir(), tempFileName);
     console.log("[UPLOAD-FILE] File details", {
       fileId,
       fileName,
-      fileType: isTextFile ? "text" : "pdf",
+      fileType: isTextFile ? "text" : isMarkdownFile ? "markdown" : "pdf",
       fileSize: buffer.length,
     });
 
@@ -109,7 +111,11 @@ export const uploadFile = async (req: Request, res: Response) => {
     const { data: storageData, error: storageError } = await supabase.storage
       .from("user-documents")
       .upload(`/${teamId}/${tempFileName}`, buffer, {
-        contentType: isTextFile ? "text/plain" : "application/pdf",
+        contentType: isTextFile
+          ? "text/plain"
+          : isMarkdownFile
+          ? "text/markdown"
+          : "application/pdf",
         upsert: false,
       });
 
@@ -127,9 +133,11 @@ export const uploadFile = async (req: Request, res: Response) => {
 
     console.log("[UPLOAD-FILE] Processing file content");
     let documents: Document[];
-    if (isTextFile) {
-      // For text files, create a single document from the content
-      console.log("[UPLOAD-FILE] Processing text file");
+    if (isTextFile || isMarkdownFile) {
+      // For text and markdown files, create a single document from the content
+      console.log(
+        `[UPLOAD-FILE] Processing ${isTextFile ? "text" : "markdown"} file`,
+      );
       const textContent = buffer.toString("utf-8");
       documents = [
         new Document({
@@ -186,7 +194,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       console.log("[UPLOAD-FILE] Inserting file record");
       await supabase.from("files").insert({
         file_id: fileId,
-        type: `${isTextFile ? "text" : "pdf"}`,
+        type: `${isTextFile ? "text" : isMarkdownFile ? "markdown" : "pdf"}`,
         file_name: fileName,
         team_id: teamId,
         storage_path: storageData.path,
@@ -213,7 +221,7 @@ export const uploadFile = async (req: Request, res: Response) => {
         event: "file_upload_completed",
         properties: {
           file_name: fileName,
-          file_type: isTextFile ? "text" : "pdf",
+          file_type: isTextFile ? "text" : isMarkdownFile ? "markdown" : "pdf",
           file_size: buffer.length,
         },
       });
@@ -228,7 +236,9 @@ export const uploadFile = async (req: Request, res: Response) => {
       console.log("[UPLOAD-FILE] Sending successful response");
       return res.json({
         success: true,
-        message: `${isTextFile ? "Text" : "PDF"} file processed successfully`,
+        message: `${
+          isTextFile ? "Text" : isMarkdownFile ? "Markdown" : "PDF"
+        } file processed successfully`,
         file_name: fileName,
         file_id: fileId,
         chunks: chunks.length,
