@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export function FileUploadForm({
   submitFile,
-  placeholder = "Drag 'n' drop a PDF or text file here (max 20MB), or click to select one",
+  placeholder = "Drag 'n' drop a PDF, text, or markdown file here (max 20MB), or click to select one",
   callBack,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,12 +30,9 @@ export function FileUploadForm({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      ...(placeholder.toLowerCase().includes("pdf")
-        ? { "application/pdf": [".pdf"] }
-        : {}),
-      ...(placeholder.toLowerCase().includes("text")
-        ? { "text/plain": [".txt"] }
-        : {}),
+      "application/pdf": [".pdf"],
+      "text/plain": [".txt"],
+      "text/markdown": [".md"],
     },
     maxFiles: 1,
   });
