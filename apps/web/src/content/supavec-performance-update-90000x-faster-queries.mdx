@@ -1,0 +1,120 @@
+---
+title: "Supavec Performance Update: 90,000x Faster Queries"
+date: "2025-03-20"
+author: "Taishi"
+tags: ["Product updates"]
+description: "We recently made a significant database optimization to Supavec that has dramatically improved query performance. What started as an investigation into slow API responses ended with a solution that made our document retrieval 90,985 times faster."
+image: "/images/supavec-banner.png"
+---
+
+We recently made a significant database optimization to Supavec that has dramatically improved query performance. What started as an investigation into slow API responses ended with a solution that made our document retrieval **90,985 times faster**. I wanted to share how we identified and solved this challenge.
+
+## Identifying the Problem
+
+As more users joined Supavec and started uploading documents, we noticed our API response times gradually degrading. After digging into the issue, we discovered that our approach to querying the `documents` table was creating a major bottleneck.
+
+The culprit? We were filtering documents using this pattern:
+
+```sql
+metadata(jsonb)->>file_id = "5696ded6-63da-4bea-a791-17ccf6cb8ea6"
+```
+
+While this worked fine with a small dataset, it was forcing PostgreSQL to perform full sequential scans across our growing documents table. With thousands of documents in the system, queries were taking over 10 seconds to complete in some cases.
+
+## Our Solution
+
+We implemented a two-part solution to address this performance issue:
+
+### 1. Schema Improvement
+
+First, we added a dedicated `file_id` column to the documents table instead of storing this identifier in a JSON metadata field. This allowed us to use a much simpler and more efficient query:
+
+```sql
+WHERE file_id = "5696ded6-63da-4bea-a791-17ccf6cb8ea6"
+```
+
+This required moving away from the opinionated `SupabaseVectorStore.from_documents` approach from Langchain, which limited our ability to customize our data storage. By implementing our own solution, we gained more control over how document data is stored and retrieved.
+
+### 2. Strategic Indexing
+
+The schema change provided a good improvement, but we took it a step further by adding a partial index:
+
+```sql
+CREATE INDEX idx_documents_file_id ON public.documents USING btree (file_id) WHERE (deleted_at IS NULL)
+```
+
+This partial index focuses specifically on our most common query pattern: retrieving active (non-deleted) documents for a specific file ID.
+
+## The Results
+
+The performance improvement exceeded our expectations:
+
+**Before optimization:**
+- Execution time: **10,008.379 ms** (over 10 seconds)
+- Full sequential scan required
+- 186,576 rows unnecessarily examined to find just 14 matching documents
+
+**After optimization:**
+- Execution time: **0.110 ms** (just over a tenth of a millisecond)
+- Efficient index scan
+- Direct lookup with minimal overhead
+
+This represents a **90,985x speed improvement** in document retrieval operations!
+
+## What This Means For Supavec Users
+
+If you're using Supavec, you'll notice several immediate benefits:
+
+- Significantly faster API response times
+- Better handling of concurrent requests
+- Improved scalability as your document collection grows
+
+This is particularly valuable for users who have uploaded many documents or who run complex queries across multiple documents.
+
+## Technical Deep Dive
+
+For those interested in the database internals, here's a comparison of the query execution plans:
+
+### Before Optimization
+```
+Seq Scan on documents
+(cost=0.00..75636.85 rows=923 width=1441) (actual time=1116.145..10008.227 rows=14 loops=1)
+  Filter: ((deleted_at IS NULL) AND ((metadata ->> 'file_id'::text) = '01200bed-1784-47dd-847c-9799d3a2978f'::text))
+  Rows Removed by Filter: 186576
+Planning Time: 0.803 ms
+Execution Time: 10008.379 ms
+```
+
+The key issue here is the "Seq Scan" - PostgreSQL had to examine every row in the table.
+
+### After Optimization
+```
+Index Scan using idx_documents_file_id on documents
+(cost=0.29..52.79 rows=46 width=1441) (actual time=0.020..0.032 rows=14 loops=1)
+  Index Cond: (file_id = '01200bed-1784-47dd-847c-9799d3a2978f'::uuid)
+Planning Time: 0.684 ms
+Execution Time: 0.110 ms
+```
+
+Now we're seeing an "Index Scan" - PostgreSQL can jump directly to the relevant rows.
+
+## Looking Forward
+
+This optimization is part of our ongoing commitment to building a fast, reliable, and scalable open-source RAG platform. We're continuing to monitor system performance and work on additional improvements, including:
+
+- Enhanced vector search algorithms
+- Optimized document chunking strategies
+- More efficient embedding generation
+- Advanced caching mechanisms
+
+For those interested in the technical details, the relevant pull request is [here](https://github.com/taishikato/supavec/pull/40).
+
+Thanks to everyone who's been using Supavec and providing valuable feedback. As an open-source project, we're committed to transparency about our development process and excited to share these improvements with the community.
+
+## Got a questions?
+
+Let me know on [Discord](https://go.supavec.com/discord) or [email](mailto:hello@supavec.com) if you have any questions or issues using Supavec MCP Server :)
+
+---
+
+*Supavec is the open-source alternative to Carbon AI, built with Supabase, Bun, Next.js, Vercel, Railway, and TypeScript. We make it easy to connect your data to AI through our open-source RAG platform.*
