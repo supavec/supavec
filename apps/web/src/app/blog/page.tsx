@@ -67,7 +67,7 @@ export default function BlogPage() {
               className="border-b border-gray-200 dark:border-gray-700 pb-8 last:border-0"
             >
               <Link href={`/blog/${post.slug}`} className="block group">
-                <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-500 transition-colors">
+                <h2 className="text-2xl font-bold mb-2 group-hover:text-violet-500 transition-colors">
                   {post.title}
                 </h2>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
@@ -84,7 +84,7 @@ export default function BlogPage() {
                   </p>
                 )}
                 <div className="mt-4">
-                  <span className="text-blue-500 font-medium group-hover:underline">
+                  <span className="text-violet-500 font-medium group-hover:underline">
                     Read more →
                   </span>
                 </div>
