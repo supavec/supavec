@@ -83,11 +83,28 @@ export default async function Page({
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
           components={{
+            pre(props) {
+              const { children, className, ...rest } = props;
+              return (
+                <pre
+                  className={cn(
+                    "rounded-lg p-4 overflow-auto border bg-muted/10",
+                    className
+                  )}
+                  {...rest}
+                >
+                  {children}
+                </pre>
+              );
+            },
             code(props) {
               const { children, className, ...rest } = props;
               return (
                 <code
-                  className={cn("break-words hyphens-auto", className)}
+                  className={cn(
+                    "break-words hyphens-auto !bg-muted/10",
+                    className
+                  )}
                   {...rest}
                 >
                   {children}
