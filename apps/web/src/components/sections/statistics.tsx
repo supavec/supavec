@@ -1,6 +1,7 @@
 import { Icons } from "@/components/icons";
 import { Section } from "@/components/section";
 import { BorderText } from "@/components/ui/border-number";
+import { BrainCircuit } from "lucide-react";
 
 const stats = [
   {
@@ -12,7 +13,7 @@ const stats = [
   {
     title: "200k+",
     subtitle: "Embeddings generated",
-    icon: <Icons.npm className="size-5" />,
+    icon: <BrainCircuit className="size-5" />,
     link: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
   },
   {
