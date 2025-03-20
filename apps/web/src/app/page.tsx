@@ -12,6 +12,7 @@ import { CTA } from "@/components/sections/cta";
 import { Footer } from "@/components/sections/footer";
 import { Pricing } from "@/components/sections/pricing";
 import { SenjaTestimonials } from "@/components/sections/senja-testimonials";
+import { Statistics } from "@/components/sections/statistics";
 
 export const metadata: Metadata = {
   description:
@@ -29,6 +30,7 @@ export default async function Home() {
       <WhySupavec />
       <SenjaTestimonials />
       <HowToUse />
+      <Statistics />
       <Testimonials />
       <Pricing className="mt-[-49px] bg-background relative z-10" />
       <Community />
