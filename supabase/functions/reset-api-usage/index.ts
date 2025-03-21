@@ -6,6 +6,13 @@ type User = {
   id: string;
   email: string;
   last_usage_reset_at: string;
+  first_name?: string;
+};
+
+type EmailResult = {
+  userId: string;
+  email: string;
+  emailSent: boolean;
 };
 
 /**
@@ -47,6 +54,41 @@ addEventListener("beforeunload", () => {
   console.log("Reset API usage function will be shutdown");
 });
 
+async function sendTransactionalEmail(user: User) {
+  try {
+    const response = await fetch("https://app.loops.so/api/v1/transactional", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.LOOPS_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        transactionalId: "cm8igyt0q1fxgalgjp1csrxtr",
+        dataVariables: {
+          firstName: user.first_name || "there",
+          apiCallTime: 0, // You may need to get the actual API call time from your database
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Loops API returned ${response.status}: ${await response.text()}`,
+      );
+    }
+
+    console.log(`Sent transactional email to ${user.email}`);
+    return true;
+  } catch (error) {
+    console.error(
+      `Failed to send transactional email to ${user.email}:`,
+      error,
+    );
+    return false;
+  }
+}
+
 /**
  * Resets API usage for users whose last reset was more than a month ago
  */
@@ -65,7 +107,7 @@ async function resetApiUsage() {
   // Find users whose last_usage_reset_date is more than 1 month ago
   const { data: usersToReset, error: selectError } = await supabaseAdmin
     .from("profiles")
-    .select("id, email, last_usage_reset_at")
+    .select("id, email, first_name, last_usage_reset_at")
     .lt("last_usage_reset_at", oneMonthAgo.toISOString());
 
   if (selectError) {
@@ -87,6 +129,8 @@ async function resetApiUsage() {
 
   console.log(`Processing reset for ${usersToReset.length} users`);
 
+  const emailResults: EmailResult[] = [];
+
   // Process each user individually to calculate their next reset date
   for (const user of usersToReset) {
     const nextResetDate = getNextUsageResetDate(user.last_usage_reset_at);
@@ -99,16 +143,31 @@ async function resetApiUsage() {
 
     if (updateError) {
       console.error(`Error updating user ${user.id}: ${updateError.message}`);
+      continue;
     }
+
+    // Send transactional email after successful reset
+    const emailSent = await sendTransactionalEmail(user);
+    emailResults.push({
+      userId: user.id,
+      email: user.email,
+      emailSent,
+    });
   }
 
   console.log(`Successfully reset API usage for ${usersToReset.length} users`);
+  console.log(`Email sending results: ${JSON.stringify(emailResults)}`);
 
   return {
     success: true,
     message: "API usage reset successful",
     count: usersToReset.length,
-    users: usersToReset.map((u: User) => ({ id: u.id, email: u.email })),
+    users: usersToReset.map((u: User) => ({
+      id: u.id,
+      email: u.email,
+      emailSent: emailResults.find((r) => r.userId === u.id)?.emailSent ||
+        false,
+    })),
   };
 }
 
