@@ -15,6 +15,8 @@ type EmailResult = {
   emailSent: boolean;
 };
 
+const transactionalId = "cm8igyt0q1fxgalgjp1csrxtr";
+
 /**
  * Calculates the next usage reset date based on the last usage reset date.
  * Follows Stripe's monthly cycle logic (e.g., Jan 2 → Feb 2).
@@ -64,10 +66,9 @@ async function sendTransactionalEmail(user: User) {
       },
       body: JSON.stringify({
         email: user.email,
-        transactionalId: "cm8igyt0q1fxgalgjp1csrxtr",
+        transactionalId,
         dataVariables: {
           firstName: user.first_name || "there",
-          apiCallTime: 0, // You may need to get the actual API call time from your database
         },
       }),
     });
