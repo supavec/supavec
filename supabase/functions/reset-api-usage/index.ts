@@ -1,12 +1,13 @@
 import process from "node:process";
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import type { Database } from "../_shared/types/supabase.ts";
 
 type User = {
   id: string;
   email: string;
   last_usage_reset_at: string;
-  first_name?: string;
+  name?: string;
 };
 
 type EmailResult = {
@@ -14,6 +15,11 @@ type EmailResult = {
   email: string;
   emailSent: boolean;
 };
+
+const supabaseAdmin = createClient<Database>(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
 const transactionalId = "cm8igyt0q1fxgalgjp1csrxtr";
 
@@ -47,11 +53,6 @@ function getNextUsageResetDate(lastUsageResetAt: string | null): string | null {
   return nextResetDate.toISOString();
 }
 
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
 addEventListener("beforeunload", () => {
   console.log("Reset API usage function will be shutdown");
 });
@@ -68,7 +69,7 @@ async function sendTransactionalEmail(user: User) {
         email: user.email,
         transactionalId,
         dataVariables: {
-          firstName: user.first_name || "there",
+          firstName: user.name ? user.name.split(" ")[0] : "there",
         },
       }),
     });
@@ -108,7 +109,7 @@ async function resetApiUsage() {
   // Find users whose last_usage_reset_date is more than 1 month ago
   const { data: usersToReset, error: selectError } = await supabaseAdmin
     .from("profiles")
-    .select("id, email, first_name, last_usage_reset_at")
+    .select("id, email, name, last_usage_reset_at")
     .lt("last_usage_reset_at", oneMonthAgo.toISOString());
 
   if (selectError) {
