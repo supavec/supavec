@@ -42,15 +42,41 @@ For the API (`packages/api`):
 cp packages/api/.env.sample packages/api/.env
 ```
 
+For the Supabase (`supabase`):
+
+- Copy `.env.sample` to `.env`
+
+```bash
+cp supabase/.env.sample supabase/.env
+```
+
 4. Configure environment variables:
 
 Web app environment variables (`apps/web/.env.local`):
 
-- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-- `NEXT_PUBLIC_SUPABASE_PROJECT_ID`: Your Supabase project ID
-- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
-- `NEXT_PUBLIC_API_URL`: Local API URL (default: http://localhost:3001)
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL  
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key  
+- `NEXT_PUBLIC_SUPABASE_PROJECT_ID`: Your Supabase project ID  
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key  
+- `NEXT_PUBLIC_API_URL`: Local API URL (default: http://localhost:3001)  
+- `POSTHOG_API_KEY`: Your PostHog API key  
+- `NEXT_PUBLIC_POSTHOG_KEY`: Your PostHog API key  
+- `NEXT_PUBLIC_POSTHOG_HOST`: PostHog API host (default: https://app.posthog.com)  
+- `DEMO_SUPA_API_KEY`: Your demo Supa API key  
+- `LOOPS_API_KEY`: Your Loops API key  
+- `STRIPE_SECRET_KEY`: Your Stripe secret key  
+- `STRIPE_SIGNATURE_SECRET`: Your Stripe signature secret  
+- `NEXT_PUBLIC_STRIPE_KEY`: Your public Stripe key  
+- `NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY`: Stripe price ID for the basic monthly plan  
+- `NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY`: Stripe price ID for the basic yearly plan  
+- `NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_MONTHLY`: Stripe price ID for the enterprise monthly plan  
+- `NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_YEARLY`: Stripe price ID for the enterprise yearly plan  
+- `NEXT_PUBLIC_STRIPE_PRODUCT_BASIC`: Stripe product ID for the basic plan  
+- `NEXT_PUBLIC_STRIPE_PRODUCT_ENTERPRISE`: Stripe product ID for the enterprise plan  
+- `API_ROUTE_SECRET`: API route secret key  
+- `NEXT_PUBLIC_GOOGLE_ANALYTICS`: Your Google Analytics key  
+- `NEXT_PUBLIC_APP_URL`: Local app URL (default: http://localhost:3000)  
+
 
 API environment variables (`packages/api/.env`):
 
