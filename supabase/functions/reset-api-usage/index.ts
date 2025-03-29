@@ -109,7 +109,7 @@ async function resetApiUsage() {
   // Find users whose last_usage_reset_date is more than 1 month ago
   const { data: usersToReset, error: selectError } = await supabaseAdmin
     .from("profiles")
-    .select("id, email, name, last_usage_reset_at")
+    .select("id, email, name, last_usage_reset_at, is_transactional_email_on")
     .lt("last_usage_reset_at", oneMonthAgo.toISOString());
 
   if (selectError) {
@@ -149,12 +149,14 @@ async function resetApiUsage() {
     }
 
     // Send transactional email after successful reset
-    const emailSent = await sendTransactionalEmail(user);
-    emailResults.push({
-      userId: user.id,
-      email: user.email,
-      emailSent,
-    });
+    if (user.is_transactional_email_on) {
+      const emailSent = await sendTransactionalEmail(user);
+      emailResults.push({
+        userId: user.id,
+        email: user.email,
+        emailSent,
+      });
+    }
   }
 
   console.log(`Successfully reset API usage for ${usersToReset.length} users`);

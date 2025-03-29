@@ -205,8 +205,9 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
-          email: string | null
+          email: string
           id: string
+          is_transactional_email_on: boolean | null
           last_usage_reset_at: string | null
           name: string | null
           onboarding_at: string | null
@@ -217,8 +218,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          email?: string | null
+          email: string
           id?: string
+          is_transactional_email_on?: boolean | null
           last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null
@@ -229,8 +231,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          email?: string | null
+          email?: string
           id?: string
+          is_transactional_email_on?: boolean | null
           last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null
