@@ -1,13 +1,12 @@
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { Request, Response } from "express";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { GoogleGenAI } from "@google/genai";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { ValidatedChatRequest } from "../middleware/chat/validate-request";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
+import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
 
 console.log("[CHAT] Module loaded");
 
@@ -54,12 +53,10 @@ Context:
 ${context}
 
 Question: ${query}`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
+    const { text: answer } = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt,
     });
-
-    const answer = response.text;
 
     console.log("[CHAT] Capturing PostHog event");
     client.capture({
