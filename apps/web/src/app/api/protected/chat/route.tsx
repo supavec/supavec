@@ -1,7 +1,5 @@
 import { type Message, createDataStreamResponse, streamText } from "ai";
-
 import { getMostRecentUserMessage } from "@/lib/utils";
-
 import { openai } from "@ai-sdk/openai";
 
 export async function POST(request: Request) {
