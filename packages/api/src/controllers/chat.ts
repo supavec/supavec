@@ -6,19 +6,20 @@ import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { ValidatedChatRequest } from "../middleware/chat/validate-request";
 import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { createDataStreamResponse, generateText, streamText } from "ai";
 
 console.log("[CHAT] Module loaded");
 
 export const chat = async (req: Request, res: Response) => {
   console.log("[CHAT] Request received");
   try {
-    const { query, k, file_ids, apiKeyData } = req.body
+    const { query, k, file_ids, stream: isStreaming, apiKeyData } = req.body
       .validatedData as ValidatedChatRequest;
     console.log("[CHAT] Processing chat request", {
       query,
       k,
       fileIdsCount: file_ids.length,
+      stream: isStreaming,
     });
 
     console.log("[CHAT] Creating vector store");
@@ -53,28 +54,51 @@ Context:
 ${context}
 
 Question: ${query}`;
-    const { text: answer } = await generateText({
-      model: google("gemini-2.0-flash"),
-      prompt,
-    });
 
     console.log("[CHAT] Capturing PostHog event");
     client.capture({
       distinctId: apiKeyData.profiles.email,
       event: "/chat API Call",
     });
-
-    const apiResponse = {
-      success: true,
-      answer,
-    };
-
     console.log("[CHAT] Logging API usage");
     logApiUsageAsync({
       endpoint: "/chat",
       userId: apiKeyData.user_id,
       success: true,
     });
+
+    if (isStreaming) {
+      return createDataStreamResponse({
+        execute: (dataStream) => {
+          const result = streamText({
+            model: google("gemini-2.0-flash"),
+            prompt,
+            onError: (error) => {
+              console.error("[CHAT] Streaming error:", error);
+            },
+          });
+
+          result.consumeStream();
+
+          result.mergeIntoDataStream(dataStream, {
+            sendReasoning: true,
+          });
+        },
+        onError: () => {
+          return "Oops, an error occured!";
+        },
+      });
+    }
+
+    const { text: answer } = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt,
+    });
+
+    const apiResponse = {
+      success: true,
+      answer,
+    };
 
     console.log("[CHAT] Sending successful response");
     return res.status(200).json(apiResponse);
@@ -98,6 +122,17 @@ Question: ${query}`;
           error: error instanceof Error ? error.message : "Unknown error",
         });
       }
+    }
+
+    // For streaming responses, we need to end the response with an error
+    const isStreaming = req.body.validatedData?.stream;
+    if (isStreaming && !res.headersSent) {
+      res.setHeader("Content-Type", "text/event-stream");
+      res.write(
+        `data: ${JSON.stringify({ error: "Internal server error" })}\n\n`,
+      );
+      res.end();
+      return;
     }
 
     return res.status(500).json({

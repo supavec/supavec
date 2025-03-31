@@ -9,12 +9,14 @@ const requestSchema = z.object({
     1,
     "At least one file ID is required",
   ),
+  stream: z.boolean().default(false),
 });
 
 export type ValidatedChatRequest = {
   query: string;
   k: number;
   file_ids: string[];
+  stream: boolean;
   teamId: string;
   apiKeyData: {
     team_id: string;
