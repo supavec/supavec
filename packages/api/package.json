@@ -12,12 +12,14 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@supavec/common": "workspace:*",
+    "@ai-sdk/google": "^1.2.4",
     "@langchain/community": "0.3.22",
     "@langchain/openai": "^0.3.16",
     "@supabase/supabase-js": "^2.47.10",
+    "@supavec/common": "workspace:*",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "1.34.3",
+    "ai": "^4.2.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.18.2",

@@ -3,6 +3,7 @@ import { supabase } from "../utils/supabase";
 
 export interface AuthenticatedRequest extends Request {
   apiKey?: string;
+  userId?: string;
 }
 
 export const apiKeyAuth = () => {

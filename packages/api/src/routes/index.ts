@@ -4,6 +4,7 @@ import { uploadFile } from "../controllers/upload-file";
 import { uploadText } from "../controllers/upload-text";
 import { getEmbeddings } from "../controllers/embeddings";
 import { search } from "../controllers/search";
+import { chat } from "../controllers/chat";
 import { userFiles } from "../controllers/user-files";
 import { deleteFile } from "../controllers/delete-file";
 import { resyncFile } from "../controllers/resync-file";
@@ -14,6 +15,7 @@ import { apiUsageLimit } from "../middleware/api-usage-limit";
 import { validateRequestMiddleware as validateDeleteRequestMiddleware } from "../middleware/delete-file/validate-request";
 import { validateRequestMiddleware as validateResyncRequestMiddleware } from "../middleware/resync-file/validate-request";
 import { validateRequestMiddleware as validateOverwriteRequestMiddleware } from "../middleware/overwrite-text/validate-request";
+import { validateRequestMiddleware as validateChatRequestMiddleware } from "../middleware/chat/validate-request";
 
 export const router: IRouter = Router();
 
@@ -42,6 +44,7 @@ router.post(
 
 router.post("/embeddings", apiKeyAuth(), apiUsageLimit(), getEmbeddings);
 router.post("/search", apiKeyAuth(), apiUsageLimit(), search);
+
 router.post("/user_files", apiKeyAuth(), apiUsageLimit(), userFiles);
 
 router.post(
@@ -50,4 +53,12 @@ router.post(
   apiUsageLimit(),
   validateOverwriteRequestMiddleware(),
   overwriteText,
+);
+
+router.post(
+  "/chat",
+  apiKeyAuth(),
+  apiUsageLimit(),
+  validateChatRequestMiddleware(),
+  chat,
 );
