@@ -43,7 +43,7 @@ export const validateRequestMiddleware = () => {
         });
       }
 
-      const { query, k, file_ids } = validation.data;
+      const { query, k, file_ids, stream } = validation.data;
       const apiKey = req.headers.authorization as string;
 
       const { data: apiKeyData, error: apiKeyError } = await supabase
@@ -87,7 +87,7 @@ export const validateRequestMiddleware = () => {
         file_ids,
         teamId: apiKeyData.team_id,
         apiKeyData,
-        stream: req.body.stream,
+        stream,
       };
       return next();
     } catch (error) {
