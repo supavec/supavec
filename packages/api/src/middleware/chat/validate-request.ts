@@ -1,6 +1,7 @@
 import { z } from "zod";
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import { supabase } from "../../utils/supabase";
+import type { AuthenticatedRequest } from "../auth";
 
 const requestSchema = z.object({
   query: z.string().min(1, "Query is required"),
@@ -29,7 +30,7 @@ export type ValidatedChatRequest = {
 
 export const validateRequestMiddleware = () => {
   return async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction,
   ) => {
@@ -45,7 +46,6 @@ export const validateRequestMiddleware = () => {
 
       const { query, k, file_ids, stream } = validation.data;
       const apiKey = req.headers.authorization;
-      
       if (!apiKey) {
         return res.status(401).json({
           success: false,
@@ -59,7 +59,7 @@ export const validateRequestMiddleware = () => {
         .match({ api_key: apiKey })
         .single();
 
-      if (apiKeyError || !apiKeyData?.team_id) {
+      if (apiKeyError || !apiKeyData?.team_id || !apiKeyData?.user_id) {
         return res.status(401).json({
           success: false,
           message: "Invalid API key",
@@ -88,6 +88,7 @@ export const validateRequestMiddleware = () => {
         });
       }
 
+      req.userId = apiKeyData.user_id;
       req.body.validatedData = {
         query,
         k,

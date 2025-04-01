@@ -10,7 +10,12 @@ import { generateText, pipeDataStreamToResponse, streamText } from "ai";
 
 console.log("[CHAT] Module loaded");
 
-export const chat = async (req: Request, res: Response) => {
+export interface AuthenticatedRequest extends Request {
+  apiKey: string;
+  userId: string;
+}
+
+export const chat = async (req: AuthenticatedRequest, res: Response) => {
   console.log("[CHAT] Request received");
   try {
     const { query, k, file_ids, stream: isStreaming, apiKeyData } = req.body
@@ -131,24 +136,12 @@ Question: ${query}`;
   } catch (error) {
     console.error("[CHAT] Error in chat endpoint:", error);
 
-    if (req.headers.authorization) {
-      const apiKey = req.headers.authorization as string;
-      console.log("[CHAT] Attempting to log error with user ID");
-      const { data: apiKeyData } = await supabase
-        .from("api_keys")
-        .select("user_id")
-        .match({ api_key: apiKey })
-        .single();
-
-      if (apiKeyData?.user_id) {
-        logApiUsageAsync({
-          endpoint: "/chat",
-          userId: apiKeyData.user_id,
-          success: false,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
-    }
+    logApiUsageAsync({
+      endpoint: "/chat",
+      userId: req.userId,
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
 
     return res.status(500).json({
       success: false,
