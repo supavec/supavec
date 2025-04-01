@@ -74,7 +74,6 @@ Question: ${query}`;
           result.mergeIntoDataStream(dataStream);
 
           await result.consumeStream();
-          console.log("[CHAT] Capturing PostHog event for streaming response");
           client.capture({
             distinctId: apiKeyData.profiles.email,
             event: "/chat API Call (streaming)",
