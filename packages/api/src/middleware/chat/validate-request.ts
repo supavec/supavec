@@ -87,6 +87,7 @@ export const validateRequestMiddleware = () => {
         file_ids,
         teamId: apiKeyData.team_id,
         apiKeyData,
+        stream: req.body.stream,
       };
       return next();
     } catch (error) {
