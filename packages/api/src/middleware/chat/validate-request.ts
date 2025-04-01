@@ -44,7 +44,14 @@ export const validateRequestMiddleware = () => {
       }
 
       const { query, k, file_ids, stream } = validation.data;
-      const apiKey = req.headers.authorization as string;
+      const apiKey = req.headers.authorization;
+      
+      if (!apiKey) {
+        return res.status(401).json({
+          success: false,
+          message: "API key is required",
+        });
+      }
 
       const { data: apiKeyData, error: apiKeyError } = await supabase
         .from("api_keys")
