@@ -30,6 +30,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
+      <script
+        async
+        src="https://ai-citations-web.vercel.app/tracker.min.js"
+        data-project-id="b653ba2f-9537-4ad3-8ed4-b570ce557811"
+      ></script>
       <CSPostHogProvider>
         <body className="min-h-screen bg-background antialiased w-full mx-auto scroll-smooth font-sans">
           <ThemeProvider
