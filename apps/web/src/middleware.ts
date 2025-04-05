@@ -2,23 +2,26 @@ import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const userAgent = request.headers.get("user-agent") || "";
+  const path = request.nextUrl.pathname;
 
-  fetch(
-    "https://ai-citations-web.vercel.app/api/track",
-    // "http://localhost:3002/api/track",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  if (!path.startsWith("/ingest")) {
+    const userAgent = request.headers.get("user-agent") || "";
+    fetch(
+      "https://ai-citations-web.vercel.app/api/track",
+      // "http://localhost:3002/api/track",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projectId: process.env.AI_CITATIONS_PROJECT_ID,
+          url: request.url,
+          userAgent,
+        }),
       },
-      body: JSON.stringify({
-        projectId: process.env.AI_CITATIONS_PROJECT_ID,
-        url: request.url,
-        userAgent,
-      }),
-    },
-  ).catch(console.error);
+    ).catch(console.error);
+  }
 
   return await updateSession(request);
 }
