@@ -4,7 +4,7 @@ import { updateSession } from "@/utils/supabase/middleware";
 async function sendTrackingData(url: string, userAgent: string) {
   try {
     await fetch(
-      "https://ai-citations-web.vercel.app/api/track",
+      "https://www.citeanalytics.com/api/track",
       // "http://localhost:3002/api/track",
       {
         method: "POST",
