@@ -32,6 +32,7 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
   const path = request.nextUrl.pathname;
 
   if (!path.startsWith("/ingest")) {
+    console.log({ request });
     const userAgent = request.headers.get("user-agent") || "";
     console.log("Middleware accessed with User-Agent:", userAgent);
     event.waitUntil(sendTrackingData(request.url, userAgent));
