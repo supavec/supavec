@@ -12,6 +12,10 @@ const examples = [
 
 const tools = [
   {
+    title: "CiteAnalytics",
+    href: "https://www.citeanalytics.com",
+  },
+  {
     title: "Supa Deep Reasearch",
     href: "https://www.supa-deep-research.com",
   },

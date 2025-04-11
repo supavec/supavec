@@ -5,7 +5,6 @@ async function sendTrackingData(url: string, userAgent: string) {
   try {
     await fetch(
       "https://www.citeanalytics.com/api/track",
-      // "http://localhost:3002/api/track",
       {
         method: "POST",
         headers: {
@@ -18,7 +17,6 @@ async function sendTrackingData(url: string, userAgent: string) {
         }),
       },
     );
-    console.log("Successfully sent tracking data");
   } catch (error: unknown) {
     if (error instanceof Error && error.name === "AbortError") {
       console.error("Tracking request timed out");
