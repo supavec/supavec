@@ -1,5 +1,6 @@
-import { NextFetchEvent, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
+import { after } from "next/server";
 
 async function sendTrackingData(url: string, userAgent: string) {
   try {
@@ -26,13 +27,15 @@ async function sendTrackingData(url: string, userAgent: string) {
   }
 }
 
-export async function middleware(request: NextRequest, event: NextFetchEvent) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   if (!path.startsWith("/ingest")) {
     const userAgent = request.headers.get("user-agent") || "";
     console.log("Middleware accessed with User-Agent:", userAgent);
-    event.waitUntil(sendTrackingData(request.url, userAgent));
+    after(async () => {
+      await sendTrackingData(request.url, userAgent);
+    });
   }
 
   return await updateSession(request);
