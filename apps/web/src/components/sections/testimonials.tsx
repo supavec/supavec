@@ -12,6 +12,7 @@ export function Testimonials() {
       const script = document.createElement("script");
       script.src =
         "https://widget.senja.io/widget/401b382e-0d8c-41b5-9160-96adc4d5f3e3/platform.js";
+      script.type = "text/javascript";
       script.async = true;
       document.body.appendChild(script);
 
@@ -33,7 +34,7 @@ export function Testimonials() {
           data-id="401b382e-0d8c-41b5-9160-96adc4d5f3e3"
           data-mode="shadow"
           data-lazyload="false"
-          style={{ display: "block" }}
+          style={{ display: "block", width: "100%" }}
         ></div>
       </div>
     </Section>
