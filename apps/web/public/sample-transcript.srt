@@ -1,0 +1,79 @@
+1
+00:00:00,000 --> 00:00:05,000
+John (Sales Rep): Hi Sarah, thanks for taking the time to meet with me today. How are you doing?
+
+2
+00:00:05,000 --> 00:00:10,000
+Sarah (Prospect): Hi John, I'm doing well, thanks. I'm looking forward to learning more about your solution.
+
+3
+00:00:10,000 --> 00:00:20,000
+John: Great! Before we dive in, can you tell me a bit about your current reporting process and any challenges you're facing?
+
+4
+00:00:20,000 --> 00:00:35,000
+Sarah: Sure. We're spending about 15 hours a week on manual reporting, and errors are creeping in. It's becoming a real bottleneck for our team.
+
+5
+00:00:35,000 --> 00:00:45,000
+John: That sounds frustrating. 15 hours a week is significant. What kind of impact are these errors having on your business?
+
+6
+00:00:45,000 --> 00:00:55,000
+Sarah: Well, we've had to redo reports twice this month, and it's affecting our decision-making speed. Management is getting concerned.
+
+7
+00:00:55,000 --> 00:01:10,000
+John: I understand. Let me show you how our solution can help. I'll walk you through our ROI calculator step by step.
+
+8
+00:01:10,000 --> 00:01:25,000
+Sarah: That sounds helpful. I love how you walked through the ROI calculator step by step. That really helped me understand the value.
+
+9
+00:01:25,000 --> 00:01:35,000
+John: I'm glad that was useful. Now, what's your timeline for making a decision on this type of solution?
+
+10
+00:01:35,000 --> 00:01:45,000
+Sarah: Well, we're looking at a few different solutions right now. We need to make a decision by the end of the quarter.
+
+11
+00:01:45,000 --> 00:01:55,000
+John: That's great to hear. What factors are most important to you when evaluating these different options?
+
+12
+00:01:55,000 --> 00:02:10,000
+Sarah: Cost is definitely a factor, but we're more focused on reliability and ease of implementation. Our IT team is pretty stretched thin right now with the ERP rollout.
+
+13
+00:02:10,000 --> 00:02:20,000
+John: I completely understand about IT bandwidth. What kind of support would you need during implementation to make this successful?
+
+14
+00:02:20,000 --> 00:02:30,000
+Sarah: We'd need hands-on support and training. I'd also need to see how this integrates with our existing CRM system.
+
+15
+00:02:30,000 --> 00:02:40,000
+John: Absolutely. We have a dedicated implementation team that works closely with clients. For CRM integration, we have pre-built connectors for most major systems.
+
+16
+00:02:40,000 --> 00:02:50,000
+Sarah: That's reassuring. Budget is always a consideration, but if the ROI is there and implementation is smooth, I think we could make this work.
+
+17
+00:02:50,000 --> 00:03:00,000
+John: I appreciate your transparency. Based on what you've shared, I think our solution could save you significant time and reduce those error rates.
+
+18
+00:03:00,000 --> 00:03:10,000
+Sarah: It definitely sounds promising. What would be the next steps if we wanted to move forward?
+
+19
+00:03:10,000 --> 00:03:20,000
+John: I'd like to schedule a technical demo with your IT team to show the CRM integration capabilities. Would that be helpful?
+
+20
+00:03:20,000 --> 00:03:32,000
+Sarah: Yes, that would be perfect. I'd need to see how this integrates with our existing CRM. Can we set something up for next week? 

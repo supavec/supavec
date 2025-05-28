@@ -8,6 +8,10 @@ const examples = [
     title: "Chat with PDF",
     href: "/examples/chat-with-pdf",
   },
+  {
+    title: "Sales Coaching AI",
+    href: "/examples/sales-coaching",
+  },
 ];
 
 const tools = [
