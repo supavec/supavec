@@ -11,6 +11,10 @@ import {
   Wrench,
   ZapIcon,
   Linkedin,
+  PhoneCall,
+  MessageSquare,
+  Shield,
+  FileText,
 } from "lucide-react";
 
 export const BLUR_FADE_DELAY = 0.15;
@@ -74,35 +78,35 @@ export const siteConfig = {
     github: "https://github.com/taishikato/supavec",
   },
   hero: {
-    title: "Supavec",
+    title: "Bring Your Own Data to Any LLM—Instant RAG API",
     description:
-      "The open-source alternative to Carbon.ai. Build powerful RAG applications with any data source, at any scale.",
+      "Ingest calls, docs, or tickets in minutes and retrieve laser-accurate context at query time. Open-source, scalable, and ready for production.",
     cta: "Get Started",
   },
   whySupavec: [
     {
-      name: "Full Control with Open Source",
+      name: "Sales Call Insights",
       description:
-        "Choose between our cloud version or self-host on your infrastructure - unlike Carbon.ai, you're never locked in. Fully open source under MIT license, giving you the freedom to adapt and modify.",
-      icon: <Code2 className="size-6" />,
+        'Drop your meeting transcripts; ask "Where did pricing objections spike?" and get timestamped clips plus summarised answers you can paste into CRM.',
+      icon: <PhoneCall className="size-6" />,
     },
     {
-      name: "Enterprise-Grade Privacy",
+      name: "Support Knowledge Copilot",
       description:
-        "Built with Supabase Row Level Security (RLS), ensuring your data stays private and secure on your infrastructure with granular access control.",
-      icon: <Lock className="size-6" />,
+        "Connect Zendesk, Notion, or Confluence. Agents type a question and receive citations from the latest docs—no more tab-switching.",
+      icon: <MessageSquare className="size-6" />,
     },
     {
-      name: "Built to Scale",
+      name: "Internal Policy Q&A",
       description:
-        "Handle millions of documents, process any size, support concurrent processing, and scale horizontally. Built on Supabase, Next.js, and TypeScript.",
-      icon: <Scale className="size-6" />,
+        "Keep legal or HR PDFs on-prem. Employees query through Slack, results reference exact clauses—no risk of leaking data.",
+      icon: <Shield className="size-6" />,
     },
     {
-      name: "Developer-First",
+      name: "Developer Docs Search",
       description:
-        "Simple API, comprehensive documentation, easy integration, and quick setup with a modern tech stack.",
-      icon: <Wrench className="size-6" />,
+        "Sync your docs repo hourly. Ship an AI search bar that returns code snippets and links in under 300 ms.",
+      icon: <FileText className="size-6" />,
     },
   ],
   features: [
@@ -173,7 +177,8 @@ export const siteConfig = {
         monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_MONTHLY as string,
         yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC_YEARLY as string,
       },
-      description: "For developers with regular usage needs.",
+      description:
+        "For developers with regular usage needs. ($15.83/month when billed yearly)",
       features: [
         "750 API calls per month",
         "All supported file types",
@@ -195,7 +200,8 @@ export const siteConfig = {
           process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_YEARLY ||
           "price_enterprise_yearly",
       },
-      description: "For businesses with high-volume needs.",
+      description:
+        "For businesses with high-volume needs. ($124.17/month when billed yearly)",
       features: [
         "5,000 API calls per month",
         "50 requests per minute",

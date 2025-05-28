@@ -8,11 +8,11 @@ export function CTA() {
     <Section id="cta">
       <div className="border overflow-hidden relative text-center py-16 mx-auto">
         <p className="text-sm text-secondary-foreground/70 text-balance mx-auto font-medium">
-          Power your AI with your own data
+          Ready to bring your data to any LLM?
         </p>
 
         <p className="max-w-3xl mt-2 text-foreground mb-6 text-balance mx-auto font-medium text-3xl">
-          Start your free trial today.
+          Start building with your own data in minutes.
         </p>
         <div className="flex justify-center">
           <Link
@@ -22,7 +22,7 @@ export function CTA() {
               "flex items-center gap-2"
             )}
           >
-            Get Started
+            Get Started Free
           </Link>
         </div>
       </div>

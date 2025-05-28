@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/sections/header";
 import { Hero } from "@/components/sections/hero";
-import { FeaturedSection } from "@/components/sections/featured-section";
-import { WhyIBuit } from "@/components/sections/why-i-built";
-import { WhatIsRag } from "@/components/sections/what-is-rag";
+// import { FeaturedSection } from "@/components/sections/featured-section";
+// import { WhyIBuit } from "@/components/sections/why-i-built";
+// import { WhatIsRag } from "@/components/sections/what-is-rag";
 import { WhySupavec } from "@/components/sections/why-supavec";
 import { HowToUse } from "@/components/sections/how-to-use";
 import { Testimonials } from "@/components/sections/testimonials";
@@ -24,9 +24,9 @@ export default async function Home() {
     <main>
       <Header />
       <Hero />
-      <FeaturedSection />
-      <WhyIBuit />
-      <WhatIsRag />
+      {/* <FeaturedSection /> */}
+      {/* <WhyIBuit /> */}
+      {/* <WhatIsRag /> */}
       <WhySupavec />
       <SenjaTestimonials />
       <HowToUse />

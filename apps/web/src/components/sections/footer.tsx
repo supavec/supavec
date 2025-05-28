@@ -58,6 +58,21 @@ export function Footer({ className }: { className?: string }) {
         className
       )}
     >
+      {/* SEO text block */}
+      <div className="border-t pt-8 pb-4">
+        <div className="text-center max-w-4xl mx-auto">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            <strong className="text-foreground">Supavec</strong> is an
+            open-source Retrieval-Augmented Generation (RAG) platform built on
+            Supabase row-level security. Our RAG-as-a-Service API enables
+            developers to integrate their own data with any LLM, providing
+            secure, scalable document embedding and retrieval capabilities for
+            AI applications. Unlike proprietary solutions, Supavec offers full
+            transparency and control over your RAG infrastructure.
+          </p>
+        </div>
+      </div>
+
       <div className="flex gap-y-5 flex-col-reverse md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 md:items-start">
           <div className="flex items-center gap-x-2">

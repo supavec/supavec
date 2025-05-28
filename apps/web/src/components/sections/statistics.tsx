@@ -28,10 +28,10 @@ export function Statistics() {
   return (
     <Section id="statistics" title="Statistics">
       <div
-        className="border-x border-t"
+        className="border-x border-t bg-gradient-to-br from-background via-secondary/10 to-background"
         style={{
           backgroundImage:
-            "radial-gradient(circle at bottom center, hsl(var(--secondary) / 0.4), hsl(var(--background)))",
+            "radial-gradient(circle at bottom center, hsl(var(--secondary) / 0.6), hsl(var(--background)))",
         }}
       >
         <div className="grid grid-cols-1 sm:grid-cols-3">
@@ -59,10 +59,13 @@ export function Statistics() {
                 </svg>
               </div>
               <div className="text-center relative">
-                <BorderText text={stat.title} />
+                <BorderText
+                  text={stat.title}
+                  className="text-4xl font-bold text-foreground"
+                />
                 <div className="flex items-center justify-center gap-2 mt-2">
                   {stat.icon}
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground font-medium">
                     {stat.subtitle}
                   </p>
                 </div>

@@ -47,9 +47,9 @@ function HeroPill() {
 
 function HeroTitles() {
   return (
-    <div className="flex w-full max-w-3xl flex-col overflow-hidden pt-8">
+    <div className="flex w-full max-w-4xl flex-col overflow-hidden pt-8">
       <motion.h1
-        className="text-left text-4xl font-semibold leading-tighter text-foreground sm:text-5xl md:text-6xl tracking-tighter"
+        className="text-left text-4xl font-semibold leading-tight text-foreground sm:text-5xl md:text-6xl tracking-tighter"
         initial={{ filter: "blur(10px)", opacity: 0, y: 50 }}
         animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
         transition={{
@@ -68,13 +68,13 @@ function HeroTitles() {
             ease,
           }}
         >
-          <AuroraText className="leading-normal">
+          <AuroraText className="leading-tight">
             {siteConfig.hero.title}
           </AuroraText>
         </motion.span>
       </motion.h1>
       <motion.p
-        className="text-left max-w-xl leading-normal text-muted-foreground sm:text-lg sm:leading-normal text-balance"
+        className="text-left max-w-2xl leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed text-balance"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -108,6 +108,27 @@ function HeroCTA() {
           <Icons.logo className="h-6 w-6" />
           {siteConfig.hero.cta}
         </Link>
+      </motion.div>
+
+      {/* Code snippet */}
+      <motion.div
+        className="mt-8 w-full max-w-xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0, duration: 0.8, ease }}
+      >
+        <div className="rounded-lg bg-muted/50 border p-4 text-sm font-mono">
+          <div className="text-muted-foreground mb-2 text-xs font-medium">
+            GET STARTED IN SECONDS
+          </div>
+          <pre className="text-foreground whitespace-pre-wrap">
+            {`curl -X POST https://api.supavec.com/embed \\
+  -H "Authorization: Bearer YOUR_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"content": "your text here"}' \\
+  | jq .embedding`}
+          </pre>
+        </div>
       </motion.div>
     </div>
   );

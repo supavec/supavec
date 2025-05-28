@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 export function WhySupavec({ className }: { className?: string }) {
   return (
-    <Section id="why-supavec" title="Why Supavec?" className={cn(className)}>
+    <Section id="why-supavec" title="Use Cases" className={cn(className)}>
       <div className="border-x border-t">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {siteConfig.whySupavec.map(
