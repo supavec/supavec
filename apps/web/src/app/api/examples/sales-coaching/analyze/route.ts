@@ -141,19 +141,11 @@ function generateInsightFromResults(
   // Extract a quote from the content (first sentence or meaningful phrase)
   const quote = extractMeaningfulQuote(relevantContent);
 
-  // Calculate confidence based on search scores
-  const avgScore = searchResults.documents.reduce(
-    (sum, doc) => sum + parseFloat(doc.score),
-    0,
-  ) / searchResults.documents.length;
-  const confidence = Math.min(Math.max(Math.round(avgScore * 100), 60), 95); // Scale and clamp between 60-95%
-
   return {
     type,
     insight,
     quote,
     coaching_tip: generateCoachingTip(type, insight),
-    confidence,
     timestamp: extractTimestampFromContent(relevantContent),
   };
 }
@@ -571,7 +563,6 @@ export async function POST(request: NextRequest) {
               "Transcript processed successfully.",
             coaching_tip:
               "Focus on asking open-ended questions to better understand prospect needs.",
-            confidence: 75,
             timestamp: "05:00",
           },
         ],

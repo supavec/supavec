@@ -227,9 +227,6 @@ export default function SalesCoachingExample() {
                         {insight.type.toUpperCase()}
                       </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {insight.confidence}% confidence
-                    </Badge>
                   </div>
                   <CardTitle className="text-lg">{insight.insight}</CardTitle>
                 </CardHeader>

@@ -3,7 +3,6 @@ export interface InsightItem {
   insight: string;
   quote: string;
   coaching_tip: string;
-  confidence: number;
   timestamp: string;
 }
 
