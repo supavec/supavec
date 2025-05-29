@@ -154,44 +154,211 @@ function generateInsightFromResults(
     quote,
     coaching_tip: generateCoachingTip(type, insight),
     confidence,
-    timestamp: generateTimestamp(),
+    timestamp: extractTimestampFromContent(relevantContent),
   };
 }
 
 function generateWinInsight(query: string, content: string): string {
-  const winTemplates = [
-    "Excellent rapport building demonstrated through active listening and empathy.",
-    "Strong value proposition delivered with clear business impact.",
-    "Effective objection handling with evidence-based responses.",
-    "Great discovery questions that uncovered key pain points.",
-    "Strong closing technique with clear next steps established.",
-  ];
+  const lowerContent = content.toLowerCase();
+  const lowerQuery = query.toLowerCase();
 
-  return winTemplates[Math.floor(Math.random() * winTemplates.length)];
+  // Analyze content for specific positive indicators
+  if (
+    lowerQuery.includes("rapport") &&
+    (lowerContent.includes("understand") || lowerContent.includes("feel") ||
+      lowerContent.includes("appreciate"))
+  ) {
+    return "Excellent rapport building demonstrated through empathetic language and active listening.";
+  }
+
+  if (
+    lowerQuery.includes("techniques") &&
+    (lowerContent.includes("benefit") || lowerContent.includes("value") ||
+      lowerContent.includes("save"))
+  ) {
+    return "Strong value-based selling approach with clear articulation of business benefits.";
+  }
+
+  if (
+    lowerQuery.includes("buying signals") &&
+    (lowerContent.includes("when") || lowerContent.includes("how much") ||
+      lowerContent.includes("timeline"))
+  ) {
+    return "Clear buying signals identified - prospect showing interest in timing and investment.";
+  }
+
+  if (
+    lowerContent.includes("objection") || lowerContent.includes("concern") ||
+    lowerContent.includes("but")
+  ) {
+    return "Effective objection handling with evidence-based responses and empathy.";
+  }
+
+  if (
+    lowerContent.includes("question") &&
+    (lowerContent.includes("pain") || lowerContent.includes("challenge") ||
+      lowerContent.includes("problem"))
+  ) {
+    return "Great discovery questions that successfully uncovered key pain points and challenges.";
+  }
+
+  if (
+    lowerContent.includes("next step") || lowerContent.includes("follow up") ||
+    lowerContent.includes("schedule")
+  ) {
+    return "Strong closing technique with clear next steps and commitment established.";
+  }
+
+  // Default based on content analysis
+  if (lowerContent.includes("solution") || lowerContent.includes("help")) {
+    return "Solution-focused approach that addresses prospect's specific needs effectively.";
+  }
+
+  return "Positive engagement and professional sales approach demonstrated in this conversation.";
 }
 
 function generateRiskInsight(query: string, content: string): string {
-  const riskTemplates = [
-    "Missed opportunity to address prospect's budget concerns early in conversation.",
-    "Could have asked more qualifying questions about decision-making process.",
-    "Prospect's timeline wasn't fully explored - risk of delayed decision.",
-    "Competitive alternatives weren't adequately addressed.",
-    "Missing clear commitment or next steps from the prospect.",
-  ];
+  const lowerContent = content.toLowerCase();
+  const lowerQuery = query.toLowerCase();
 
-  return riskTemplates[Math.floor(Math.random() * riskTemplates.length)];
+  // Analyze content for specific risk indicators
+  if (
+    lowerQuery.includes("missed") && lowerContent.includes("price") &&
+    !lowerContent.includes("budget")
+  ) {
+    return "Missed opportunity to address prospect's budget concerns early in conversation.";
+  }
+
+  if (
+    lowerQuery.includes("opportunities") &&
+    !lowerContent.includes("decision maker")
+  ) {
+    return "Could have asked more qualifying questions about decision-making process and stakeholders.";
+  }
+
+  if (
+    lowerContent.includes("think about") || lowerContent.includes("get back") ||
+    lowerContent.includes("discuss internally")
+  ) {
+    return "Prospect showing hesitation - timeline and decision process weren't fully explored.";
+  }
+
+  if (
+    lowerContent.includes("competitor") || lowerContent.includes("other") ||
+    lowerContent.includes("alternative")
+  ) {
+    return "Competitive alternatives mentioned but not adequately addressed or differentiated.";
+  }
+
+  if (
+    lowerQuery.includes("improve") && !lowerContent.includes("commitment") &&
+    !lowerContent.includes("next step")
+  ) {
+    return "Missing clear commitment or specific next steps from the prospect.";
+  }
+
+  if (
+    lowerContent.includes("maybe") || lowerContent.includes("probably") ||
+    lowerContent.includes("might")
+  ) {
+    return "Prospect using tentative language - needs stronger qualification and commitment.";
+  }
+
+  if (
+    lowerContent.includes("expensive") ||
+    lowerContent.includes("cost") && !lowerContent.includes("value")
+  ) {
+    return "Price concerns raised without adequate value justification provided.";
+  }
+
+  if (lowerQuery.includes("could have") && !lowerContent.includes("timeline")) {
+    return "Prospect's implementation timeline and urgency weren't properly explored.";
+  }
+
+  // Default based on content analysis
+  if (
+    !lowerContent.includes("question") || lowerContent.split("?").length < 3
+  ) {
+    return "Could have used more discovery questions to better understand prospect needs.";
+  }
+
+  return "Opportunity to strengthen qualification and build more urgency for next steps.";
 }
 
 function generateActionInsight(query: string, content: string): string {
-  const actionTemplates = [
-    "Schedule technical demo with IT stakeholders within 48 hours.",
-    "Send ROI calculator and case study for similar company size.",
-    "Follow up with detailed pricing proposal by end of week.",
-    "Connect prospect with existing customer for reference call.",
-    "Provide implementation timeline and resource requirements.",
-  ];
+  const lowerContent = content.toLowerCase();
+  const lowerQuery = query.toLowerCase();
 
-  return actionTemplates[Math.floor(Math.random() * actionTemplates.length)];
+  // Analyze content for specific action items based on conversation context
+  if (
+    lowerContent.includes("technical") || lowerContent.includes("demo") ||
+    lowerContent.includes("show")
+  ) {
+    return "Schedule technical demo with IT stakeholders within 48 hours.";
+  }
+
+  if (
+    lowerContent.includes("roi") || lowerContent.includes("return") ||
+    lowerContent.includes("savings")
+  ) {
+    return "Send ROI calculator and case study for similar company size and industry.";
+  }
+
+  if (
+    lowerContent.includes("price") || lowerContent.includes("cost") ||
+    lowerContent.includes("budget")
+  ) {
+    return "Follow up with detailed pricing proposal and implementation options by end of week.";
+  }
+
+  if (
+    lowerContent.includes("reference") || lowerContent.includes("customer") ||
+    lowerContent.includes("similar")
+  ) {
+    return "Connect prospect with existing customer for reference call in similar industry.";
+  }
+
+  if (
+    lowerContent.includes("implementation") ||
+    lowerContent.includes("timeline") || lowerContent.includes("rollout")
+  ) {
+    return "Provide detailed implementation timeline and resource requirements document.";
+  }
+
+  if (
+    lowerContent.includes("team") || lowerContent.includes("stakeholder") ||
+    lowerContent.includes("decision maker")
+  ) {
+    return "Schedule meeting with all key stakeholders and decision makers.";
+  }
+
+  if (
+    lowerContent.includes("contract") || lowerContent.includes("agreement") ||
+    lowerContent.includes("terms")
+  ) {
+    return "Send contract template and terms for legal review by procurement team.";
+  }
+
+  if (
+    lowerContent.includes("pilot") || lowerContent.includes("trial") ||
+    lowerContent.includes("test")
+  ) {
+    return "Set up pilot program with limited scope to demonstrate value quickly.";
+  }
+
+  if (
+    lowerContent.includes("security") || lowerContent.includes("compliance") ||
+    lowerContent.includes("audit")
+  ) {
+    return "Provide security documentation and compliance certifications for review.";
+  }
+
+  // Default actions based on query type
+  if (lowerQuery.includes("follow-up") || lowerQuery.includes("next steps")) {
+    return "Schedule follow-up call within 3 business days to maintain momentum.";
+  }
+
+  return "Send meeting recap with key discussion points and proposed next steps within 24 hours.";
 }
 
 function extractMeaningfulQuote(content: string): string {
@@ -211,36 +378,113 @@ function extractMeaningfulQuote(content: string): string {
 }
 
 function generateCoachingTip(type: string, insight: string): string {
-  const tipTemplates = {
-    win: [
-      "Continue using this effective approach in future conversations.",
-      "This demonstrates best practice - share with the team.",
-      "Great execution of sales methodology.",
-    ],
-    risk: [
-      "Consider addressing this earlier in the sales process.",
-      "Use open-ended questions to better qualify prospects.",
-      "Review objection handling techniques for this scenario.",
-    ],
-    action: [
-      "Set clear expectations and timeline for next steps.",
-      "Follow up promptly to maintain momentum.",
-      "Document these commitments in your CRM.",
-    ],
-  };
+  const lowerInsight = insight.toLowerCase();
 
-  const tips = tipTemplates[type as keyof typeof tipTemplates] ||
-    tipTemplates.action;
-  return tips[Math.floor(Math.random() * tips.length)];
+  // Generate specific tips based on the actual insight content
+  if (lowerInsight.includes("rapport") || lowerInsight.includes("empathy")) {
+    return "Continue using empathetic language and active listening to build trust with prospects.";
+  }
+
+  if (lowerInsight.includes("value") || lowerInsight.includes("benefit")) {
+    return "Always tie features back to specific business outcomes and ROI for the prospect.";
+  }
+
+  if (lowerInsight.includes("objection")) {
+    return "Use the Feel-Felt-Found technique: 'I understand how you feel, others have felt the same way, and here's what they found...'";
+  }
+
+  if (
+    lowerInsight.includes("discovery") || lowerInsight.includes("questions")
+  ) {
+    return "Ask follow-up questions using 'Tell me more about...' to dive deeper into prospect needs.";
+  }
+
+  if (
+    lowerInsight.includes("next step") || lowerInsight.includes("commitment")
+  ) {
+    return "Always end calls with specific next steps and get explicit agreement on timing.";
+  }
+
+  if (lowerInsight.includes("budget") || lowerInsight.includes("price")) {
+    return "Address budget early by asking 'What budget range have you allocated for solving this problem?'";
+  }
+
+  if (
+    lowerInsight.includes("decision maker") ||
+    lowerInsight.includes("stakeholder")
+  ) {
+    return "Map the decision-making process early: 'Who else would be involved in evaluating this solution?'";
+  }
+
+  if (lowerInsight.includes("timeline") || lowerInsight.includes("urgency")) {
+    return "Create urgency by asking 'What happens if you don't solve this problem in the next quarter?'";
+  }
+
+  if (
+    lowerInsight.includes("competitor") || lowerInsight.includes("alternative")
+  ) {
+    return "Ask 'What would make you choose one solution over another?' to understand decision criteria.";
+  }
+
+  if (lowerInsight.includes("demo") || lowerInsight.includes("technical")) {
+    return "Customize demos to show specific use cases that match the prospect's described challenges.";
+  }
+
+  // Type-based fallbacks for more generic insights
+  if (type === "win") {
+    return "Document this successful approach and share it with your team as a best practice.";
+  } else if (type === "risk") {
+    return "Practice objection handling techniques and prepare responses for common concerns.";
+  } else {
+    return "Set clear expectations and follow through consistently to build trust and momentum.";
+  }
 }
 
 function generateTimestamp(): string {
-  // Generate a random timestamp within the conversation (0-30 minutes)
-  const minutes = Math.floor(Math.random() * 30);
+  // Generate a random timestamp within the conversation (0-60 minutes)
+  // More realistic distribution - most sales calls are 15-45 minutes
+  const minutes = Math.floor(Math.random() * 45) +
+    Math.floor(Math.random() * 15);
   const seconds = Math.floor(Math.random() * 60);
   return `${minutes.toString().padStart(2, "0")}:${
     seconds.toString().padStart(2, "0")
   }`;
+}
+
+function extractTimestampFromContent(content: string): string {
+  // Try to extract timestamp patterns from content
+  // Common formats: [00:15:30], (15:30), 15:30, etc.
+  const timestampPatterns = [
+    /\[(\d{1,2}:\d{2}:\d{2})\]/g, // [00:15:30]
+    /\[(\d{1,2}:\d{2})\]/g, // [15:30]
+    /\((\d{1,2}:\d{2}:\d{2})\)/g, // (00:15:30)
+    /\((\d{1,2}:\d{2})\)/g, // (15:30)
+    /(?:^|\s)(\d{1,2}:\d{2}:\d{2})(?:\s|$)/g, // 00:15:30
+    /(?:^|\s)(\d{1,2}:\d{2})(?:\s|$)/g, // 15:30
+  ];
+
+  for (const pattern of timestampPatterns) {
+    const matches = content.match(pattern);
+    if (matches && matches.length > 0) {
+      // Extract the timestamp from the first match
+      const match = matches[0];
+      const timestampMatch = match.match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
+      if (timestampMatch) {
+        const timestamp = timestampMatch[1];
+        // Ensure format is MM:SS
+        if (timestamp.includes(":") && timestamp.split(":").length === 2) {
+          return timestamp;
+        } else if (timestamp.split(":").length === 3) {
+          // Convert HH:MM:SS to MM:SS by taking MM:SS part
+          const parts = timestamp.split(":");
+          return `${parts[1]}:${parts[2]}`;
+        }
+      }
+    }
+  }
+
+  // If no timestamp found in content, generate based on content characteristics
+  return generateTimestamp();
 }
 
 export async function POST(request: NextRequest) {
