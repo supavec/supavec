@@ -14,16 +14,16 @@ if (!SUPAVEC_API_KEY) {
 
 // Sales coaching queries for RAG
 const COACHING_QUERIES = [
-  "What sales techniques were used effectively in this conversation?",
-  "What objections were raised and how were they handled?",
-  "What opportunities were missed in this sales conversation?",
-  "What pain points did the prospect express?",
-  "How could the sales rep improve their approach?",
-  "What follow-up actions should be taken?",
-  "What buying signals were shown by the prospect?",
-  "How was rapport built during the conversation?",
-  "What questions could have been asked to uncover more needs?",
-  "What value propositions were presented?",
+  "What specific discovery questions were asked to understand prospect pain points?",
+  "How did the sales rep handle price objections and budget concerns?",
+  "What competitive threats or alternative solutions were mentioned?",
+  "What buying signals and positive indicators did the prospect show?",
+  "What key stakeholders and decision makers were identified?",
+  "How effectively was urgency and timeline established?",
+  "What specific next steps and commitments were secured?",
+  "How was value and ROI communicated to the prospect?",
+  "What rapport building techniques were demonstrated?",
+  "What qualifying questions about decision process were missed?",
 ];
 
 interface SupavecUploadResponse {
@@ -354,19 +354,42 @@ function generateActionInsight(query: string, content: string): string {
 }
 
 function extractMeaningfulQuote(content: string): string {
-  // Extract the first sentence or meaningful phrase from the content
-  const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20);
-  if (sentences.length > 0) {
-    return sentences[0].trim() + ".";
+  // Clean up SRT formatting - remove timestamps, line numbers, and arrows
+  let cleanContent = content
+    .replace(/^\d+$/gm, "") // Remove line numbers
+    .replace(/\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}/g, "") // Remove timestamps
+    .replace(/\n+/g, " ") // Replace newlines with spaces
+    .trim();
+
+  // Extract speaker and dialogue pattern: "Name: dialogue" or "Name (Role): dialogue"
+  const speakerMatch = cleanContent.match(
+    /([A-Za-z\s]+(?:\([^)]+\))?)\s*:\s*(.+)/,
+  );
+  if (speakerMatch && speakerMatch[2]) {
+    cleanContent = speakerMatch[2].trim();
   }
 
-  // Fallback to first meaningful chunk
-  const words = content.trim().split(/\s+/);
-  if (words.length > 8) {
+  // Find first complete sentence that's meaningful (more than 10 words)
+  const sentences = cleanContent.split(/[.!?]+/).filter((s) =>
+    s.trim().length > 10
+  );
+  if (sentences.length > 0) {
+    const sentence = sentences[0].trim();
+    // If sentence is too long, truncate it nicely
+    if (sentence.length > 120) {
+      const words = sentence.split(" ");
+      return words.slice(0, 15).join(" ") + "...";
+    }
+    return sentence + ".";
+  }
+
+  // Fallback: take first meaningful chunk of words
+  const words = cleanContent.trim().split(/\s+/).filter((w) => w.length > 0);
+  if (words.length > 5) {
     return words.slice(0, 12).join(" ") + "...";
   }
 
-  return content.trim();
+  return cleanContent.trim() || "Key moment from the conversation";
 }
 
 function generateCoachingTip(type: string, insight: string): string {
@@ -536,6 +559,7 @@ export async function POST(request: NextRequest) {
 
     // Perform multiple RAG queries to generate coaching insights
     const insights = [];
+    const seenInsights = new Set(); // Track similar insights to avoid duplicates
 
     for (const query of COACHING_QUERIES.slice(0, 6)) { // Limit to 6 queries for performance
       try {
@@ -543,7 +567,15 @@ export async function POST(request: NextRequest) {
         const insight = generateInsightFromResults(query, searchResult);
 
         if (insight) {
-          insights.push(insight);
+          // Create a simple hash to check for duplicate insights
+          const insightKey = `${insight.type}-${
+            insight.insight.toLowerCase().slice(0, 50)
+          }`;
+
+          if (!seenInsights.has(insightKey)) {
+            insights.push(insight);
+            seenInsights.add(insightKey);
+          }
         }
       } catch (error) {
         console.error(`Error searching for query "${query}":`, error);
