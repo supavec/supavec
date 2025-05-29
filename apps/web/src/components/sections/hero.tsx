@@ -100,10 +100,11 @@ function HeroCTA() {
     </div>
   );
 }
-const LazySpline = lazy(() => import("@splinetool/react-spline"));
+
+const LazyGlobe = lazy(() => import("@/components/globe"));
 
 export function Hero() {
-  const [showSpline, setShowSpline] = useState(false);
+  const [showGlobe, setShowGlobe] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -121,7 +122,7 @@ export function Hero() {
     // Don't show on mobile
     if (!isMobile) {
       const timer = setTimeout(() => {
-        setShowSpline(true);
+        setShowGlobe(true);
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -150,16 +151,14 @@ export function Hero() {
         {!isMobile && (
           <div className="relative lg:h-full lg:col-span-1">
             <Suspense>
-              {showSpline && (
+              {showGlobe && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.8, delay: 1 }}
+                  className="absolute inset-0 w-full h-full"
                 >
-                  <LazySpline
-                    scene="https://prod.spline.design/mZBrYNcnoESGlTUG/scene.splinecode"
-                    className="absolute inset-0 w-full h-full origin-top-left flex items-center justify-center"
-                  />
+                  <LazyGlobe />
                 </motion.div>
               )}
             </Suspense>
