@@ -22,25 +22,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
-
-interface InsightCard {
-  type: "win" | "risk" | "action";
-  title: string;
-  quote: string;
-  tip: string;
-  timestamp: string;
-  confidence: number;
-}
-
-interface AnalysisResult {
-  summary: string;
-  insights: InsightCard[];
-  metadata: {
-    duration: string;
-    speakers: string[];
-    totalChunks: number;
-  };
-}
+import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
 
 export default function SalesCoachingExample() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -68,86 +50,41 @@ export default function SalesCoachingExample() {
     setIsProcessing(true);
 
     try {
-      // Simulate the Supavec workflow
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate embedding
+      // Read file content
+      const fileContent = await uploadedFile.text();
 
-      // Mock analysis result
-      const mockResult: AnalysisResult = {
-        summary:
-          "Call analysis completed successfully. The sales rep demonstrated strong product knowledge but missed several qualifying questions. Key opportunities for improvement include active listening and objection handling.",
-        insights: [
-          {
-            type: "win",
-            title: "Strong Product Demo",
-            quote:
-              "I love how you walked through the ROI calculator step by step. That really helped me understand the value.",
-            tip: "Great use of interactive demonstrations to build value. Continue using hands-on approaches to showcase product benefits.",
-            timestamp: "00:14:32",
-            confidence: 0.92,
-          },
-          {
-            type: "risk",
-            title: "Missed Qualifying Question",
-            quote:
-              "Well, we're looking at a few different solutions right now...",
-            tip: "When prospects mention competitors, dig deeper to understand decision criteria and timeline. Ask: 'What's most important to you in making this decision?'",
-            timestamp: "00:08:15",
-            confidence: 0.87,
-          },
-          {
-            type: "action",
-            title: "Follow Up on Budget Discussion",
-            quote:
-              "Budget is always a consideration, but if the ROI is there...",
-            tip: "Send a customized ROI analysis based on their specific numbers. Schedule a follow-up to review together.",
-            timestamp: "00:22:45",
-            confidence: 0.94,
-          },
-          {
-            type: "risk",
-            title: "Didn't Address Implementation Concerns",
-            quote:
-              "Our IT team is pretty stretched thin right now with the ERP rollout...",
-            tip: "Acknowledge implementation challenges and present your support resources. Offer to speak directly with their IT team.",
-            timestamp: "00:18:20",
-            confidence: 0.89,
-          },
-          {
-            type: "win",
-            title: "Good Discovery on Pain Points",
-            quote:
-              "We're spending about 15 hours a week on manual reporting, and errors are creeping in...",
-            tip: "Excellent discovery! You uncovered both time costs and quality issues. Reference this pain throughout your follow-up.",
-            timestamp: "00:06:12",
-            confidence: 0.95,
-          },
-          {
-            type: "action",
-            title: "Schedule Technical Deep Dive",
-            quote:
-              "I'd need to see how this integrates with our existing CRM...",
-            tip: "Set up a technical call with their CRM admin. Prepare integration documentation and common use cases beforehand.",
-            timestamp: "00:26:08",
-            confidence: 0.91,
-          },
-        ],
-        metadata: {
-          duration: "32:15",
-          speakers: ["Sales Rep (John)", "Prospect (Sarah)"],
-          totalChunks: 45,
+      // Call the real API endpoint
+      const response = await fetch("/api/examples/sales-coaching/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      };
+        body: JSON.stringify({
+          file: fileContent,
+        }),
+      });
 
-      setAnalysisResult(mockResult);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to analyze transcript");
+      }
+
+      const result: AnalysisResult = await response.json();
+      setAnalysisResult(result);
       toast.success("Analysis completed successfully!");
-    } catch {
-      toast.error("Failed to process transcript. Please try again.");
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to process transcript. Please try again."
+      );
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const getInsightIcon = (type: InsightCard["type"]) => {
+  const getInsightIcon = (type: InsightItem["type"]) => {
     switch (type) {
       case "win":
         return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -158,7 +95,7 @@ export default function SalesCoachingExample() {
     }
   };
 
-  const getInsightColor = (type: InsightCard["type"]) => {
+  const getInsightColor = (type: InsightItem["type"]) => {
     switch (type) {
       case "win":
         return "bg-green-50 border-green-200";
@@ -258,18 +195,19 @@ export default function SalesCoachingExample() {
             <CardHeader>
               <CardTitle>Call Analysis Summary</CardTitle>
               <div className="flex gap-4 text-sm text-muted-foreground">
-                <span>Duration: {analysisResult.metadata.duration}</span>
                 <span>
-                  Speakers: {analysisResult.metadata.speakers.join(", ")}
+                  Total Insights: {analysisResult.summary.total_insights}
                 </span>
-                <span>
-                  Analyzed Chunks: {analysisResult.metadata.totalChunks}
-                </span>
+                <span>Wins: {analysisResult.summary.wins}</span>
+                <span>Risks: {analysisResult.summary.risks}</span>
+                <span>Actions: {analysisResult.summary.actions}</span>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed">
-                {analysisResult.summary}
+                Analysis completed successfully. Found{" "}
+                {analysisResult.summary.total_insights} actionable insights to
+                help improve sales performance.
               </p>
             </CardContent>
           </Card>
@@ -290,10 +228,10 @@ export default function SalesCoachingExample() {
                       </Badge>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {Math.round(insight.confidence * 100)}% confidence
+                      {insight.confidence}% confidence
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg">{insight.title}</CardTitle>
+                  <CardTitle className="text-lg">{insight.insight}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="bg-white/50 p-3 rounded-lg border">
@@ -305,7 +243,7 @@ export default function SalesCoachingExample() {
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Coaching Tip:</h4>
                     <p className="text-sm text-muted-foreground">
-                      {insight.tip}
+                      {insight.coaching_tip}
                     </p>
                   </div>
 
