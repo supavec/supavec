@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -230,20 +229,37 @@ export default function SalesCoachingExample() {
             <TabsContent value="upload" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="transcript-file">Upload Transcript File</Label>
-                <div className="flex items-center gap-4">
+                <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 h-32 flex items-center justify-center bg-muted/10 hover:bg-muted/20 transition-colors">
+                  <div className="text-center space-y-2">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto" />
+                    <div className="text-sm text-muted-foreground">
+                      <label
+                        htmlFor="transcript-file"
+                        className="font-medium text-primary hover:text-primary/80 cursor-pointer"
+                      >
+                        Choose a file
+                      </label>{" "}
+                      or drag and drop
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      SRT, VTT files only
+                    </p>
+                  </div>
                   <Input
                     id="transcript-file"
                     type="file"
                     accept=".srt,.vtt"
                     onChange={handleFileUpload}
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
-                  <Upload className="h-4 w-4 text-muted-foreground" />
                 </div>
                 {uploadedFile && (
-                  <p className="text-sm text-muted-foreground">
-                    Selected: {uploadedFile.name}
-                  </p>
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <FileText className="h-4 w-4 text-green-600" />
+                    <p className="text-sm text-green-700 font-medium">
+                      Selected: {uploadedFile.name}
+                    </p>
+                  </div>
                 )}
               </div>
             </TabsContent>
