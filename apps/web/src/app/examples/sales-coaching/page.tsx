@@ -15,11 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   Upload,
   FileText,
-  Play,
   CheckCircle,
   AlertTriangle,
   Target,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
@@ -104,11 +102,6 @@ export default function SalesCoachingExample() {
       case "action":
         return "bg-blue-50 border-blue-200";
     }
-  };
-
-  const openFirefliesLink = (timestamp: string) => {
-    // Simulate opening Fireflies recording at specific timestamp
-    toast.info(`Opening Fireflies recording at ${timestamp}`);
   };
 
   return (
@@ -243,17 +236,6 @@ export default function SalesCoachingExample() {
                       {insight.coaching_tip}
                     </p>
                   </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openFirefliesLink(insight.timestamp)}
-                    className="w-full gap-2"
-                  >
-                    <Play className="h-3 w-3" />
-                    Jump to {insight.timestamp}
-                    <ExternalLink className="h-3 w-3" />
-                  </Button>
                 </CardContent>
               </Card>
             ))}
