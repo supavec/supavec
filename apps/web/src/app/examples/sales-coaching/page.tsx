@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Upload,
   FileText,
@@ -44,13 +43,11 @@ interface AnalysisResult {
 }
 
 export default function SalesCoachingExample() {
-  const [transcriptUrl, setTranscriptUrl] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
   );
-  const [activeTab, setActiveTab] = useState("url");
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,8 +60,8 @@ export default function SalesCoachingExample() {
   };
 
   const processTranscript = async () => {
-    if (!transcriptUrl && !uploadedFile) {
-      toast.error("Please provide a transcript URL or upload a file");
+    if (!uploadedFile) {
+      toast.error("Please upload a transcript file");
       return;
     }
 
@@ -143,7 +140,7 @@ export default function SalesCoachingExample() {
 
       setAnalysisResult(mockResult);
       toast.success("Analysis completed successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to process transcript. Please try again.");
     } finally {
       setIsProcessing(false);
@@ -195,8 +192,7 @@ export default function SalesCoachingExample() {
             Upload Transcript
           </CardTitle>
           <CardDescription>
-            Provide a Fireflies transcript URL or upload an .srt/.vtt file to
-            analyze.{" "}
+            Upload an .srt or .vtt transcript file to analyze.{" "}
             <a
               href="/sample-transcript.srt"
               download
@@ -208,66 +204,45 @@ export default function SalesCoachingExample() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="url">Fireflies URL</TabsTrigger>
-              <TabsTrigger value="upload">Upload File</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="url" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="transcript-url">Fireflies Transcript URL</Label>
-                <Input
-                  id="transcript-url"
-                  placeholder="https://app.fireflies.ai/view/..."
-                  value={transcriptUrl}
-                  onChange={(e) => setTranscriptUrl(e.target.value)}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="upload" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="transcript-file">Upload Transcript File</Label>
-                <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 h-32 flex items-center justify-center bg-muted/10 hover:bg-muted/20 transition-colors">
-                  <div className="text-center space-y-2">
-                    <Upload className="h-8 w-8 text-muted-foreground mx-auto" />
-                    <div className="text-sm text-muted-foreground">
-                      <label
-                        htmlFor="transcript-file"
-                        className="font-medium text-primary hover:text-primary/80 cursor-pointer"
-                      >
-                        Choose a file
-                      </label>{" "}
-                      or drag and drop
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      SRT, VTT files only
-                    </p>
-                  </div>
-                  <Input
-                    id="transcript-file"
-                    type="file"
-                    accept=".srt,.vtt"
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
+          <div className="space-y-2">
+            <Label htmlFor="transcript-file">Upload Transcript File</Label>
+            <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 h-32 flex items-center justify-center bg-muted/10 hover:bg-muted/20 transition-colors">
+              <div className="text-center space-y-2">
+                <Upload className="h-8 w-8 text-muted-foreground mx-auto" />
+                <div className="text-sm text-muted-foreground">
+                  <label
+                    htmlFor="transcript-file"
+                    className="font-medium text-primary hover:text-primary/80 cursor-pointer"
+                  >
+                    Choose a file
+                  </label>{" "}
+                  or drag and drop
                 </div>
-                {uploadedFile && (
-                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <FileText className="h-4 w-4 text-green-600" />
-                    <p className="text-sm text-green-700 font-medium">
-                      Selected: {uploadedFile.name}
-                    </p>
-                  </div>
-                )}
+                <p className="text-xs text-muted-foreground">
+                  SRT, VTT files only
+                </p>
               </div>
-            </TabsContent>
-          </Tabs>
+              <Input
+                id="transcript-file"
+                type="file"
+                accept=".srt,.vtt"
+                onChange={handleFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+            {uploadedFile && (
+              <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <FileText className="h-4 w-4 text-green-600" />
+                <p className="text-sm text-green-700 font-medium">
+                  Selected: {uploadedFile.name}
+                </p>
+              </div>
+            )}
+          </div>
 
           <Button
             onClick={processTranscript}
-            disabled={isProcessing || (!transcriptUrl && !uploadedFile)}
+            disabled={isProcessing || !uploadedFile}
             className="w-full mt-4"
           >
             {isProcessing ? "Processing..." : "Analyze Call"}
