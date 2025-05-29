@@ -47,7 +47,7 @@ export const Testimonials = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=dark&period=daily&t=1741056944849"
+            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=light&period=daily&t=1741056944849"
             alt="Supavec - The&#0032;open&#0032;source&#0032;RAG&#0032;as&#0032;a&#0032;service&#0032;platform | Product Hunt"
             style={{ width: "250px", height: "54px" }}
             width={250}
@@ -61,7 +61,7 @@ export const Testimonials = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=871672&theme=dark&period=weekly&topic_id=267&t=1741056944849"
+            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=871672&theme=light&period=weekly&topic_id=267&t=1741056944849"
             alt="Supavec - The&#0032;open&#0032;source&#0032;RAG&#0032;as&#0032;a&#0032;service&#0032;platform | Product Hunt"
             style={{ width: "250px", height: "54px" }}
             width={250}
@@ -75,7 +75,7 @@ export const Testimonials = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=871672&theme=dark&period=monthly&topic_id=267&t=1741056944849"
+            src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=871672&theme=light&period=monthly&topic_id=267&t=1741056944849"
             alt="Supavec - The&#0032;open&#0032;source&#0032;RAG&#0032;as&#0032;a&#0032;service&#0032;platform | Product Hunt"
             style={{ width: "250px", height: "54px" }}
             width={250}

@@ -18,6 +18,7 @@ export function SenjaTestimonials() {
       const script = document.createElement("script");
       script.src =
         "https://widget.senja.io/widget/634426d3-2ae5-4494-96cc-5273fab6fe36/platform.js";
+      script.type = "text/javascript";
       script.async = true;
       document.body.appendChild(script);
 
@@ -44,7 +45,7 @@ export function SenjaTestimonials() {
             data-id="634426d3-2ae5-4494-96cc-5273fab6fe36"
             data-mode="shadow"
             data-lazyload="false"
-            style={{ display: "block" }}
+            style={{ display: "block", width: "100%" }}
           ></div>
           <div className="bg-background py-8 w-full flex justify-center items-center mt-[-76px] relative z-10 rounded-none">
             <Link

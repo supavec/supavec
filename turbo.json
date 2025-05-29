@@ -20,7 +20,10 @@
         "DEMO_SUPA_API_KEY",
         "OPENAI_API_KEY",
         "STRIPE_SECRET_KEY",
-        "STRIPE_SIGNATURE_SECRET"
+        "STRIPE_SIGNATURE_SECRET",
+        "LOGTAIL_URL",
+        "LOGTAIL_SOURCE_TOKEN",
+        "AI_CITATIONS_PROJECT_ID"
       ]
     },
     "lint": {},
