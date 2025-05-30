@@ -382,7 +382,7 @@ function extractRelevantQuote(
   }
 
   const lowerInsight = insight.toLowerCase();
-  const lowerQuery = query.toLowerCase();
+  // const lowerQuery = query.toLowerCase();
 
   // Find quotes based on insight type and content
   let relevantQuotes: string[] = [];
