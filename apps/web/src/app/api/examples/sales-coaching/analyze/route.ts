@@ -378,7 +378,7 @@ export async function POST(request: NextRequest) {
     const insights = [];
     const seenInsights = new Set(); // Track similar insights to avoid duplicates
 
-    for (const query of COACHING_QUERIES.slice(0, 6)) { // Limit to 1 query for performance
+    for (const query of COACHING_QUERIES.slice(0, 6)) { // Limit to 6 queries for performance
       try {
         const searchResult = await searchSupavec(query, fileId);
         const insight = await generateInsightFromResults(query, searchResult);
