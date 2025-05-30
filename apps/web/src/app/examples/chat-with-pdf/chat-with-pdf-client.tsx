@@ -148,13 +148,24 @@ export default function ChatWithPDFClient() {
           {!fileName ? (
             <div className="space-y-2">
               <Label htmlFor="pdf-file">Upload PDF File</Label>
-              <FileUploadForm
-                placeholder="Drag 'n' drop a PDF file here (max 20MB), or click to select one"
-                submitFile={submitFile}
-                callBack={() => {
-                  // File upload callback handled in submitFile
-                }}
-              />
+              {isUploading ? (
+                <div className="border-2 border-dashed border-muted-foreground/10 bg-muted/5 rounded-lg p-6 cursor-not-allowed transition-colors flex flex-col items-center justify-center">
+                  <div className="rounded-full bg-background p-3 shadow-sm">
+                    <FileText className="size-6 text-muted-foreground/30" />
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground/50">
+                    Uploading file, please wait...
+                  </p>
+                </div>
+              ) : (
+                <FileUploadForm
+                  placeholder="Drag 'n' drop a PDF file here (max 20MB), or click to select one"
+                  submitFile={submitFile}
+                  callBack={() => {
+                    // File upload callback handled in submitFile
+                  }}
+                />
+              )}
             </div>
           ) : (
             <div className="space-y-4">
