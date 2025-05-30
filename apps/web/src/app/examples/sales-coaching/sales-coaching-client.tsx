@@ -170,13 +170,15 @@ export default function SalesCoachingClient() {
                         : "text-primary hover:text-primary/80 cursor-pointer"
                     )}
                   >
-                    {isProcessing ? "Processing..." : "Choose a file"}
+                    {isProcessing
+                      ? "Processing (may take ~20 seconds)..."
+                      : "Choose a file"}
                   </label>{" "}
                   {!isProcessing && "or drag and drop"}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {isProcessing
-                    ? "Please wait while analyzing"
+                    ? "Please wait while analyzing (may take ~20 seconds)"
                     : "SRT, VTT files only"}
                 </p>
               </div>
@@ -204,7 +206,9 @@ export default function SalesCoachingClient() {
             disabled={isProcessing || !uploadedFile}
             className="w-full mt-4"
           >
-            {isProcessing ? "Processing..." : "Analyze Call"}
+            {isProcessing
+              ? "Processing (may take ~20 seconds)..."
+              : "Analyze Call"}
           </Button>
         </CardContent>
       </Card>
