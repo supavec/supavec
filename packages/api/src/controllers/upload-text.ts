@@ -205,7 +205,9 @@ export const uploadText = async (req: Request, res: Response) => {
       properties: {
         file_name: fileName,
         file_type: "text",
-        file_size: contents?.length || storagePayload.length,
+        file_size: contents?.length || segments?.reduce((sum, seg) =>
+          sum + seg.content.length, 0) ||
+          0,
         segment_count: segments?.length ?? docs.length,
         processing_mode: segments ? "segments" : "chunks",
       },
