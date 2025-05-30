@@ -26,19 +26,17 @@ export const CTA = () => {
         </div>
         <ButtonColorful
           className="mt-6 z-10"
-          label="Create your Chat with PDF app"
+          label="Create your AI app"
           onClick={() => {
             posthog.capture(
-              "Click CTA in Chat with PDF example",
+              "Click CTA in AI app example",
               {},
               {
                 send_instantly: true,
               }
             );
 
-            router.push(
-              "https://www.supavec.com/login?src=examples-chat-with-pdf"
-            );
+            router.push("https://www.supavec.com/login?src=examples-ai-app");
           }}
         />
         <RetroGrid />
