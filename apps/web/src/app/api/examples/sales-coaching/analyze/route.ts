@@ -169,13 +169,6 @@ async function generateInsightFromResults(
     .map((doc) => doc.content)
     .join(". ");
 
-  console.log({
-    query,
-    relevantContent,
-    relevantDocuments,
-    relevantDocumentsLength: relevantDocuments.length,
-  });
-
   // Determine insight type based on query intent
   let type: "win" | "risk" | "action" = "action";
 
@@ -198,7 +191,12 @@ async function generateInsightFromResults(
   const insight = await generateInsightWithAI(query, relevantContent, type);
 
   // Extract a quote that actually supports this insight
-  const quote = extractRelevantQuote(query, insight, relevantContent, type);
+  const quote = await extractRelevantQuoteWithAI(
+    query,
+    insight,
+    relevantContent,
+    type,
+  );
 
   return {
     type,
@@ -209,11 +207,63 @@ async function generateInsightFromResults(
   };
 }
 
-function extractRelevantQuote(
+async function extractRelevantQuoteWithAI(
   query: string,
   insight: string,
   content: string,
   type: "win" | "risk" | "action",
+): Promise<string> {
+  try {
+    // Clean up SRT formatting first
+    const cleanContent = content
+      .replace(/^\d+$/gm, "") // Remove line numbers
+      .replace(/\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}/g, "") // Remove timestamps
+      .replace(/\n+/g, " ") // Replace newlines with spaces
+      .trim();
+
+    const { text } = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt:
+        `You are a sales coach analyzing a conversation transcript. Extract the most relevant quote that supports the given insight.
+
+CONVERSATION CONTENT:
+${cleanContent}
+
+INSIGHT: ${insight}
+INSIGHT TYPE: ${type}
+ORIGINAL QUERY: ${query}
+
+GUIDELINES:
+- Find the specific dialogue segment that best supports or demonstrates the insight
+- For "win" insights: Extract quotes showing positive responses, engagement, or buying signals
+- For "risk" insights: Extract quotes showing objections, concerns, or hesitation
+- For "action" insights: Extract quotes about next steps, commitments, or requests
+- Prefer prospect/customer quotes over sales rep quotes when possible
+- Return ONLY the relevant speaker dialogue (include speaker name if available)
+- Keep it concise but meaningful (max 100 characters)
+- If no perfect match, extract the most contextually relevant dialogue
+
+Extract the quote:`,
+      maxTokens: 50,
+      temperature: 0.3,
+    });
+
+    const quote = text.trim();
+    return quote.length > 0
+      ? truncateQuote(quote)
+      : "Key moment from the conversation";
+  } catch (error) {
+    console.error("Error extracting quote with AI:", error);
+    // Fallback to pattern-based extraction
+    return extractRelevantQuoteFallback(query, insight, content, type);
+  }
+}
+
+function extractRelevantQuoteFallback(
+  query: string,
+  insight: string,
+  content: string,
+  _type: "win" | "risk" | "action",
 ): string {
   // Clean up SRT formatting - remove timestamps, line numbers, and arrows
   const cleanContent = content
@@ -236,104 +286,7 @@ function extractRelevantQuote(
     }
   }
 
-  const lowerInsight = insight.toLowerCase();
-  // const lowerQuery = query.toLowerCase();
-
-  // Find quotes based on insight type and content
-  let relevantQuotes: string[] = [];
-
-  if (type === "win") {
-    // For wins, look for positive responses, buying signals, good questions
-    relevantQuotes = dialogues
-      .filter((d) => {
-        const text = d.text.toLowerCase();
-        return (
-          // Positive responses
-          text.includes("that sounds") || text.includes("i like") ||
-          text.includes("perfect") || text.includes("excellent") ||
-          text.includes("exactly") || text.includes("great") ||
-          // Buying signals
-          text.includes("timeline") || text.includes("budget") ||
-          text.includes("when") || text.includes("how much") ||
-          // Engagement signals
-          text.includes("tell me more") || text.includes("i want") ||
-          text.includes("i need") || text.includes("we could")
-        );
-      })
-      .map((d) => d.text);
-  } else if (type === "action") {
-    // For actions, look for next steps, commitments, specific asks
-    relevantQuotes = dialogues
-      .filter((d) => {
-        const text = d.text.toLowerCase();
-        return (
-          text.includes("next step") || text.includes("follow up") ||
-          text.includes("send") || text.includes("schedule") ||
-          text.includes("proposal") || text.includes("demo") ||
-          text.includes("reference") || text.includes("pilot") ||
-          text.includes("implementation") || text.includes("timeline")
-        );
-      })
-      .map((d) => d.text);
-  } else if (type === "risk") {
-    // For risks, look for objections, concerns, hesitations
-    relevantQuotes = dialogues
-      .filter((d) => {
-        const text = d.text.toLowerCase();
-        return (
-          text.includes("concern") || text.includes("worry") ||
-          text.includes("but") || text.includes("however") ||
-          text.includes("problem") || text.includes("issue") ||
-          text.includes("skeptical") || text.includes("not sure")
-        );
-      })
-      .map((d) => d.text);
-  }
-
-  // If we found relevant quotes, pick the best one
-  if (relevantQuotes.length > 0) {
-    // Prefer quotes that are more specific to the insight
-    for (const quote of relevantQuotes) {
-      const lowerQuote = quote.toLowerCase();
-      if (
-        lowerInsight.includes("discovery") &&
-        (lowerQuote.includes("understand") || lowerQuote.includes("tell me"))
-      ) {
-        return truncateQuote(quote);
-      }
-      if (
-        lowerInsight.includes("objection") &&
-        (lowerQuote.includes("concern") || lowerQuote.includes("but"))
-      ) {
-        return truncateQuote(quote);
-      }
-      if (
-        lowerInsight.includes("next step") &&
-        (lowerQuote.includes("next") || lowerQuote.includes("follow"))
-      ) {
-        return truncateQuote(quote);
-      }
-      if (
-        lowerInsight.includes("roi") &&
-        (lowerQuote.includes("cost") || lowerQuote.includes("investment") ||
-          lowerQuote.includes("budget"))
-      ) {
-        return truncateQuote(quote);
-      }
-      if (
-        lowerInsight.includes("timeline") &&
-        (lowerQuote.includes("week") || lowerQuote.includes("timeline") ||
-          lowerQuote.includes("when"))
-      ) {
-        return truncateQuote(quote);
-      }
-    }
-
-    // If no specific match, return the first relevant quote
-    return truncateQuote(relevantQuotes[0]);
-  }
-
-  // Fallback: extract any meaningful dialogue
+  // Simple fallback logic
   if (dialogues.length > 0) {
     // Prefer prospect quotes over sales rep quotes for insights
     const prospectQuotes = dialogues.filter((d) =>
@@ -370,8 +323,8 @@ function truncateQuote(quote: string): string {
 
   // Otherwise, truncate at word boundary
   const words = quote.split(" ");
-  if (words.length > 15) {
-    return words.slice(0, 15).join(" ") + "...";
+  if (words.length > 20) {
+    return words.slice(0, 20).join(" ") + "...";
   }
 
   return quote;
