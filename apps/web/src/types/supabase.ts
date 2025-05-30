@@ -14,6 +14,7 @@ export type Database = {
           api_key: string | null
           created_at: string
           id: string
+          is_unlimited: boolean
           team_id: string
           user_id: string | null
         }
@@ -21,6 +22,7 @@ export type Database = {
           api_key?: string | null
           created_at?: string
           id?: string
+          is_unlimited?: boolean
           team_id: string
           user_id?: string | null
         }
@@ -28,6 +30,7 @@ export type Database = {
           api_key?: string | null
           created_at?: string
           id?: string
+          is_unlimited?: boolean
           team_id?: string
           user_id?: string | null
         }
@@ -207,7 +210,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          is_transactional_email_on: boolean | null
+          is_transactional_email_on: boolean
           last_usage_reset_at: string | null
           name: string | null
           onboarding_at: string | null
@@ -220,7 +223,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
-          is_transactional_email_on?: boolean | null
+          is_transactional_email_on?: boolean
           last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null
@@ -233,7 +236,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          is_transactional_email_on?: boolean | null
+          is_transactional_email_on?: boolean
           last_usage_reset_at?: string | null
           name?: string | null
           onboarding_at?: string | null

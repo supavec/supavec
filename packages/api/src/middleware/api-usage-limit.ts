@@ -41,7 +41,7 @@ export const apiUsageLimit = () => {
 
       const { data: apiKeyData, error: apiKeyError } = await supabase
         .from("api_keys")
-        .select("id, team_id, user_id")
+        .select("id, team_id, user_id, is_unlimited")
         .match({ api_key: req.apiKey })
         .single();
 
@@ -60,12 +60,21 @@ export const apiUsageLimit = () => {
       const userId = apiKeyData.user_id;
       const teamId = apiKeyData.team_id;
       const keyId = apiKeyData.id;
+      const isUnlimited = apiKeyData.is_unlimited;
 
       console.log(
         `[API-LIMIT][${requestId}] API key validated - User: ${userId}, Team: ${
           teamId || "N/A"
-        }, Key ID: ${keyId}`,
+        }, Key ID: ${keyId}, Unlimited: ${isUnlimited}`,
       );
+
+      // Check if the API key has unlimited usage
+      if (isUnlimited) {
+        console.log(
+          `[API-LIMIT][${requestId}] API key has unlimited usage - skipping usage checks`,
+        );
+        return next();
+      }
 
       if (!userId) {
         console.error(
