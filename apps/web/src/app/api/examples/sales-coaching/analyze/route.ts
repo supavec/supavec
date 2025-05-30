@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
+import { parseSrt } from "./utils";
 
 // Supavec API configuration
 const SUPAVEC_API_URL = process.env.SUPAVEC_API_URL ||
@@ -49,6 +50,12 @@ async function uploadTranscriptToSupavec(
     throw new Error("Supavec API key not configured");
   }
 
+  const turns = parseSrt(transcript);
+  const segments = turns.map((c) => ({
+    content: `${c.speaker}: ${c.text}`,
+    metadata: { speaker: c.speaker, start_ts: c.start },
+  }));
+
   const response = await fetch(`${SUPAVEC_API_URL}/upload_text`, {
     method: "POST",
     headers: {
@@ -57,9 +64,7 @@ async function uploadTranscriptToSupavec(
     },
     body: JSON.stringify({
       name: fileName,
-      contents: transcript,
-      chunk_size: 500, // Reasonable chunk size for sales conversations
-      chunk_overlap: 50, // Small overlap to maintain context
+      segments,
     }),
   });
 
@@ -695,15 +700,6 @@ export async function POST(request: NextRequest) {
       try {
         const searchResult = await searchSupavec(query, fileId);
         const insight = generateInsightFromResults(query, searchResult);
-        console.log("==========");
-        console.log({
-          query,
-          searchResult1: searchResult.documents[0].content,
-          searchResult2: searchResult.documents[1].content,
-          searchResult3: searchResult.documents[2].content,
-          insight,
-        });
-        console.log("==========");
 
         if (insight) {
           // Create a simple hash to check for duplicate insights
