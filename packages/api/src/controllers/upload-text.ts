@@ -102,9 +102,7 @@ export const uploadText = async (req: Request, res: Response) => {
     });
 
     const fileId = randomUUID();
-    const fileName = segments && segments.length
-      ? `${fileId}.json`
-      : `${fileId}.txt`;
+    const fileName = `${fileId}.txt`;
     console.log("[UPLOAD-TEXT] Generated file ID", { fileId, fileName });
 
     // Decide how we will build the document array
@@ -121,7 +119,7 @@ export const uploadText = async (req: Request, res: Response) => {
           file_id: fileId,
         },
       }));
-      storagePayload = JSON.stringify(segments, null, 2);
+      storagePayload = segments.map((seg) => seg.content).join("\n\n");
     } else {
       console.log(
         "[UPLOAD-TEXT] Splitting raw contents with RecursiveCharacterTextSplitter",
