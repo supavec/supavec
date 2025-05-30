@@ -168,11 +168,15 @@ For each insight, provide:
 
 2. Update UI components:
    ```typescript
-   const getInsightIcon = (type: InsightCard['type']) => {
-     case 'opportunity': return <Lightbulb className="h-5 w-5 text-purple-500" />;
-   }
-   ```
-
+const getInsightIcon = (type: InsightCard['type']) => {
+  switch (type) {
+    case 'opportunity':
+      return <Lightbulb className="h-5 w-5 text-purple-500" />;
+    // handle other types...
+    default:
+      return null;
+  }
+};
 ### Custom Prompting
 
 Modify the coaching prompts in the API route to focus on specific sales methodologies:
