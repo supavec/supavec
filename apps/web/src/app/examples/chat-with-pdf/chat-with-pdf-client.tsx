@@ -12,14 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Upload,
-  FileText,
-  MessageSquare,
-  CornerRightUp,
-  File,
-  X,
-} from "lucide-react";
+import { FileText, MessageSquare, CornerRightUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { useChat } from "ai/react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,7 +24,6 @@ export default function ChatWithPDFClient() {
   const [fileId, setFileId] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [chatStarted, setChatStarted] = useState(false);
 
   // Initialize state from localStorage on mount
   useEffect(() => {
@@ -54,9 +46,6 @@ export default function ChatWithPDFClient() {
     },
     api: "/api/examples/chat-with-pdf",
     initialMessages: [],
-    onResponse() {
-      setChatStarted(true);
-    },
     onFinish() {
       posthog.capture(
         "Chatting with PDF example completed",
@@ -113,7 +102,6 @@ export default function ChatWithPDFClient() {
     localStorage.removeItem("pdfFileName_demo");
     setFileId(null);
     setFileName(null);
-    setChatStarted(false);
     setInput("");
   };
 
