@@ -8,6 +8,9 @@ type Document = {
   content: string;
 };
 
+const SUPAVEC_API_URL = process.env.SUPAVEC_API_URL ||
+  "https://api.supavec.com";
+
 export async function POST(req: NextRequest) {
   const { messages, fileId }: { messages: Array<Message>; fileId: string } =
     await req.json();
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/embeddings`,
+      `${SUPAVEC_API_URL}/embeddings`,
       {
         query: userMessage.content,
         file_ids: [fileId],
@@ -28,7 +31,7 @@ export async function POST(req: NextRequest) {
       {
         headers: {
           "Content-Type": "application/json",
-          authorization: process.env.DEMO_SUPA_API_KEY!,
+          authorization: process.env.SUPAVEC_API_KEY!,
         },
       },
     );
