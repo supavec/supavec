@@ -23,7 +23,8 @@
         "STRIPE_SIGNATURE_SECRET",
         "LOGTAIL_URL",
         "LOGTAIL_SOURCE_TOKEN",
-        "AI_CITATIONS_PROJECT_ID"
+        "AI_CITATIONS_PROJECT_ID",
+        "SUPAVEC_API_KEY"
       ]
     },
     "lint": {},
