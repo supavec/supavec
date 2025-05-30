@@ -74,6 +74,16 @@ export default function SalesCoachingExample() {
 
       const result: AnalysisResult = await response.json();
       setAnalysisResult(result);
+
+      // Reset form state after successful analysis
+      setUploadedFile(null);
+      const fileInput = document.getElementById(
+        "transcript-file"
+      ) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
       toast.success("Analysis completed successfully!");
     } catch (error) {
       console.error("Analysis error:", error);
