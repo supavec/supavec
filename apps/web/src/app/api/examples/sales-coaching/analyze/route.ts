@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
 import { parseSrt } from "./utils";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
 
 // Supavec API configuration
 const SUPAVEC_API_URL = process.env.SUPAVEC_API_URL ||
@@ -109,10 +111,54 @@ async function searchSupavec(
   return await response.json();
 }
 
-function generateInsightFromResults(
+async function generateInsightWithAI(
+  query: string,
+  content: string,
+  type: "win" | "risk" | "action",
+): Promise<string> {
+  try {
+    const { text } = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt:
+        `You are an experienced sales coach analyzing a sales call transcript. Based on the conversation content below, generate a specific, actionable ${type} insight.
+
+CONVERSATION CONTENT:
+${content}
+
+COACHING QUERY: ${query}
+
+GUIDELINES:
+- For "win" insights: Identify what the sales rep did exceptionally well
+- For "risk" insights: Identify missed opportunities or potential concerns  
+- For "action" insights: Suggest specific next steps based on what was discussed
+- Keep it very short (max 15 words, one line only)
+- Be direct and actionable, not generic
+- Do NOT include prefixes like "Action Insight:" or "Win:" or "Risk:"
+- Reference specific details from the conversation
+
+Generate the insight directly:`,
+      maxTokens: 40,
+      temperature: 0.7,
+    });
+
+    return text.trim();
+  } catch (error) {
+    console.error("Error generating insight with AI:", error);
+    // Fallback to a basic insight if AI fails
+    return `${
+      type === "win"
+        ? "Positive engagement"
+        : type === "risk"
+        ? "Opportunity for improvement"
+        : "Follow up required"
+    } identified in this conversation segment.`;
+  }
+}
+
+async function generateInsightFromResults(
   query: string,
   searchResults: SupavecSearchResponse,
-): InsightItem | null {
+): Promise<InsightItem | null> {
   if (!searchResults.success || !searchResults.documents.length) {
     return null;
   }
@@ -121,28 +167,35 @@ function generateInsightFromResults(
   const relevantDocuments = searchResults.documents.slice(0, 2); // Use top 2 most relevant
   const relevantContent = relevantDocuments
     .map((doc) => doc.content)
-    .join(" ");
+    .join(". ");
 
-  // Generate coaching insight based on query type and content
+  console.log({
+    query,
+    relevantContent,
+    relevantDocuments,
+    relevantDocumentsLength: relevantDocuments.length,
+  });
+
+  // Determine insight type based on query intent
   let type: "win" | "risk" | "action" = "action";
-  let insight = "";
 
   if (
     query.includes("effectively") || query.includes("techniques") ||
-    query.includes("rapport") || query.includes("buying signals")
+    query.includes("rapport") || query.includes("buying signals") ||
+    query.includes("positive indicators")
   ) {
     type = "win";
-    insight = generateWinInsight(query, relevantContent);
   } else if (
     query.includes("missed") || query.includes("opportunities") ||
     query.includes("improve") || query.includes("could have")
   ) {
     type = "risk";
-    insight = generateRiskInsight(query, relevantContent);
   } else {
     type = "action";
-    insight = generateActionInsight(query, relevantContent);
   }
+
+  // Generate insight using AI
+  const insight = await generateInsightWithAI(query, relevantContent, type);
 
   // Extract a quote that actually supports this insight
   const quote = extractRelevantQuote(query, insight, relevantContent, type);
@@ -151,212 +204,9 @@ function generateInsightFromResults(
     type,
     insight,
     quote,
-    coaching_tip: generateCoachingTip(type, insight),
+    coaching_tip: await generateCoachingTipWithAI(insight, type),
     timestamp: extractTimestampFromContent(relevantContent),
   };
-}
-
-function generateWinInsight(query: string, content: string): string {
-  const lowerContent = content.toLowerCase();
-  const lowerQuery = query.toLowerCase();
-
-  // Analyze content for specific positive indicators
-  if (
-    lowerQuery.includes("rapport") &&
-    (lowerContent.includes("understand") || lowerContent.includes("feel") ||
-      lowerContent.includes("appreciate"))
-  ) {
-    return "Excellent rapport building demonstrated through empathetic language and active listening.";
-  }
-
-  if (
-    lowerQuery.includes("techniques") &&
-    (lowerContent.includes("benefit") || lowerContent.includes("value") ||
-      lowerContent.includes("save"))
-  ) {
-    return "Strong value-based selling approach with clear articulation of business benefits.";
-  }
-
-  if (
-    lowerQuery.includes("buying signals") &&
-    (lowerContent.includes("when") || lowerContent.includes("how much") ||
-      lowerContent.includes("timeline"))
-  ) {
-    return "Clear buying signals identified - prospect showing interest in timing and investment.";
-  }
-
-  if (
-    lowerContent.includes("objection") || lowerContent.includes("concern") ||
-    lowerContent.includes("but")
-  ) {
-    return "Effective objection handling with evidence-based responses and empathy.";
-  }
-
-  if (
-    lowerContent.includes("question") &&
-    (lowerContent.includes("pain") || lowerContent.includes("challenge") ||
-      lowerContent.includes("problem"))
-  ) {
-    return "Great discovery questions that successfully uncovered key pain points and challenges.";
-  }
-
-  if (
-    lowerContent.includes("next step") || lowerContent.includes("follow up") ||
-    lowerContent.includes("schedule")
-  ) {
-    return "Strong closing technique with clear next steps and commitment established.";
-  }
-
-  // Default based on content analysis
-  if (lowerContent.includes("solution") || lowerContent.includes("help")) {
-    return "Solution-focused approach that addresses prospect's specific needs effectively.";
-  }
-
-  return "Positive engagement and professional sales approach demonstrated in this conversation.";
-}
-
-function generateRiskInsight(query: string, content: string): string {
-  const lowerContent = content.toLowerCase();
-  const lowerQuery = query.toLowerCase();
-
-  // Analyze content for specific risk indicators
-  if (
-    lowerQuery.includes("missed") && lowerContent.includes("price") &&
-    !lowerContent.includes("budget")
-  ) {
-    return "Missed opportunity to address prospect's budget concerns early in conversation.";
-  }
-
-  if (
-    lowerQuery.includes("opportunities") &&
-    !lowerContent.includes("decision maker")
-  ) {
-    return "Could have asked more qualifying questions about decision-making process and stakeholders.";
-  }
-
-  if (
-    lowerContent.includes("think about") || lowerContent.includes("get back") ||
-    lowerContent.includes("discuss internally")
-  ) {
-    return "Prospect showing hesitation - timeline and decision process weren't fully explored.";
-  }
-
-  if (
-    lowerContent.includes("competitor") || lowerContent.includes("other") ||
-    lowerContent.includes("alternative")
-  ) {
-    return "Competitive alternatives mentioned but not adequately addressed or differentiated.";
-  }
-
-  if (
-    lowerQuery.includes("improve") && !lowerContent.includes("commitment") &&
-    !lowerContent.includes("next step")
-  ) {
-    return "Missing clear commitment or specific next steps from the prospect.";
-  }
-
-  if (
-    lowerContent.includes("maybe") || lowerContent.includes("probably") ||
-    lowerContent.includes("might")
-  ) {
-    return "Prospect using tentative language - needs stronger qualification and commitment.";
-  }
-
-  if (
-    lowerContent.includes("expensive") ||
-    lowerContent.includes("cost") && !lowerContent.includes("value")
-  ) {
-    return "Price concerns raised without adequate value justification provided.";
-  }
-
-  if (lowerQuery.includes("could have") && !lowerContent.includes("timeline")) {
-    return "Prospect's implementation timeline and urgency weren't properly explored.";
-  }
-
-  // Default based on content analysis
-  if (
-    !lowerContent.includes("question") || lowerContent.split("?").length < 3
-  ) {
-    return "Could have used more discovery questions to better understand prospect needs.";
-  }
-
-  return "Opportunity to strengthen qualification and build more urgency for next steps.";
-}
-
-function generateActionInsight(query: string, content: string): string {
-  const lowerContent = content.toLowerCase();
-  const lowerQuery = query.toLowerCase();
-
-  // Analyze content for specific action items based on conversation context
-  if (
-    lowerContent.includes("technical") || lowerContent.includes("demo") ||
-    lowerContent.includes("show")
-  ) {
-    return "Schedule technical demo with IT stakeholders within 48 hours.";
-  }
-
-  if (
-    lowerContent.includes("roi") || lowerContent.includes("return") ||
-    lowerContent.includes("savings")
-  ) {
-    return "Send ROI calculator and case study for similar company size and industry.";
-  }
-
-  if (
-    lowerContent.includes("price") || lowerContent.includes("cost") ||
-    lowerContent.includes("budget")
-  ) {
-    return "Follow up with detailed pricing proposal and implementation options by end of week.";
-  }
-
-  if (
-    lowerContent.includes("reference") || lowerContent.includes("customer") ||
-    lowerContent.includes("similar")
-  ) {
-    return "Connect prospect with existing customer for reference call in similar industry.";
-  }
-
-  if (
-    lowerContent.includes("implementation") ||
-    lowerContent.includes("timeline") || lowerContent.includes("rollout")
-  ) {
-    return "Provide detailed implementation timeline and resource requirements document.";
-  }
-
-  if (
-    lowerContent.includes("team") || lowerContent.includes("stakeholder") ||
-    lowerContent.includes("decision maker")
-  ) {
-    return "Schedule meeting with all key stakeholders and decision makers.";
-  }
-
-  if (
-    lowerContent.includes("contract") || lowerContent.includes("agreement") ||
-    lowerContent.includes("terms")
-  ) {
-    return "Send contract template and terms for legal review by procurement team.";
-  }
-
-  if (
-    lowerContent.includes("pilot") || lowerContent.includes("trial") ||
-    lowerContent.includes("test")
-  ) {
-    return "Set up pilot program with limited scope to demonstrate value quickly.";
-  }
-
-  if (
-    lowerContent.includes("security") || lowerContent.includes("compliance") ||
-    lowerContent.includes("audit")
-  ) {
-    return "Provide security documentation and compliance certifications for review.";
-  }
-
-  // Default actions based on query type
-  if (lowerQuery.includes("follow-up") || lowerQuery.includes("next steps")) {
-    return "Schedule follow-up call within 3 business days to maintain momentum.";
-  }
-
-  return "Send meeting recap with key discussion points and proposed next steps within 24 hours.";
 }
 
 function extractRelevantQuote(
@@ -527,66 +377,37 @@ function truncateQuote(quote: string): string {
   return quote;
 }
 
-function generateCoachingTip(type: string, insight: string): string {
-  const lowerInsight = insight.toLowerCase();
+async function generateCoachingTipWithAI(
+  insight: string,
+  type: string,
+): Promise<string> {
+  try {
+    const { text } = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt:
+        `You are an experienced sales trainer providing coaching tips. Based on the sales insight below, generate a specific, actionable coaching tip.
 
-  // Generate specific tips based on the actual insight content
-  if (lowerInsight.includes("rapport") || lowerInsight.includes("empathy")) {
-    return "Continue using empathetic language and active listening to build trust with prospects.";
-  }
+INSIGHT: ${insight}
+INSIGHT TYPE: ${type}
 
-  if (lowerInsight.includes("value") || lowerInsight.includes("benefit")) {
-    return "Always tie features back to specific business outcomes and ROI for the prospect.";
-  }
+Generate a practical coaching tip (max 15 words, one line only) that helps sales reps improve their technique. Focus on specific actions they can take.
 
-  if (lowerInsight.includes("objection")) {
-    return "Use the Feel-Felt-Found technique: 'I understand how you feel, others have felt the same way, and here's what they found...'";
-  }
+Coaching tip:`,
+      maxTokens: 35,
+      temperature: 0.6,
+    });
 
-  if (
-    lowerInsight.includes("discovery") || lowerInsight.includes("questions")
-  ) {
-    return "Ask follow-up questions using 'Tell me more about...' to dive deeper into prospect needs.";
-  }
-
-  if (
-    lowerInsight.includes("next step") || lowerInsight.includes("commitment")
-  ) {
-    return "Always end calls with specific next steps and get explicit agreement on timing.";
-  }
-
-  if (lowerInsight.includes("budget") || lowerInsight.includes("price")) {
-    return "Address budget early by asking 'What budget range have you allocated for solving this problem?'";
-  }
-
-  if (
-    lowerInsight.includes("decision maker") ||
-    lowerInsight.includes("stakeholder")
-  ) {
-    return "Map the decision-making process early: 'Who else would be involved in evaluating this solution?'";
-  }
-
-  if (lowerInsight.includes("timeline") || lowerInsight.includes("urgency")) {
-    return "Create urgency by asking 'What happens if you don't solve this problem in the next quarter?'";
-  }
-
-  if (
-    lowerInsight.includes("competitor") || lowerInsight.includes("alternative")
-  ) {
-    return "Ask 'What would make you choose one solution over another?' to understand decision criteria.";
-  }
-
-  if (lowerInsight.includes("demo") || lowerInsight.includes("technical")) {
-    return "Customize demos to show specific use cases that match the prospect's described challenges.";
-  }
-
-  // Type-based fallbacks for more generic insights
-  if (type === "win") {
-    return "Document this successful approach and share it with your team as a best practice.";
-  } else if (type === "risk") {
-    return "Practice objection handling techniques and prepare responses for common concerns.";
-  } else {
-    return "Set clear expectations and follow through consistently to build trust and momentum.";
+    return text.trim();
+  } catch (error) {
+    console.error("Error generating coaching tip with AI:", error);
+    // Fallback tip based on type
+    if (type === "win") {
+      return "Document this successful approach and share it with your team as a best practice.";
+    } else if (type === "risk") {
+      return "Practice objection handling techniques and prepare responses for common concerns.";
+    } else {
+      return "Set clear expectations and follow through consistently to build trust and momentum.";
+    }
   }
 }
 
@@ -696,10 +517,10 @@ export async function POST(request: NextRequest) {
     const insights = [];
     const seenInsights = new Set(); // Track similar insights to avoid duplicates
 
-    for (const query of COACHING_QUERIES.slice(0, 6)) { // Limit to 6 queries for performance
+    for (const query of COACHING_QUERIES.slice(0, 1)) { // Limit to 1 query for performance
       try {
         const searchResult = await searchSupavec(query, fileId);
-        const insight = generateInsightFromResults(query, searchResult);
+        const insight = await generateInsightFromResults(query, searchResult);
 
         if (insight) {
           // Create a simple hash to check for duplicate insights
