@@ -11,6 +11,8 @@ export function parseSrt(raw: string): Turn[] {
       const lines = block.trim().split("\n");
       if (lines.length < 3) return [];
       const [, time, ...textLines] = lines; // skip numeric index
+      // Validate timestamp format
+      if (!time || !time.includes(" --> ")) return [];
       const [start] = time.split(" --> ");
       const speakerLine = textLines.join(" ");
       const colonIdx = speakerLine.indexOf(":");
