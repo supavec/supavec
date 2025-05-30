@@ -34,6 +34,12 @@ export function MobileDrawer({ isLoggedIn }: { isLoggedIn: boolean }) {
         </DrawerHeader>
         <DrawerFooter>
           <Link
+            href="/examples/sales-coaching"
+            className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}
+          >
+            Sales Example
+          </Link>
+          <Link
             href="/pricing"
             className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}
           >

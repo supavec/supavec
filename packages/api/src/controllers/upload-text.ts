@@ -102,7 +102,9 @@ export const uploadText = async (req: Request, res: Response) => {
     });
 
     const fileId = randomUUID();
-    const fileName = `${fileId}.txt`;
+    const fileName = segments && segments.length
+      ? `${fileId}.json`
+      : `${fileId}.txt`;
     console.log("[UPLOAD-TEXT] Generated file ID", { fileId, fileName });
 
     // Decide how we will build the document array

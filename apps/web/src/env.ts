@@ -10,6 +10,7 @@ export const env = createEnv({
     STRIPE_SIGNATURE_SECRET: z.string().min(1),
     OPENAI_API_KEY: z.string().min(1),
     API_ROUTE_SECRET: z.string().min(1),
+    SUPAVEC_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z
