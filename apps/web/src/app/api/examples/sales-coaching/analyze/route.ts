@@ -4,6 +4,8 @@ import { extractTimestampFromContent, parseSrt, truncateQuote } from "./utils";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
+const MODEL = openai("gpt-4o-mini");
+
 // Supavec API configuration
 const SUPAVEC_API_URL = process.env.SUPAVEC_API_URL ||
   "https://api.supavec.com";
@@ -118,7 +120,7 @@ async function generateInsightWithAI(
 ): Promise<string> {
   try {
     const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: MODEL,
       prompt:
         `You are an experienced sales coach analyzing a sales call transcript. Based on the conversation content below, generate a specific, actionable ${type} insight.
 
@@ -222,7 +224,7 @@ async function extractRelevantQuoteWithAI(
       .trim();
 
     const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: MODEL,
       prompt:
         `You are a sales coach analyzing a conversation transcript. Extract the most relevant quote that supports the given insight.
 
@@ -310,7 +312,7 @@ async function generateCoachingTipWithAI(
 ): Promise<string> {
   try {
     const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: MODEL,
       prompt:
         `You are an experienced sales trainer providing coaching tips. Based on the sales insight below, generate a specific, actionable coaching tip.
 
