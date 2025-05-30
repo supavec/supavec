@@ -7,6 +7,7 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
+import { type Document } from "@langchain/core/documents";
 
 console.log("[UPLOAD-TEXT] Module loaded");
 
@@ -34,9 +35,11 @@ const uploadTextSchema = z.object({
 })
   // require ONE of contents or segments
   .refine(
-    (d) =>
-      (d.contents && d.contents.length) || (d.segments && d.segments.length),
-    { message: "Provide either `contents` or `segments`." },
+    (d) => Boolean(d.contents) !== Boolean(d.segments),
+    {
+      message:
+        "Must provide either `contents` (raw text) or `segments` (pre-chunked), but not both.",
+    },
   )
   // overlap rule only matters when splitting raw contents
   .refine(
@@ -93,9 +96,7 @@ export const uploadText = async (req: Request, res: Response) => {
     } = bodyValidation.data;
     console.log("[UPLOAD-TEXT] Processing text upload", {
       name,
-      payloadLength: (segments && segments.length)
-        ? JSON.stringify(segments).length
-        : contents?.length,
+      payloadLength: contents?.length || JSON.stringify(segments).length,
       chunk_size,
       chunk_overlap,
     });
@@ -107,11 +108,11 @@ export const uploadText = async (req: Request, res: Response) => {
     console.log("[UPLOAD-TEXT] Generated file ID", { fileId, fileName });
 
     // Decide how we will build the document array
-    let docs: any[]; // will hold the documents to embed
+    let docs: Document[]; // will hold the documents to embed
     let storagePayload: string; // the string we upload to Supabase Storage
 
-    if (segments && segments.length) {
-      console.log("[UPLOAD-TEXT] Using caller‑provided segments");
+    if (segments?.length) {
+      console.log("[UPLOAD-TEXT] Using caller provided segments");
       docs = segments.map((seg) => ({
         pageContent: seg.content,
         metadata: {
@@ -120,7 +121,7 @@ export const uploadText = async (req: Request, res: Response) => {
           file_id: fileId,
         },
       }));
-      storagePayload = JSON.stringify(segments, null, 2);
+      storagePayload = segments.map((seg) => seg.content).join("\n\n");
     } else {
       console.log(
         "[UPLOAD-TEXT] Splitting raw contents with RecursiveCharacterTextSplitter",
@@ -206,7 +207,11 @@ export const uploadText = async (req: Request, res: Response) => {
       properties: {
         file_name: fileName,
         file_type: "text",
-        file_size: contents.length,
+        file_size: contents?.length || segments?.reduce((sum, seg) =>
+          sum + seg.content.length, 0) ||
+          0,
+        segment_count: segments?.length ?? docs.length,
+        processing_mode: segments ? "segments" : "chunks",
       },
     });
 
