@@ -58,13 +58,6 @@ export function FileUploadForm({
         throw new Error(response.error);
       }
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Failed to process file");
-      }
-
-      console.log("File processed successfully:", result);
       setFiles([]);
       router.refresh();
       callBack?.();
