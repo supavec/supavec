@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     );
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-nano"),
       prompt: `Answer to the query based on the provided context below:
       ${response.data.documents.map((doc: Document) => doc.content).join("\n")}
       Query: ${userMessage.content}`,
