@@ -5,7 +5,7 @@ import { BrainCircuit } from "lucide-react";
 
 const stats = [
   {
-    title: "500+",
+    title: "600+",
     subtitle: "Stars on GitHub",
     icon: <Icons.github className="size-5" />,
     link: "https://github.com/taishikato/supavec",
