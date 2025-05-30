@@ -112,8 +112,9 @@ function generateInsightFromResults(
     return null;
   }
 
-  // Combine the most relevant chunks
-  const relevantContent = searchResults.documents
+  // Combine the most relevant chunks with scores
+  const relevantDocuments = searchResults.documents.slice(0, 2); // Use top 2 most relevant
+  const relevantContent = relevantDocuments
     .map((doc) => doc.content)
     .join(" ");
 
@@ -138,8 +139,8 @@ function generateInsightFromResults(
     insight = generateActionInsight(query, relevantContent);
   }
 
-  // Extract a quote from the content (first sentence or meaningful phrase)
-  const quote = extractMeaningfulQuote(relevantContent);
+  // Extract a quote that actually supports this insight
+  const quote = extractRelevantQuote(query, insight, relevantContent, type);
 
   return {
     type,
@@ -353,43 +354,172 @@ function generateActionInsight(query: string, content: string): string {
   return "Send meeting recap with key discussion points and proposed next steps within 24 hours.";
 }
 
-function extractMeaningfulQuote(content: string): string {
+function extractRelevantQuote(
+  query: string,
+  insight: string,
+  content: string,
+  type: "win" | "risk" | "action",
+): string {
   // Clean up SRT formatting - remove timestamps, line numbers, and arrows
-  let cleanContent = content
+  const cleanContent = content
     .replace(/^\d+$/gm, "") // Remove line numbers
     .replace(/\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}/g, "") // Remove timestamps
     .replace(/\n+/g, " ") // Replace newlines with spaces
     .trim();
 
-  // Extract speaker and dialogue pattern: "Name: dialogue" or "Name (Role): dialogue"
-  const speakerMatch = cleanContent.match(
-    /([A-Za-z\s]+(?:\([^)]+\))?)\s*:\s*(.+)/,
-  );
-  if (speakerMatch && speakerMatch[2]) {
-    cleanContent = speakerMatch[2].trim();
-  }
+  // Extract all speaker dialogues
+  const speakerPattern =
+    /([A-Za-z\s]+(?:\([^)]+\))?)\s*:\s*([^:]+?)(?=\s+[A-Za-z\s]+(?:\([^)]+\))?\s*:|$)/g;
+  const dialogues: Array<{ speaker: string; text: string }> = [];
 
-  // Find first complete sentence that's meaningful (more than 10 words)
-  const sentences = cleanContent.split(/[.!?]+/).filter((s) =>
-    s.trim().length > 10
-  );
-  if (sentences.length > 0) {
-    const sentence = sentences[0].trim();
-    // If sentence is too long, truncate it nicely
-    if (sentence.length > 120) {
-      const words = sentence.split(" ");
-      return words.slice(0, 15).join(" ") + "...";
+  let match;
+  while ((match = speakerPattern.exec(cleanContent)) !== null) {
+    const speaker = match[1].trim();
+    const text = match[2].trim();
+    if (text.length > 20) { // Only include substantial dialogue
+      dialogues.push({ speaker, text });
     }
-    return sentence + ".";
   }
 
-  // Fallback: take first meaningful chunk of words
-  const words = cleanContent.trim().split(/\s+/).filter((w) => w.length > 0);
-  if (words.length > 5) {
-    return words.slice(0, 12).join(" ") + "...";
+  const lowerInsight = insight.toLowerCase();
+  const lowerQuery = query.toLowerCase();
+
+  // Find quotes based on insight type and content
+  let relevantQuotes: string[] = [];
+
+  if (type === "win") {
+    // For wins, look for positive responses, buying signals, good questions
+    relevantQuotes = dialogues
+      .filter((d) => {
+        const text = d.text.toLowerCase();
+        return (
+          // Positive responses
+          text.includes("that sounds") || text.includes("i like") ||
+          text.includes("perfect") || text.includes("excellent") ||
+          text.includes("exactly") || text.includes("great") ||
+          // Buying signals
+          text.includes("timeline") || text.includes("budget") ||
+          text.includes("when") || text.includes("how much") ||
+          // Engagement signals
+          text.includes("tell me more") || text.includes("i want") ||
+          text.includes("i need") || text.includes("we could")
+        );
+      })
+      .map((d) => d.text);
+  } else if (type === "action") {
+    // For actions, look for next steps, commitments, specific asks
+    relevantQuotes = dialogues
+      .filter((d) => {
+        const text = d.text.toLowerCase();
+        return (
+          text.includes("next step") || text.includes("follow up") ||
+          text.includes("send") || text.includes("schedule") ||
+          text.includes("proposal") || text.includes("demo") ||
+          text.includes("reference") || text.includes("pilot") ||
+          text.includes("implementation") || text.includes("timeline")
+        );
+      })
+      .map((d) => d.text);
+  } else if (type === "risk") {
+    // For risks, look for objections, concerns, hesitations
+    relevantQuotes = dialogues
+      .filter((d) => {
+        const text = d.text.toLowerCase();
+        return (
+          text.includes("concern") || text.includes("worry") ||
+          text.includes("but") || text.includes("however") ||
+          text.includes("problem") || text.includes("issue") ||
+          text.includes("skeptical") || text.includes("not sure")
+        );
+      })
+      .map((d) => d.text);
   }
 
-  return cleanContent.trim() || "Key moment from the conversation";
+  // If we found relevant quotes, pick the best one
+  if (relevantQuotes.length > 0) {
+    // Prefer quotes that are more specific to the insight
+    for (const quote of relevantQuotes) {
+      const lowerQuote = quote.toLowerCase();
+      if (
+        lowerInsight.includes("discovery") &&
+        (lowerQuote.includes("understand") || lowerQuote.includes("tell me"))
+      ) {
+        return truncateQuote(quote);
+      }
+      if (
+        lowerInsight.includes("objection") &&
+        (lowerQuote.includes("concern") || lowerQuote.includes("but"))
+      ) {
+        return truncateQuote(quote);
+      }
+      if (
+        lowerInsight.includes("next step") &&
+        (lowerQuote.includes("next") || lowerQuote.includes("follow"))
+      ) {
+        return truncateQuote(quote);
+      }
+      if (
+        lowerInsight.includes("roi") &&
+        (lowerQuote.includes("cost") || lowerQuote.includes("investment") ||
+          lowerQuote.includes("budget"))
+      ) {
+        return truncateQuote(quote);
+      }
+      if (
+        lowerInsight.includes("timeline") &&
+        (lowerQuote.includes("week") || lowerQuote.includes("timeline") ||
+          lowerQuote.includes("when"))
+      ) {
+        return truncateQuote(quote);
+      }
+    }
+
+    // If no specific match, return the first relevant quote
+    return truncateQuote(relevantQuotes[0]);
+  }
+
+  // Fallback: extract any meaningful dialogue
+  if (dialogues.length > 0) {
+    // Prefer prospect quotes over sales rep quotes for insights
+    const prospectQuotes = dialogues.filter((d) =>
+      d.speaker.toLowerCase().includes("prospect") ||
+      d.speaker.toLowerCase().includes("sarah") ||
+      !d.speaker.toLowerCase().includes("rep") &&
+        !d.speaker.toLowerCase().includes("john")
+    );
+
+    if (prospectQuotes.length > 0) {
+      return truncateQuote(prospectQuotes[0].text);
+    }
+
+    return truncateQuote(dialogues[0].text);
+  }
+
+  return "Key moment from the conversation";
+}
+
+function truncateQuote(quote: string): string {
+  // Clean up the quote
+  quote = quote.trim();
+
+  // If quote is reasonable length, return as is
+  if (quote.length <= 100) {
+    return quote;
+  }
+
+  // If too long, truncate at sentence boundary
+  const sentences = quote.split(/[.!?]+/);
+  if (sentences.length > 1 && sentences[0].length <= 80) {
+    return sentences[0].trim() + ".";
+  }
+
+  // Otherwise, truncate at word boundary
+  const words = quote.split(" ");
+  if (words.length > 15) {
+    return words.slice(0, 15).join(" ") + "...";
+  }
+
+  return quote;
 }
 
 function generateCoachingTip(type: string, insight: string): string {
@@ -565,6 +695,15 @@ export async function POST(request: NextRequest) {
       try {
         const searchResult = await searchSupavec(query, fileId);
         const insight = generateInsightFromResults(query, searchResult);
+        console.log("==========");
+        console.log({
+          query,
+          searchResult1: searchResult.documents[0].content,
+          searchResult2: searchResult.documents[1].content,
+          searchResult3: searchResult.documents[2].content,
+          insight,
+        });
+        console.log("==========");
 
         if (insight) {
           // Create a simple hash to check for duplicate insights
