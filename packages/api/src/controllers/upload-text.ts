@@ -35,9 +35,11 @@ const uploadTextSchema = z.object({
 })
   // require ONE of contents or segments
   .refine(
-    (d) =>
-      (d.contents && d.contents.length) || (d.segments && d.segments.length),
-    { message: "Provide either `contents` or `segments`." },
+    (d) => d.contents?.length || d.segments?.length,
+    {
+      message:
+        "Must provide either `contents` (raw text) or `segments` (pre-chunked), but not both.",
+    },
   )
   // overlap rule only matters when splitting raw contents
   .refine(
@@ -94,9 +96,7 @@ export const uploadText = async (req: Request, res: Response) => {
     } = bodyValidation.data;
     console.log("[UPLOAD-TEXT] Processing text upload", {
       name,
-      payloadLength: (segments && segments.length)
-        ? JSON.stringify(segments).length
-        : contents?.length,
+      payloadLength: contents?.length || JSON.stringify(segments).length,
       chunk_size,
       chunk_overlap,
     });
@@ -109,7 +109,7 @@ export const uploadText = async (req: Request, res: Response) => {
     let docs: Document[]; // will hold the documents to embed
     let storagePayload: string; // the string we upload to Supabase Storage
 
-    if (segments && segments.length) {
+    if (segments?.length) {
       console.log("[UPLOAD-TEXT] Using caller provided segments");
       docs = segments.map((seg) => ({
         pageContent: seg.content,
@@ -205,7 +205,7 @@ export const uploadText = async (req: Request, res: Response) => {
       properties: {
         file_name: fileName,
         file_type: "text",
-        file_size: contents?.length || JSON.stringify(segments).length,
+        file_size: contents?.length || storagePayload.length,
         segment_count: segments?.length ?? docs.length,
         processing_mode: segments ? "segments" : "chunks",
       },
