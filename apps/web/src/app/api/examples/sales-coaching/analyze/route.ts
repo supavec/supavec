@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
+import type { AnalysisResult, InsightItem } from "@/types/sales-coaching";
 import { extractTimestampFromContent, parseSrt, truncateQuote } from "./utils";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";

@@ -1,19 +1,19 @@
-export interface InsightItem {
+export type InsightItem = {
   type: "win" | "risk" | "action";
   insight: string;
   quote: string;
   coaching_tip: string;
   timestamp: string;
-}
+};
 
-export interface AnalysisSummary {
+export type AnalysisSummary = {
   total_insights: number;
   wins: number;
   risks: number;
   actions: number;
-}
+};
 
-export interface AnalysisResult {
+export type AnalysisResult = {
   insights: InsightItem[];
   summary: AnalysisSummary;
-}
+};

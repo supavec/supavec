@@ -21,7 +21,7 @@ import {
   Target,
 } from "lucide-react";
 import { toast } from "sonner";
-import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
+import type { AnalysisResult, InsightItem } from "@/types/sales-coaching";
 
 export default function SalesCoachingExample() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
