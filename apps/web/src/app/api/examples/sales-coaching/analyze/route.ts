@@ -81,7 +81,7 @@ async function searchSupavec(
     body: JSON.stringify({
       query: query,
       file_ids: [fileId],
-      k: 3, // Get top 3 relevant chunks per query
+      k: 2,
     }),
   });
 
