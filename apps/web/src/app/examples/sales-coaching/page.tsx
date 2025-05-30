@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -30,6 +31,10 @@ export default function SalesCoachingExample() {
   );
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isProcessing) {
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (file && (file.name.endsWith(".srt") || file.name.endsWith(".vtt"))) {
       setUploadedFile(file);
@@ -136,20 +141,41 @@ export default function SalesCoachingExample() {
         <CardContent>
           <div className="space-y-2">
             <Label htmlFor="transcript-file">Upload Transcript File</Label>
-            <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 h-32 flex items-center justify-center bg-muted/10 hover:bg-muted/20 transition-colors">
+            <div
+              className={cn(
+                "relative border-2 border-dashed rounded-lg p-8 h-32 flex items-center justify-center transition-colors",
+                isProcessing
+                  ? "border-muted-foreground/10 bg-muted/5 cursor-not-allowed"
+                  : "border-muted-foreground/25 bg-muted/10 hover:bg-muted/20 cursor-pointer"
+              )}
+            >
               <div className="text-center space-y-2">
-                <Upload className="h-8 w-8 text-muted-foreground mx-auto" />
+                <Upload
+                  className={cn(
+                    "size-8 mx-auto",
+                    isProcessing
+                      ? "text-muted-foreground/30"
+                      : "text-muted-foreground"
+                  )}
+                />
                 <div className="text-sm text-muted-foreground">
                   <label
                     htmlFor="transcript-file"
-                    className="font-medium text-primary hover:text-primary/80 cursor-pointer"
+                    className={cn(
+                      "font-medium",
+                      isProcessing
+                        ? "text-muted-foreground/50 cursor-not-allowed"
+                        : "text-primary hover:text-primary/80 cursor-pointer"
+                    )}
                   >
-                    Choose a file
+                    {isProcessing ? "Processing..." : "Choose a file"}
                   </label>{" "}
-                  or drag and drop
+                  {!isProcessing && "or drag and drop"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  SRT, VTT files only
+                  {isProcessing
+                    ? "Please wait while analyzing"
+                    : "SRT, VTT files only"}
                 </p>
               </div>
               <Input
@@ -157,7 +183,8 @@ export default function SalesCoachingExample() {
                 type="file"
                 accept=".srt,.vtt"
                 onChange={handleFileUpload}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isProcessing}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               />
             </div>
             {uploadedFile && (
