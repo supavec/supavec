@@ -206,6 +206,8 @@ export const uploadText = async (req: Request, res: Response) => {
         file_name: fileName,
         file_type: "text",
         file_size: contents?.length || JSON.stringify(segments).length,
+        segment_count: segments?.length ?? docs.length,
+        processing_mode: segments ? "segments" : "chunks",
       },
     });
 
