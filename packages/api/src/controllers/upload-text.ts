@@ -35,7 +35,7 @@ const uploadTextSchema = z.object({
 })
   // require ONE of contents or segments
   .refine(
-    (d) => d.contents?.length || d.segments?.length,
+    (d) => Boolean(d.contents) !== Boolean(d.segments),
     {
       message:
         "Must provide either `contents` (raw text) or `segments` (pre-chunked), but not both.",
