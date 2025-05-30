@@ -3,19 +3,13 @@ import { AnalysisResult, InsightItem } from "@/types/sales-coaching";
 import { extractTimestampFromContent, parseSrt, truncateQuote } from "./utils";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import type { SupavecSearchResponse, SupavecUploadResponse } from "./types";
 
 const MODEL = openai("gpt-4o-mini");
 
-// Supavec API configuration
 const SUPAVEC_API_URL = process.env.SUPAVEC_API_URL ||
   "https://api.supavec.com";
-const SUPAVEC_API_KEY = process.env.SUPAVEC_API_KEY;
-
-if (!SUPAVEC_API_KEY) {
-  console.warn(
-    "SUPAVEC_API_KEY environment variable not set. API will not work properly.",
-  );
-}
+const SUPAVEC_API_KEY = process.env.SUPAVEC_API_KEY!;
 
 // Sales coaching queries for RAG
 const COACHING_QUERIES = [
@@ -30,21 +24,6 @@ const COACHING_QUERIES = [
   "What rapport building techniques were demonstrated?",
   "What qualifying questions about decision process were missed?",
 ];
-
-interface SupavecUploadResponse {
-  success: boolean;
-  message: string;
-  file_id: string;
-}
-
-interface SupavecSearchResponse {
-  success: boolean;
-  documents: Array<{
-    content: string;
-    file_id: string;
-    score: string;
-  }>;
-}
 
 async function uploadTranscriptToSupavec(
   transcript: string,
