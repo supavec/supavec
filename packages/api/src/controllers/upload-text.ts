@@ -14,21 +14,38 @@ const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 
 const uploadTextSchema = z.object({
-  contents: z.string().min(5, "Content must be at least 5 characters long"),
+  // OPTION A – raw text
+  contents: z.string().min(5, "Content must be at least 5 characters long")
+    .optional(),
+
+  // OPTION B – caller‑provided, already‑chunked segments
+  segments: z.array(
+    z.object({
+      content: z.string().min(1),
+      metadata: z.record(z.any()).optional(),
+    }),
+  ).optional(),
+
   name: z.string().min(1).optional().default("Untitled Document"),
+
+  // legacy split knobs (only used when `contents` is present)
   chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
-  chunk_overlap: z.number()
-    .positive()
-    .default(DEFAULT_CHUNK_OVERLAP),
-}).refine(
-  (data) => {
-    return data.chunk_overlap < data.chunk_size;
-  },
-  {
-    message: "chunk_overlap must be less than chunk_size",
-    path: ["chunk_overlap"],
-  },
-);
+  chunk_overlap: z.number().positive().default(DEFAULT_CHUNK_OVERLAP),
+})
+  // require ONE of contents or segments
+  .refine(
+    (d) =>
+      (d.contents && d.contents.length) || (d.segments && d.segments.length),
+    { message: "Provide either `contents` or `segments`." },
+  )
+  // overlap rule only matters when splitting raw contents
+  .refine(
+    (d) => !d.contents || d.chunk_overlap < d.chunk_size,
+    {
+      message: "chunk_overlap must be less than chunk_size",
+      path: ["chunk_overlap"],
+    },
+  );
 
 export const uploadText = async (req: Request, res: Response) => {
   console.log("[UPLOAD-TEXT] Request received");
@@ -69,26 +86,63 @@ export const uploadText = async (req: Request, res: Response) => {
 
     const {
       contents,
+      segments,
       name,
       chunk_size = DEFAULT_CHUNK_SIZE,
       chunk_overlap = DEFAULT_CHUNK_OVERLAP,
     } = bodyValidation.data;
     console.log("[UPLOAD-TEXT] Processing text upload", {
       name,
-      contentLength: contents.length,
+      payloadLength: (segments && segments.length)
+        ? JSON.stringify(segments).length
+        : contents?.length,
       chunk_size,
       chunk_overlap,
     });
 
     const fileId = randomUUID();
-    const fileName = `${fileId}.txt`;
+    const fileName = segments && segments.length
+      ? `${fileId}.json`
+      : `${fileId}.txt`;
     console.log("[UPLOAD-TEXT] Generated file ID", { fileId, fileName });
+
+    // Decide how we will build the document array
+    let docs: any[]; // will hold the documents to embed
+    let storagePayload: string; // the string we upload to Supabase Storage
+
+    if (segments && segments.length) {
+      console.log("[UPLOAD-TEXT] Using caller‑provided segments");
+      docs = segments.map((seg) => ({
+        pageContent: seg.content,
+        metadata: {
+          ...(seg.metadata ?? {}),
+          source: name,
+          file_id: fileId,
+        },
+      }));
+      storagePayload = JSON.stringify(segments, null, 2);
+    } else {
+      console.log(
+        "[UPLOAD-TEXT] Splitting raw contents with RecursiveCharacterTextSplitter",
+      );
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: chunk_size ?? DEFAULT_CHUNK_SIZE,
+        chunkOverlap: chunk_overlap ?? DEFAULT_CHUNK_OVERLAP,
+      });
+      docs = await splitter.createDocuments([contents!], [
+        { source: name, file_id: fileId },
+      ]);
+      storagePayload = contents!;
+    }
+    console.log("[UPLOAD-TEXT] Documents prepared", {
+      chunkCount: docs.length,
+    });
 
     // Upload text content to Supabase Storage
     console.log("[UPLOAD-TEXT] Uploading to Supabase Storage");
     const { data: storageData, error: uploadError } = await supabase.storage
       .from("user-documents")
-      .upload(`/${teamId}/${fileName}`, contents, {
+      .upload(`/${teamId}/${fileName}`, storagePayload, {
         contentType: "text/plain",
         upsert: false,
       });
@@ -104,21 +158,6 @@ export const uploadText = async (req: Request, res: Response) => {
     }
     console.log("[UPLOAD-TEXT] Storage upload successful", {
       path: storageData.path,
-    });
-
-    console.log("[UPLOAD-TEXT] Creating text splitter");
-    const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: chunk_size ?? DEFAULT_CHUNK_SIZE,
-      chunkOverlap: chunk_overlap ?? DEFAULT_CHUNK_OVERLAP,
-    });
-
-    console.log("[UPLOAD-TEXT] Splitting text into chunks");
-    const docs = await splitter.createDocuments([contents], [{
-      source: name,
-      file_id: fileId,
-    }]);
-    console.log("[UPLOAD-TEXT] Text split into chunks", {
-      chunkCount: docs.length,
     });
 
     console.log("[UPLOAD-TEXT] Storing documents in vector store");
