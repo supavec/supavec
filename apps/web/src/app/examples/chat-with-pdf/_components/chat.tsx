@@ -68,9 +68,9 @@ export const Chat = ({
       <div>
         <form className="relative" onSubmit={submitForm}>
           <div className="relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl sm:rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 z-0" />
+            <div className="absolute -inset-0.5 bg-linear-to-r from-pink-600 to-purple-600 rounded-2xl sm:rounded-3xl blur-sm opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 z-0" />
             <Input
-              className="relative mx-auto h-[52px] flex border border-input px-3 shadow-sm focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed md:text-sm max-w-xl bg-muted w-full rounded-2xl sm:rounded-3xl pl-10 sm:pl-12 pr-12 sm:pr-16 placeholder:text-foreground/70 border-none dark:ring-white/30 text-black dark:text-white text-wrap py-3 sm:py-4 text-sm sm:text-base max-h-[200px] overflow-y-auto leading-[1.2] min-h-[52px] z-10"
+              className="relative mx-auto h-[52px] flex border border-input px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed md:text-sm max-w-xl bg-muted w-full rounded-2xl sm:rounded-3xl pl-10 sm:pl-12 pr-12 sm:pr-16 placeholder:text-foreground/70 border-none dark:ring-white/30 text-black dark:text-white text-wrap py-3 sm:py-4 text-sm sm:text-base max-h-[200px] overflow-y-auto leading-[1.2] min-h-[52px] z-10"
               placeholder="What do you want to ask?"
               value={input}
               disabled={isLoading}

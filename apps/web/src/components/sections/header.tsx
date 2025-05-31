@@ -11,7 +11,7 @@ export function Header() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <header className="sticky top-0 h-[var(--header-height)] z-50 p-0 bg-background/60 backdrop-blur">
+    <header className="sticky top-0 h-(--header-height) z-50 p-0 bg-background/60 backdrop-blur-sm">
       <div className="flex justify-between items-center container mx-auto p-2">
         <Link
           href="/"

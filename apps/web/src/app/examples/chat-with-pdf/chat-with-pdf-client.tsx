@@ -138,7 +138,7 @@ export default function ChatWithPDFClient() {
               <Label htmlFor="pdf-file">Upload PDF File</Label>
               {isUploading ? (
                 <div className="border-2 border-dashed border-muted-foreground/10 bg-muted/5 rounded-lg p-6 cursor-not-allowed transition-colors flex flex-col items-center justify-center">
-                  <div className="rounded-full bg-background p-3 shadow-sm">
+                  <div className="rounded-full bg-background p-3 shadow-xs">
                     <FileText className="size-6 text-muted-foreground/30" />
                   </div>
                   <p className="mt-2 text-sm text-muted-foreground/50">

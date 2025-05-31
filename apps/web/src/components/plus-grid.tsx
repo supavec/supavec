@@ -21,7 +21,7 @@ export function PlusGridRow({
     <div
       className={clsx(
         className,
-        "group/row relative isolate pt-[calc(theme(spacing.2)+1px)] last:pb-[calc(theme(spacing.2)+1px)]"
+        "group/row relative isolate pt-[calc(--spacing(2)+1px)] last:pb-[calc(--spacing(2)+1px)]"
       )}
     >
       <div
@@ -54,7 +54,7 @@ export function PlusGridItem({
       <PlusGridIcon placement="top right" />
       <PlusGridIcon
         placement="bottom left"
-        className="hidden group-last/row:group-first/item:block"
+        className="hidden group-first/item:group-last/row:block"
       />
       <PlusGridIcon
         placement="bottom right"

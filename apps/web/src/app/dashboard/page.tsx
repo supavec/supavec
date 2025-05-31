@@ -63,7 +63,7 @@ export default async function Page() {
         subscribedProductId={data?.stripe_subscribed_product_id}
       />
       <SidebarInset>
-        <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -88,7 +88,7 @@ export default async function Page() {
             <h2 className="text-2xl font-bold mb-4">Welcome to Supavec Beta</h2>
             <p>Generate your API key to get started with Supavec.</p>
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min p-4">
+          <div className="min-h-screen flex-1 rounded-xl md:min-h-min p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="p-4 rounded-xl border basis-full md:basis-1/2 bg-muted/10">
                 <h3 className="text-xl font-semibold mb-4">

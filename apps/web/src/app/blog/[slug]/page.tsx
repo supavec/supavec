@@ -102,7 +102,7 @@ export default async function Page({
               return (
                 <code
                   className={cn(
-                    "break-words hyphens-auto !bg-muted/10",
+                    "break-words hyphens-auto bg-muted/10!",
                     className
                   )}
                   {...rest}

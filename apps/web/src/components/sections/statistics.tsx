@@ -28,7 +28,7 @@ export function Statistics() {
   return (
     <Section id="statistics" title="Statistics">
       <div
-        className="border-x border-t bg-gradient-to-br from-background via-secondary/10 to-background"
+        className="border-x border-t bg-linear-to-br from-background via-secondary/10 to-background"
         style={{
           backgroundImage:
             "radial-gradient(circle at bottom center, hsl(var(--secondary) / 0.6), hsl(var(--background)))",
@@ -40,7 +40,7 @@ export function Statistics() {
               href={stat.link}
               key={stat.link}
               target="_blank"
-              className="flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 last:border-b-0 sm:border-r sm:last:border-r-0 [&:nth-child(-n+2)]:border-t-0 sm:[&:nth-child(-n+3)]:border-t-0 relative group overflow-hidden"
+              className="flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 last:border-b-0 sm:border-r sm:last:border-r-0 nth-[-n+2]:border-t-0 sm:nth-[-n+3]:border-t-0 relative group overflow-hidden"
             >
               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 duration-300 ease-in-out">
                 <svg
