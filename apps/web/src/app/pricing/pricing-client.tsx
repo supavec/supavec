@@ -57,7 +57,7 @@ const TabsTrigger = ({ onClick, children, isActive }: TabsTriggerProps) => {
   return (
     <button
       onClick={onClick}
-      className={cn("relative z-[1] px-4 py-2", { "z-0": isActive })}
+      className={cn("relative z-1 px-4 py-2", { "z-0": isActive })}
     >
       {isActive && (
         <motion.div
@@ -218,7 +218,7 @@ export function PricingClient() {
                 </p>
               </CardHeader>
 
-              <CardContent className="flex-grow p-4 pt-5">
+              <CardContent className="grow p-4 pt-5">
                 <ul className="space-y-2">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">

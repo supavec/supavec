@@ -17,7 +17,7 @@ function Rings() {
       fill="none"
       className={clsx(
         'col-start-1 row-start-1 size-full',
-        '[mask-composite:intersect] [mask-image:linear-gradient(to_bottom,black_90%,transparent),radial-gradient(circle,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)]',
+        'mask-intersect mask-[linear-gradient(to_bottom,black_90%,transparent),radial-gradient(circle,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)]',
       )}
     >
       {Array.from(Array(42).keys()).map((n) => (
@@ -55,7 +55,7 @@ function Checkmark() {
             transition: { ...transition, duration: 0.75 },
           },
         }}
-        className="flex size-6 items-center justify-center rounded-full bg-gradient-to-t from-green-500 to-green-300 shadow"
+        className="flex size-6 items-center justify-center rounded-full bg-linear-to-t from-green-500 to-green-300 shadow-sm"
       >
         <CheckIcon className="size-4 fill-white" />
       </motion.div>

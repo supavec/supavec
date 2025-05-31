@@ -102,7 +102,7 @@ export function ChatInterface({
   return (
     <div className="grid grid-cols-2 gap-4 p-4 relative">
       {(!uploadedFiles || uploadedFiles.length === 0) && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-xs flex items-center justify-center z-10 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-full p-4 md:p-8">
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-muted rounded-lg p-4">
               <MessageCircle className="size-8 text-muted-foreground mb-2" />
