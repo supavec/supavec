@@ -11,7 +11,7 @@ export const CTA = () => {
   const router = useRouter();
 
   return (
-    <section className="text-center border-x border-b">
+    <section className="text-center border-x border-b rounded-b">
       <div className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl">
         <p className="text-sm z-10 font-semibold tracking-tight text-balance text-muted-foreground text-center">
           Ready to build youir own?
