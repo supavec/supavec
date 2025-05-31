@@ -30,7 +30,7 @@ export default function OnboardingCompletePage() {
           <a
             target="_blank"
             href="https://discord.gg/MS9CjPeXF4"
-            className={cn(buttonVariants({ variant: "outline-solid" }), "w-full")}
+            className={cn(buttonVariants({ variant: "outline" }), "w-full")}
           >
             <Icons.discord className="mr-2 size-4" />
             Join {APP_NAME} Discord
