@@ -89,11 +89,10 @@ function HeroCTA() {
             GET STARTED IN SECONDS
           </div>
           <pre className="text-foreground whitespace-pre-wrap">
-            {`curl -X POST https://api.supavec.com/embed \\
+            {`curl -X POST https://api.supavec.com/upload_text \\
   -H "Authorization: Bearer YOUR_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"content": "your text here"}' \\
-  | jq .embedding`}
+  -d '{"contents": "your text here"}'`}
           </pre>
         </div>
       </motion.div>
