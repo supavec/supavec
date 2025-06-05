@@ -32,8 +32,8 @@ function Circle({
       style={{ '--opacity': opacity } as React.CSSProperties}
       className={clsx(
         'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full',
-        'bg-[radial-gradient(circle,transparent_25%,color-mix(in_srgb,_theme(colors.blue.500)_var(--opacity),transparent)_100%)]',
-        'ring-1 ring-inset ring-blue-500/[8%]',
+        'bg-[radial-gradient(circle,transparent_25%,color-mix(in_srgb,var(--color-blue-500)_var(--opacity),transparent)_100%)]',
+        'ring-1 ring-inset ring-blue-500/8',
       )}
     />
   )
@@ -46,14 +46,14 @@ function Circles() {
       <Circle size={400} opacity="5%" delay={0.3} />
       <Circle size={272} opacity="5%" delay={0.15} />
       <Circle size={144} opacity="10%" delay={0} />
-      <div className="absolute inset-0 bg-gradient-to-t from-white to-35%" />
+      <div className="absolute inset-0 bg-linear-to-t from-white to-35%" />
     </div>
   )
 }
 
 function MainLogo() {
   return (
-    <div className="absolute left-44 top-32 flex size-16 items-center justify-center rounded-full bg-white shadow ring-1 ring-black/5">
+    <div className="absolute left-44 top-32 flex size-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5">
       <Mark className="h-9 fill-black" />
     </div>
   )
@@ -90,7 +90,7 @@ function Logo({
       alt=""
       src={src}
       style={{ left, top } as React.CSSProperties}
-      className="absolute size-16 rounded-full bg-white shadow ring-1 ring-black/5"
+      className="absolute size-16 rounded-full bg-white shadow-sm ring-1 ring-black/5"
     />
   )
 }
@@ -99,7 +99,7 @@ export function LogoCluster() {
   return (
     <div aria-hidden="true" className="relative h-full overflow-hidden">
       <Circles />
-      <div className="absolute left-1/2 h-full w-[26rem] -translate-x-1/2">
+      <div className="absolute left-1/2 h-full w-104 -translate-x-1/2">
         <MainLogo />
         <Logo
           src="/logo-cluster/career-builder.svg"

@@ -25,7 +25,7 @@ export function Testimonials() {
   return (
     <Section id="testimonials" title="Testimonials">
       <div className="border-t border-x">
-        <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-2/6 w-[calc(100%-2px)] overflow-hidden bg-gradient-to-t from-background to-transparent"></div>
+        <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-2/6 w-[calc(100%-2px)] overflow-hidden bg-linear-to-t from-background to-transparent"></div>
 
         {/* Client-side only rendering of the Senja widget */}
         <div

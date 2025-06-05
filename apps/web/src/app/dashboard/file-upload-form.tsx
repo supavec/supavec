@@ -80,7 +80,7 @@ export function FileUploadForm({
         className="border-2 border-dashed border-muted-foreground/25 hover:bg-muted rounded-lg p-6 cursor-pointer transition-colors bg-muted/50 flex flex-col items-center justify-center"
       >
         <input {...getInputProps()} />
-        <div className="rounded-full bg-background p-3 shadow-sm">
+        <div className="rounded-full bg-background p-3 shadow-xs">
           <ImagePlus className="size-6 text-muted-foreground" />
         </div>
         <p className="mt-2 text-sm">
