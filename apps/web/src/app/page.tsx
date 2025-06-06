@@ -4,7 +4,7 @@ import { Hero } from "@/components/sections/hero";
 // import { FeaturedSection } from "@/components/sections/featured-section";
 // import { WhyIBuit } from "@/components/sections/why-i-built";
 // import { WhatIsRag } from "@/components/sections/what-is-rag";
-import { WhySupavec } from "@/components/sections/why-supavec";
+import { UseCases } from "@/components/sections/use-cases";
 import { HowToUse } from "@/components/sections/how-to-use";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Community } from "@/components/sections/community";
@@ -27,7 +27,7 @@ export default async function Home() {
       {/* <FeaturedSection /> */}
       {/* <WhyIBuit /> */}
       {/* <WhatIsRag /> */}
-      <WhySupavec />
+      <UseCases />
       <SenjaTestimonials />
       <HowToUse />
       <Statistics />
