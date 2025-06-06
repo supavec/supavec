@@ -87,25 +87,6 @@ function SalesCoachingHeroCTA() {
           Build My Coaching App
         </Link>
       </motion.div>
-
-      {/* Early access section */}
-      <motion.div
-        className="mt-8 pt-6 border-t border-border/30"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0, duration: 0.8, ease }}
-      >
-        <div className="flex flex-col items-center gap-4 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-            Early Access Program
-          </div>
-          <p className="text-sm text-muted-foreground max-w-md">
-            Be among the first agencies to test our AI coaching platform. Join
-            our pilot program and help shape the future of sales coaching.
-          </p>
-        </div>
-      </motion.div>
     </div>
   );
 }
@@ -113,7 +94,7 @@ function SalesCoachingHeroCTA() {
 function SalesCoachingHeroVisual() {
   return (
     <motion.div
-      className="mt-16 lg:mt-12"
+      className="mt-8 lg:mt-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.0, duration: 0.8, ease }}
@@ -189,12 +170,50 @@ export function SalesCoachingHero() {
   return (
     <Section id="sales-coaching-hero">
       <div className="relative w-full p-6 lg:p-12 border-x overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col items-start">
-            <SalesCoachingHeroTitles />
-            <SalesCoachingHeroCTA />
-            <SalesCoachingHeroVisual />
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+            {/* Left Column - Content */}
+            <div className="flex flex-col items-start">
+              <a
+                href="https://www.producthunt.com/posts/supavec?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-supavec"
+                target="_blank"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=neutral&period=daily&t=1739785669388"
+                  alt="Supavec - The&#0032;open&#0032;source&#0032;RAG&#0032;as&#0032;a&#0032;service&#0032;platform | Product Hunt"
+                  className="w-[250px] h-[54px]"
+                />
+              </a>
+              <SalesCoachingHeroTitles />
+              <SalesCoachingHeroCTA />
+            </div>
+
+            {/* Right Column - Visual */}
+            <div className="lg:mt-8">
+              <SalesCoachingHeroVisual />
+            </div>
           </div>
+
+          {/* Early Access Program - Centered below both columns */}
+          <motion.div
+            className="mt-16 pt-8 border-t border-border/30"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.8, ease }}
+          >
+            <div className="flex flex-col items-center gap-4 text-center max-w-2xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                Early Access Program
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Be among the first agencies to test our AI coaching platform.
+                Join our pilot program and help shape the future of sales
+                coaching.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </div>
     </Section>

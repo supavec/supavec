@@ -50,7 +50,7 @@ export function SalesCoachingSocialProof() {
       description="Join our pilot program and help shape the future of sales coaching"
       align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Vision Statements */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

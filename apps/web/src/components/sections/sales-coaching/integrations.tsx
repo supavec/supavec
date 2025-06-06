@@ -51,10 +51,10 @@ export function SalesCoachingIntegrations() {
       id="integrations"
       title="Integrations & Workflow Fit"
       subtitle="Slots Into Your Existing Tooling"
-      description="No platform migration required—work with the tools you already use"
+      description="No platform migration required, work with the tools you already use"
       align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Integrations Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">

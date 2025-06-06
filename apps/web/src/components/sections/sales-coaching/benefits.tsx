@@ -81,7 +81,7 @@ export function SalesCoachingBenefits() {
       description="Real improvements you can measure and track"
       align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -127,23 +127,6 @@ export function SalesCoachingBenefits() {
               </motion.div>
             ))}
           </div>
-
-          {/* Metrics Bar */}
-          {/* Pricing Hint */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease }}
-            viewport={{ once: true }}
-            className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800"
-          >
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-blue-600 dark:text-blue-400">
-                Starts at $0.25/call
-              </span>{" "}
-              • No setup fees • Volume discounts available
-            </p>
-          </motion.div>
 
           {/* Metrics Bar */}
           <motion.div
