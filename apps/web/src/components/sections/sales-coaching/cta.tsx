@@ -78,27 +78,26 @@ export function SalesCoachingCTA() {
             viewport={{ once: true }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link
-              href="/onboarding"
+            <a
+              href="#interactive-demo"
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
                 "text-lg px-8 py-4 text-background flex gap-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               )}
             >
-              <Upload className="h-5 w-5" />
-              Run My Transcript Free
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
+              <PlayCircle className="h-5 w-5" />
+              Try Live Demo
+            </a>
 
             <Link
-              href="/demo"
+              href="/login"
               className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "text-lg px-8 py-4 flex gap-2 rounded-lg border-2 hover:bg-muted transition-all duration-200"
+                buttonVariants({ variant: "ghost", size: "lg" }),
+                "text-lg px-8 py-4 flex gap-2 rounded-lg transition-all duration-200"
               )}
             >
-              <PlayCircle className="h-5 w-5" />
-              See a 3-Min Demo
+              <Upload className="h-5 w-5" />
+              Build My Coaching App
             </Link>
           </motion.div>
 
