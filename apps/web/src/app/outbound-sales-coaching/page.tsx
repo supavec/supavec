@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SalesCoachingHero } from "@/components/sections/sales-coaching/hero";
 import { SalesCoachingPainPromise } from "@/components/sections/sales-coaching/pain-promise";
 import { SalesCoachingHowItWorks } from "@/components/sections/sales-coaching/how-it-works";
+import { SalesCoachingInteractiveDemo } from "@/components/sections/sales-coaching/interactive-demo";
 import { SalesCoachingBenefits } from "@/components/sections/sales-coaching/benefits";
 import { SalesCoachingIntegrations } from "@/components/sections/sales-coaching/integrations";
 import { SalesCoachingSocialProof } from "@/components/sections/sales-coaching/social-proof";
@@ -24,6 +25,7 @@ export default async function SalesCoachingPage() {
       <SalesCoachingHero />
       <SalesCoachingPainPromise />
       <SalesCoachingHowItWorks />
+      <SalesCoachingInteractiveDemo />
       <SalesCoachingBenefits />
       <SalesCoachingIntegrations />
       <SalesCoachingSocialProof />

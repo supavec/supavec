@@ -66,16 +66,16 @@ function SalesCoachingHeroCTA() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.8, ease }}
       >
-        <Link
-          href="/demo"
+        <a
+          href="#interactive-demo"
           className={cn(
             buttonVariants({ variant: "default", size: "lg" }),
             "w-full sm:w-auto text-background flex gap-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
           )}
         >
           <PlayCircle className="h-5 w-5" />
-          Watch 3-Min Demo
-        </Link>
+          Try Live Demo
+        </a>
         <Link
           href="/onboarding"
           className="w-full sm:w-auto text-foreground hover:text-blue-600 dark:hover:text-blue-400 flex gap-2 items-center font-medium transition-colors underline underline-offset-4"
