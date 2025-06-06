@@ -124,7 +124,8 @@ export function SalesCoachingFAQ() {
               Email Our Team
             </a>
             <a
-              href="/demo"
+              href="https://cal.com/taishik/15-mins-meeting"
+              target="_blank"
               className="inline-flex items-center px-6 py-3 border border-border hover:bg-muted text-foreground font-medium rounded-lg transition-colors"
             >
               Schedule a Demo
