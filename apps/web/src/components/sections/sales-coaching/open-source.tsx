@@ -50,9 +50,9 @@ export function SalesCoachingOpenSource() {
     <Section
       id="open-source"
       title="Open-Source & Privacy Edge"
-      subtitle="Your data, your control"
+      subtitle="Your Data, Your Control"
       description="Enterprise-grade security with open-source transparency"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">

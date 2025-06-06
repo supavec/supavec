@@ -51,9 +51,9 @@ export function SalesCoachingFAQ() {
     <Section
       id="faq"
       title="Frequently Asked Questions"
-      subtitle="Got questions? We have answers"
+      subtitle="Got Questions? We Have Answers"
       description="Everything you need to know about transforming your sales coaching with AI"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-4xl mx-auto space-y-6">

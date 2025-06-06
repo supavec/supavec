@@ -128,11 +128,11 @@ export function SalesCoachingInteractiveDemo() {
     <Section
       id="interactive-demo"
       title="Try It Live"
-      subtitle="Experience AI coaching in action"
+      subtitle="Experience AI Coaching In Action"
       description="Upload your own transcript or use our sample to see instant coaching insights"
-      className="border-x"
+      align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12 border-x">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Demo Introduction */}
           <motion.div

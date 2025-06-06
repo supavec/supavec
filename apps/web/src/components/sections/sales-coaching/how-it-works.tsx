@@ -45,7 +45,7 @@ export function SalesCoachingHowItWorks() {
       title="How It Works"
       subtitle="3-Step Visual Process"
       description="Transform your sales calls into coaching gold in three simple steps"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-6xl mx-auto">

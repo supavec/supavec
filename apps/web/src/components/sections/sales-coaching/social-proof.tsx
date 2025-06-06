@@ -46,9 +46,9 @@ export function SalesCoachingSocialProof() {
     <Section
       id="social-proof"
       title="Early Access Program"
-      subtitle="Be the first to experience AI-powered coaching"
+      subtitle="Be The First To Experience AI-Powered Coaching"
       description="Join our pilot program and help shape the future of sales coaching"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">

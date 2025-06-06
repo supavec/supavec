@@ -10,7 +10,7 @@ const examples = [
   },
   {
     title: "Sales Coaching AI",
-    href: "/examples/sales-coaching",
+    href: "/outbound-sales-coaching",
   },
 ];
 

@@ -50,9 +50,9 @@ export function SalesCoachingIntegrations() {
     <Section
       id="integrations"
       title="Integrations & Workflow Fit"
-      subtitle="Slots into your existing tooling"
+      subtitle="Slots Into Your Existing Tooling"
       description="No platform migration required—work with the tools you already use"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">

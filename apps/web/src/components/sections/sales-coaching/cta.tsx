@@ -11,7 +11,7 @@ const ease = [0.16, 1, 0.3, 1];
 
 export function SalesCoachingCTA() {
   return (
-    <Section id="final-cta" className="border-x">
+    <Section id="final-cta">
       <div className="relative p-6 lg:p-12 border-x overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-emerald-950/20" />

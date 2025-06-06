@@ -77,11 +77,14 @@ function SalesCoachingHeroCTA() {
           Try Live Demo
         </a>
         <Link
-          href="/onboarding"
-          className="w-full sm:w-auto text-foreground hover:text-blue-600 dark:hover:text-blue-400 flex gap-2 items-center font-medium transition-colors underline underline-offset-4"
+          href="/login"
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "lg" }),
+            "w-full sm:w-auto text-foreground font-medium transition-colors"
+          )}
         >
           <Upload className="h-4 w-4" />
-          Generate My Free Brief
+          Build My Coaching App
         </Link>
       </motion.div>
 

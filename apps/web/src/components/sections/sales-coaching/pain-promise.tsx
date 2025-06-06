@@ -2,71 +2,77 @@
 
 import { Section } from "@/components/section";
 import { motion } from "framer-motion";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Clock,
   Users,
-  TrendingDown,
+  Database,
   Zap,
   Target,
-  LineChart,
+  Shield,
+  ArrowRight,
 } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1];
 
-const painPoints = [
+const challenges = [
   {
-    icon: <Clock className="h-6 w-6" />,
-    emoji: "⏰",
-    title: "Managers binge-watching midnight replays",
-    description:
-      "Sales managers spending hours reviewing call recordings instead of coaching",
+    icon: <Clock className="h-6 w-6 stroke-1" />,
+    title: "Managers lose hours scrubbing call recordings",
+    description: "Time spent reviewing instead of coaching active deals",
   },
   {
-    icon: <Users className="h-6 w-6" />,
-    emoji: "⏱️",
-    title: "Reps missing coaching while quota clock ticks",
-    description:
-      "Critical coaching opportunities lost due to time constraints and manual review processes",
+    icon: <Users className="h-6 w-6 stroke-1" />,
+    title: "Coaching slips when pipelines heat up",
+    description: "Critical feedback gets delayed when sales teams are busiest",
   },
   {
-    icon: <TrendingDown className="h-6 w-6" />,
-    emoji: "📊",
-    title: "Ops teams drowning in call data",
-    description:
-      "Mountains of transcript data with no clear insights or actionable intelligence",
+    icon: <Database className="h-6 w-6 stroke-1" />,
+    title: "Sensitive client data can't leave your stack",
+    description: "Privacy concerns limit tool adoption for enterprise clients",
   },
 ];
 
-const promisePoints = [
+const solutions = [
   {
     icon: <Zap className="h-6 w-6" />,
-    title: "Instant coaching summaries",
-    description:
-      "Every call gets a coach's summary—no extra headcount required",
+    title:
+      "Brief in < 30 sec—review an entire hour call faster than a coffee break",
+    description: "Auto-generated coaching summary delivered instantly",
   },
   {
     icon: <Target className="h-6 w-6" />,
-    title: "Actionable insights",
-    description:
-      "Clear wins, objections, and next steps extracted automatically",
+    title:
+      "Auto-extracted insights—each rep gets actionable feedback after every call",
+    description: "Wins, objections, and next steps surfaced automatically",
   },
   {
-    icon: <LineChart className="h-6 w-6" />,
-    title: "Scale your coaching",
-    description: "Coach more reps, more often, with AI-powered analysis",
+    icon: <Shield className="h-6 w-6" />,
+    title: "Self-host or SaaS—open-source, SOC-2 path, full VPC deploy option",
+    description: "Complete control over your data and deployment",
   },
 ];
 
 export function SalesCoachingPainPromise() {
   return (
     <Section
-      id="pain-promise"
-      title="Why This Page Exists"
-      className="border-x"
+      id="why-choose-supavec"
+      title="Why Sales Agencies Choose Supavec"
+      description="Supavec helps B2B sales agencies turn raw call data into clear, coach-ready actions—without extra headcount or vendor lock-in."
+      align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
+        {/* Micro-proof chip */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-sm font-medium">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            Runs 24s per 60-min call (internal benchmark)
+          </div>
+        </div>
+
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Pain Points */}
+          {/* Agency Challenges */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -75,32 +81,30 @@ export function SalesCoachingPainPromise() {
             className="space-y-8"
           >
             <div className="space-y-4">
-              <h3 className="text-3xl font-bold text-red-600 dark:text-red-400">
-                The Pain
+              <h3 className="text-3xl font-bold text-slate-600 dark:text-slate-400">
+                Agency Challenge
               </h3>
-              <p className="text-lg text-muted-foreground">
-                B2B sales agencies are drowning in call data but starving for
-                insights
-              </p>
             </div>
 
             <div className="space-y-6">
-              {painPoints.map((point, index) => (
+              {challenges.map((challenge, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1, ease }}
                   viewport={{ once: true }}
-                  className="flex gap-4 p-4 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-800/50"
+                  className="flex gap-4 p-4 rounded-lg bg-slate-50/50 dark:bg-slate-900/20 border border-slate-200/50 dark:border-slate-700/50"
                 >
-                  <div className="flex-shrink-0 text-2xl">{point.emoji}</div>
+                  <div className="flex-shrink-0 text-slate-500 dark:text-slate-400">
+                    {challenge.icon}
+                  </div>
                   <div className="space-y-2">
                     <h4 className="font-semibold text-foreground">
-                      {point.title}
+                      {challenge.title}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      {point.description}
+                      {challenge.description}
                     </p>
                   </div>
                 </motion.div>
@@ -108,7 +112,7 @@ export function SalesCoachingPainPromise() {
             </div>
           </motion.div>
 
-          {/* Promise */}
+          {/* Supavec Fix */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -118,21 +122,12 @@ export function SalesCoachingPainPromise() {
           >
             <div className="space-y-4">
               <h3 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                The Promise
+                Supavec Fix
               </h3>
-              <div className="p-6 rounded-lg bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-950/20 dark:to-blue-950/20 border border-emerald-200 dark:border-emerald-800">
-                <blockquote className="text-xl font-medium text-foreground italic">
-                  &ldquo;Supavec gives every call a coach&rsquo;s summary—no
-                  extra headcount.&rdquo;
-                </blockquote>
-                <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium mt-3">
-                  One-page summary in &lt; 30 seconds
-                </p>
-              </div>
             </div>
 
             <div className="space-y-6">
-              {promisePoints.map((point, index) => (
+              {solutions.map((solution, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -142,14 +137,14 @@ export function SalesCoachingPainPromise() {
                   className="flex gap-4 p-4 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/50"
                 >
                   <div className="flex-shrink-0 text-emerald-600 dark:text-emerald-400">
-                    {point.icon}
+                    {solution.icon}
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-semibold text-foreground">
-                      {point.title}
+                      {solution.title}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      {point.description}
+                      {solution.description}
                     </p>
                   </div>
                 </motion.div>
@@ -157,6 +152,26 @@ export function SalesCoachingPainPromise() {
             </div>
           </motion.div>
         </div>
+
+        {/* CTA Nudger */}
+        <motion.div
+          className="flex justify-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease }}
+          viewport={{ once: true }}
+        >
+          <a
+            href="#interactive-demo"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "group"
+            )}
+          >
+            See a Live Brief
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </a>
+        </motion.div>
       </div>
     </Section>
   );

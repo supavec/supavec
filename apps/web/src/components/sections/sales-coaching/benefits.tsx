@@ -77,9 +77,9 @@ export function SalesCoachingBenefits() {
     <Section
       id="benefits"
       title="Outcome-Focused Benefits"
-      subtitle="Concrete results for every role"
+      subtitle="Concrete Results For Every Role"
       description="Real improvements you can measure and track"
-      className="border-x"
+      align="center"
     >
       <div className="relative p-6 lg:p-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">
