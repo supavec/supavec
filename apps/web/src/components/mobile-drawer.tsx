@@ -33,12 +33,20 @@ export function MobileDrawer({ isLoggedIn }: { isLoggedIn: boolean }) {
           <DrawerDescription>{siteConfig.description}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Link
-            href="/examples/sales-coaching"
-            className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}
-          >
-            Sales Example
-          </Link>
+          <div className="space-y-2 mb-4">
+            <h3 className="text-sm font-medium text-muted-foreground px-4 text-center">
+              Solutions
+            </h3>
+            <Link
+              href="/outbound-sales-call-coaching"
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "rounded-full justify-center w-full"
+              )}
+            >
+              Sales Coaching
+            </Link>
+          </div>
           <Link
             href="/pricing"
             className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}
