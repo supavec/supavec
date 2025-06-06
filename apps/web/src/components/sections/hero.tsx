@@ -139,7 +139,7 @@ export function Hero() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=light&period=daily&t=1739785669388"
+              src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=neutral&period=daily&t=1739785669388"
               alt="Supavec - The&#0032;open&#0032;source&#0032;RAG&#0032;as&#0032;a&#0032;service&#0032;platform | Product Hunt"
               className="w-[250px] h-[54px]"
             />
