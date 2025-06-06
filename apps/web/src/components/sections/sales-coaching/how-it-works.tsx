@@ -47,7 +47,7 @@ export function SalesCoachingHowItWorks() {
       description="Transform your sales calls into coaching gold in three simple steps"
       align="center"
     >
-      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12 border-x">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {steps.map((step, index) => (

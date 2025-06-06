@@ -10,37 +10,31 @@ const integrations = [
   {
     name: "Zoom",
     logo: "🎥",
-    status: "Available",
     description: "Direct transcript import from Zoom cloud recordings",
   },
   {
     name: "Fireflies",
     logo: "🔥",
-    status: "Available",
     description: "API integration for automatic transcript sync",
   },
   {
     name: "Gong",
     logo: "📊",
-    status: "Roadmap",
     description: "Revenue intelligence platform integration",
   },
   {
     name: "HubSpot",
     logo: "🧡",
-    status: "Available",
     description: "CRM integration for coaching insights",
   },
   {
     name: "Salesforce",
     logo: "☁️",
-    status: "Available",
     description: "Activity logging and opportunity updates",
   },
   {
     name: "Microsoft Teams",
     logo: "💬",
-    status: "Roadmap",
     description: "Meeting transcript integration",
   },
 ];
@@ -54,7 +48,7 @@ export function SalesCoachingIntegrations() {
       description="No platform migration required, work with the tools you already use"
       align="center"
     >
-      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Integrations Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -75,19 +69,6 @@ export function SalesCoachingIntegrations() {
                   <h3 className="font-semibold text-foreground">
                     {integration.name}
                   </h3>
-
-                  {/* Status Badge */}
-                  <div
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      integration.status === "Available"
-                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
-                        : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"
-                    }`}
-                  >
-                    {integration.status === "Roadmap"
-                      ? "Coming Soon"
-                      : integration.status}
-                  </div>
                 </div>
 
                 {/* Tooltip */}
@@ -146,8 +127,8 @@ export function SalesCoachingIntegrations() {
 
               <div className="pt-4">
                 <p className="text-lg font-medium text-blue-800 dark:text-blue-300">
-                  Supavec slots into the tooling you already use—no platform
-                  migration required.
+                  Supavec slots into the tooling you already use, with no
+                  platform migration required.
                 </p>
               </div>
             </div>
@@ -171,7 +152,8 @@ export function SalesCoachingIntegrations() {
             </p>
             <div className="flex justify-center">
               <a
-                href="/docs/api"
+                href="https://docs.supavec.com"
+                target="_blank"
                 className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
               >
                 View API Documentation

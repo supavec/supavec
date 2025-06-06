@@ -81,7 +81,7 @@ export function SalesCoachingBenefits() {
       description="Real improvements you can measure and track"
       align="center"
     >
-      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
