@@ -6,30 +6,16 @@ import {
   MessageSquare,
   Shield,
   FileText,
-  Zap,
   Lock,
-  Brain,
   Search,
-  Users,
-  Settings,
-  BarChart3,
-  MessageCircle,
-  Headphones,
   Clock,
-  Star,
-  CheckCircle,
-  Database,
-  Globe,
-  Smartphone,
-  Monitor,
   Wifi,
-  Cpu,
 } from "lucide-react";
 
 // Mock phone interface for Sales Call Insights
 const PhoneCallMockup = () => (
   <div className="relative max-w-xs mx-auto">
-    <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-1 shadow-lg">
+    <div className="bg-gray-300 dark:bg-gray-700 rounded-3xl p-0.5 shadow-lg">
       <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 space-y-4">
         {/* Status bar */}
         <div className="flex justify-between items-center text-xs">
