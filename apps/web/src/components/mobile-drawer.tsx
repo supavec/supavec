@@ -12,6 +12,7 @@ import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { IoMenuSharp } from "react-icons/io5";
+import { HiPhoneArrowUpRight } from "react-icons/hi2";
 
 export function MobileDrawer({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -44,6 +45,7 @@ export function MobileDrawer({ isLoggedIn }: { isLoggedIn: boolean }) {
                 "rounded-full justify-center w-full"
               )}
             >
+              <HiPhoneArrowUpRight className="h-4 w-4 mr-2" />
               Sales Coaching
             </Link>
           </div>

@@ -15,6 +15,7 @@ import {
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { HiPhoneArrowUpRight } from "react-icons/hi2";
 
 export function Header() {
   const { isLoggedIn } = useAuth();
@@ -47,8 +48,9 @@ export function Header() {
                           href="/outbound-sales-call-coaching"
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
-                          <div className="text-sm font-medium leading-none">
-                            Sales Coaching
+                          <div className="flex items-center gap-2 text-sm font-medium leading-none">
+                            <HiPhoneArrowUpRight className="h-4 w-4 text-primary" />
+                            Outbound Sales Call Coaching
                           </div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                             Interactive sales coaching example with AI feedback
