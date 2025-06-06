@@ -23,9 +23,9 @@ export default async function SalesCoachingPage() {
     <main>
       <Header />
       <SalesCoachingHero />
+      <SalesCoachingInteractiveDemo />
       <SalesCoachingPainPromise />
       <SalesCoachingHowItWorks />
-      <SalesCoachingInteractiveDemo />
       <SalesCoachingBenefits />
       <SalesCoachingIntegrations />
       <SalesCoachingSocialProof />
