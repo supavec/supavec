@@ -54,7 +54,7 @@ export function SalesCoachingOpenSource() {
       description="Enterprise-grade security with open-source transparency"
       align="center"
     >
-      <div className="relative p-6 lg:p-12 border-x">
+      <div className="relative px-6 pb-6 lg:px-12 lg:pb-12 border-x">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Main Value Prop */}
           <motion.div
