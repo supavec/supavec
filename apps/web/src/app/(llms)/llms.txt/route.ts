@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const content = `# Supavec - RAG API Service
+  const content = `# Supavec - The open source RAG as a Service platform
 
 > Turn any private data into instant context for the LLM you already use. Open-source, scalable RAG platform built on Supabase with self-host or cloud options.
 

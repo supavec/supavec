@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const content = `# https://www.supavec.com/ llms-full.txt
+  const content = `# Supavec - The open source RAG as a Service platform
 
 ## Supavec: RAG API Service
 [![Supavec - The open source RAG as a service platform | Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=871672&theme=neutral&period=daily&t=1739785669388)](https://www.producthunt.com/posts/supavec?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-supavec)
