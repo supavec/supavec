@@ -184,7 +184,7 @@ We offer a free tier with limited features and paid subscription plans with addi
 You retain all rights to your Content. By uploading Content, you grant Supavec a license to use, copy, store, transmit, and process your Content solely to provide the Service. Content must not infringe on others' rights, violate laws, contain harmful code, or be otherwise objectionable.
 
 ### 7. Intellectual Property Rights
-The Service and its original content are owned by Supавec and protected by international intellectual property laws. Portions of our software are available under the MIT license.
+The Service and its original content are owned by Supavec and protected by international intellectual property laws. Portions of our software are available under the MIT license.
 
 ### 8. Acceptable Use
 Use the Service only for lawful purposes. Do not use it to harm others, interfere with the Service, gain unauthorized access, or develop competing products.
