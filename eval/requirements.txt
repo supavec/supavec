@@ -1,0 +1,7 @@
+requests>=2.31.0
+ragas>=0.2.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+openai>=1.0.0
+pandas>=2.0.0
+numpy>=1.24.0 
