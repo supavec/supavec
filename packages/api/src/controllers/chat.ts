@@ -52,13 +52,28 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
       .join("\n\n");
 
     console.log("[CHAT] Generating response with AI");
-    const prompt =
-      `Based on the following context, please answer the question. If the answer cannot be found in the context, please say so.
+    const prompt = `
+You are an expert assistant. Perform the following two steps **sequentially** and return the result in the specified format.
 
-Context:
+Step 1 - Key Point Extraction  
+Extract the key facts from **Context** that are strictly required to answer **Question**. Present them as a concise bullet list.
+
+Step 2 - Answer Construction  
+Using *only* the key points from Step 1, write a clear answer that **covers every part of the Question**.  
+If the answer is not contained in the Context, reply with: "I don't know based on the provided documents."
+
+### Context
 ${context}
 
-Question: ${query}`;
+### Question
+${query}
+
+### Output format
+**Key Points**
+- …
+
+**Answer**
+`;
 
     if (isStreaming) {
       pipeDataStreamToResponse(res, {
@@ -71,6 +86,8 @@ Question: ${query}`;
           const result = streamText({
             model: google("gemini-2.0-flash"),
             prompt,
+            temperature: 0.2,
+            maxTokens: 1024,
           });
 
           console.log("[CHAT] Starting stream response");
@@ -111,6 +128,8 @@ Question: ${query}`;
     const { text: answer } = await generateText({
       model: google("gemini-2.0-flash"),
       prompt,
+      temperature: 0.2,
+      maxTokens: 1024,
     });
 
     console.log("[CHAT] Capturing PostHog event");
