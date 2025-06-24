@@ -56,9 +56,12 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
 
     const prompt = `
 You are a concise expert assistant.
-Think step-by-step.
-When citing any numeric value, quote it *exactly* as it appears in the Context — do NOT add, subtract, or combine numbers.  
-If multiple distinct numeric values are relevant, list them separately without modification.
+Think step-by-step **internally** but do NOT reveal your reasoning.
+
+Follow these numeric rules
+1. If the question asks for a single value, output exactly one number (no ranges, no ±, no quotes, no extra numbers).
+2. Remove uncertainty (±) and units unless the question explicitly wants them.
+3. If the question uses words like "total", you may add numbers found in Context, then output only the sum.
 
 Use only the information found in the Context.  
 If the required information is truly absent, reply exactly:
