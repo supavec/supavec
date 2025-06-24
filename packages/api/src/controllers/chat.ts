@@ -20,6 +20,7 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { query, k, file_ids, stream: isStreaming, apiKeyData } = req.body
       .validatedData as ValidatedChatRequest;
+    const topK = k && k > 0 ? Math.max(k, 8) : 8; // ensure at least 8 passages
     console.log("[CHAT] Processing chat request", {
       query,
       k,
@@ -44,7 +45,7 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
     console.log("[CHAT] Performing similarity search");
     const similaritySearchResults = await vectorStore.similaritySearch(
       query,
-      k,
+      topK,
     );
 
     const context = similaritySearchResults
@@ -56,8 +57,11 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
     const prompt = `
 You are a concise expert assistant.
 Think step-by-step.
-Use only the Context.
-If the answer is missing, say:
+When citing any numeric value, quote it *exactly* as it appears in the Context — do NOT add, subtract, or combine numbers.  
+If multiple distinct numeric values are relevant, list them separately without modification.
+
+Use only the information found in the Context.  
+If the required information is truly absent, reply exactly:
 "I don't know based on the provided documents."
 
 ### Context
