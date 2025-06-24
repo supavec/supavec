@@ -1,0 +1,69 @@
+name: RAG Evaluation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'packages/api/**'
+      - 'eval/**'
+      - '.github/workflows/rag-evaluation.yml'
+
+jobs:
+  rag-evaluation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Cache Python dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('eval/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        cd eval
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run RAG evaluation
+      env:
+        SUPAVEC_BASE_URL: ${{ secrets.SUPAVEC_BASE_URL }}
+        SUPAVEC_API_KEY: ${{ secrets.SUPAVEC_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        FILE_ID: ${{ secrets.FILE_ID }}
+      run: |
+        cd eval
+        python evaluate_rag_with_ragas.py > evaluation_results.txt 2>&1
+        
+    - name: Upload evaluation results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: rag-evaluation-results-${{ github.event.number }}
+        path: eval/evaluation_results.txt
+        retention-days: 30
+        
+    - name: Check evaluation results
+      run: |
+        cd eval
+        if grep -q "Error during RAGAS evaluation" evaluation_results.txt; then
+          echo "❌ RAG evaluation failed"
+          cat evaluation_results.txt
+          exit 1
+        elif grep -q "RAG EVALUATION RESULTS" evaluation_results.txt; then
+          echo "✅ RAG evaluation completed successfully"
+          cat evaluation_results.txt
+        else
+          echo "⚠️ RAG evaluation completed with warnings"
+          cat evaluation_results.txt
+        fi

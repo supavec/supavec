@@ -51,3 +51,15 @@ next-env.d.ts
 
 # misc
 /scripts
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
+*.pyzwz
+venv/

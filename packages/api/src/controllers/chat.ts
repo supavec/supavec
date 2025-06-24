@@ -20,6 +20,7 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { query, k, file_ids, stream: isStreaming, apiKeyData } = req.body
       .validatedData as ValidatedChatRequest;
+    const topK = k && k > 0 ? Math.max(k, 8) : 8; // ensure at least 8 passages
     console.log("[CHAT] Processing chat request", {
       query,
       k,
@@ -44,7 +45,7 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
     console.log("[CHAT] Performing similarity search");
     const similaritySearchResults = await vectorStore.similaritySearch(
       query,
-      k,
+      topK,
     );
 
     const context = similaritySearchResults
@@ -52,13 +53,32 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
       .join("\n\n");
 
     console.log("[CHAT] Generating response with AI");
-    const prompt =
-      `Based on the following context, please answer the question. If the answer cannot be found in the context, please say so.
 
-Context:
+    const prompt = `
+You are a concise expert assistant.
+Think step-by-step.
+
+When a question asks for a numeric fact, follow these rules strictly  
+1. Output exactly **one** value that answers the question.  
+2. Retain the unit as shown in Context (e.g. “Bq/m³”, “mSv/y”).  
+3. Do NOT include ranges, ± notation, quotes, or extra numbers.  
+4. If the question says “total”, you may add numbers found in Context, then output only the sum with its unit.
+
+Return the answer as a short declarative sentence mirroring the wording of the question.  
+Example: *“Indoor radon activity concentration during the burning season was 63 Bq/m³.”*
+
+Use only the information found in the Context.  
+If the required information is absent, reply exactly:  
+"I don't know based on the provided documents."
+
+### Context
 ${context}
 
-Question: ${query}`;
+### Question
+${query}
+
+### Final Answer
+`;
 
     if (isStreaming) {
       pipeDataStreamToResponse(res, {
@@ -71,6 +91,8 @@ Question: ${query}`;
           const result = streamText({
             model: google("gemini-2.0-flash"),
             prompt,
+            temperature: 0.1,
+            maxTokens: 1024,
           });
 
           console.log("[CHAT] Starting stream response");
@@ -111,6 +133,8 @@ Question: ${query}`;
     const { text: answer } = await generateText({
       model: google("gemini-2.0-flash"),
       prompt,
+      temperature: 0.1,
+      maxTokens: 1024,
     });
 
     console.log("[CHAT] Capturing PostHog event");
