@@ -181,8 +181,8 @@ def main():
                         print(f"{formatted_name}: {metric_value}")
 
             except Exception as e:
-                print(f"Evaluation Result: {result}")
-
+                print(f"Failed to parse evaluation results as dictionary: {e}")
+                print(f"Raw evaluation result: {result}")
         print("=" * 50)
 
     except Exception as e:
