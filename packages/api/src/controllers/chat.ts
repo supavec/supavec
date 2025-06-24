@@ -80,7 +80,7 @@ ${query}
           const result = streamText({
             model: google("gemini-2.0-flash"),
             prompt,
-            temperature: 0.2,
+            temperature: 0.1,
             maxTokens: 1024,
           });
 
@@ -122,7 +122,7 @@ ${query}
     const { text: answer } = await generateText({
       model: google("gemini-2.0-flash"),
       prompt,
-      temperature: 0.2,
+      temperature: 0.1,
       maxTokens: 1024,
     });
 
