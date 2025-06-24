@@ -52,15 +52,13 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
       .join("\n\n");
 
     console.log("[CHAT] Generating response with AI");
+
     const prompt = `
-You are an expert assistant. Perform the following two steps **sequentially** and return the result in the specified format.
-
-Step 1 - Key Point Extraction  
-Extract the key facts from **Context** that are strictly required to answer **Question**. Present them as a concise bullet list.
-
-Step 2 - Answer Construction  
-Using *only* the key points from Step 1, write a clear answer that **covers every part of the Question**.  
-If the answer is not contained in the Context, reply with: "I don't know based on the provided documents."
+You are a concise expert assistant.
+Think step-by-step, but **do NOT reveal your reasoning**.
+Use only the Context.
+If the answer is missing, say:
+"I don't know based on the provided documents."
 
 ### Context
 ${context}
@@ -68,11 +66,7 @@ ${context}
 ### Question
 ${query}
 
-### Output format
-**Key Points**
-- …
-
-**Answer**
+### Final Answer
 `;
 
     if (isStreaming) {
