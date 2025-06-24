@@ -56,15 +56,19 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
 
     const prompt = `
 You are a concise expert assistant.
-Think step-by-step **internally** but do NOT reveal your reasoning.
+Think step-by-step.
 
-Follow these numeric rules
-1. If the question asks for a single value, output exactly one number (no ranges, no ±, no quotes, no extra numbers).
-2. Remove uncertainty (±) and units unless the question explicitly wants them.
-3. If the question uses words like "total", you may add numbers found in Context, then output only the sum.
+When a question asks for a numeric fact, follow these rules strictly  
+1. Output exactly **one** value that answers the question.  
+2. Retain the unit as shown in Context (e.g. “Bq/m³”, “mSv/y”).  
+3. Do NOT include ranges, ± notation, quotes, or extra numbers.  
+4. If the question says “total”, you may add numbers found in Context, then output only the sum with its unit.
+
+Return the answer as a short declarative sentence mirroring the wording of the question.  
+Example: *“Indoor radon activity concentration during the burning season was 63 Bq/m³.”*
 
 Use only the information found in the Context.  
-If the required information is truly absent, reply exactly:
+If the required information is absent, reply exactly:  
 "I don't know based on the provided documents."
 
 ### Context
