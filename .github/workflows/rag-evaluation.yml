@@ -16,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Set up Python
+    - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
@@ -62,12 +62,7 @@ jobs:
           exit 1
         elif grep -q "RAG EVALUATION RESULTS" evaluation_results.txt; then
           echo "✅ RAG evaluation completed successfully"
-          {
-            echo "## RAG Evaluation Results"
-            echo '```'
-            sed -n '/RAG EVALUATION RESULTS/,+20p' evaluation_results.txt
-            echo '```'
-          } >> $GITHUB_STEP_SUMMARY
+          cat evaluation_results.txt
         else
           echo "⚠️ RAG evaluation completed with warnings"
           cat evaluation_results.txt
