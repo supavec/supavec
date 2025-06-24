@@ -64,7 +64,7 @@ jobs:
           echo "✅ RAG evaluation completed successfully"
           echo "## RAG Evaluation Results" >> $GITHUB_STEP_SUMMARY
           echo "```" >> $GITHUB_STEP_SUMMARY
-          grep -A 20 "RAG EVALUATION RESULTS" evaluation_results.txt >> $GITHUB_STEP_SUMMARY
+          sed -n '/RAG EVALUATION RESULTS/,+20p' evaluation_results.txt >> $GITHUB_STEP_SUMMARY
           echo "```" >> $GITHUB_STEP_SUMMARY
         else
           echo "⚠️ RAG evaluation completed with warnings"
