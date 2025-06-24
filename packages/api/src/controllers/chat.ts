@@ -55,7 +55,7 @@ export const chat = async (req: AuthenticatedRequest, res: Response) => {
 
     const prompt = `
 You are a concise expert assistant.
-Think step-by-step, but **do NOT reveal your reasoning**.
+Think step-by-step.
 Use only the Context.
 If the answer is missing, say:
 "I don't know based on the provided documents."
