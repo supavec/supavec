@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { unlink, writeFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
 import { randomUUID } from "crypto";
-import { z } from "zod";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { Document } from "@langchain/core/documents";
 import { updateLoopsContact } from "../utils/loops";
@@ -12,86 +11,53 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
+import { AuthenticatedRequest } from "../middleware/auth";
 
-console.log("[UPLOAD-FILE] Module loaded");
+type ValidatedUploadRequest = AuthenticatedRequest & {
+  body: {
+    validatedData: {
+      chunk_size: number;
+      chunk_overlap: number;
+      teamId: string;
+      apiKeyData: {
+        team_id: string;
+        user_id: string | null;
+        profiles: {
+          email: string | null;
+        } | null;
+      };
+      file: Express.Multer.File;
+    };
+  };
+};
 
-const DEFAULT_CHUNK_SIZE = 1000;
-const DEFAULT_CHUNK_OVERLAP = 200;
-
-const uploadQuerySchema = z.object({
-  chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
-  chunk_overlap: z.number()
-    .positive()
-    .default(DEFAULT_CHUNK_OVERLAP),
-}).refine(
-  (data) => {
-    return data.chunk_overlap < data.chunk_size;
-  },
-  {
-    message: "chunk_overlap must be less than chunk_size",
-    path: ["chunk_overlap"],
-  },
-);
-
-export const uploadFile = async (req: Request, res: Response) => {
+export const uploadFile = async (
+  req: ValidatedUploadRequest,
+  res: Response,
+) => {
   console.log("[UPLOAD-FILE] Request received");
   try {
-    const apiKey = req.headers.authorization as string;
+    const {
+      chunk_size,
+      chunk_overlap,
+      teamId,
+      apiKeyData,
+      file,
+    } = req.body.validatedData;
 
-    // Get team ID from API key
-    console.log("[UPLOAD-FILE] Verifying API key");
-    const { data: apiKeyData, error: apiKeyError } = await supabase
-      .from("api_keys")
-      .select("team_id, user_id, profiles(email)")
-      .match({ api_key: apiKey })
-      .single();
-
-    if (apiKeyError || !apiKeyData?.team_id) {
-      console.log("[UPLOAD-FILE] Invalid API key", { error: apiKeyError });
-      return res.status(401).json({
-        success: false,
-        error: "Invalid API key",
-      });
-    }
-
-    const teamId = apiKeyData.team_id as string;
-    console.log("[UPLOAD-FILE] Team ID retrieved", { teamId });
-
-    // Validate query parameters
-    console.log("[UPLOAD-FILE] Validating query parameters");
-    const queryValidation = uploadQuerySchema.safeParse(req.query);
-    if (!queryValidation.success) {
-      console.log(
-        "[UPLOAD-FILE] Query validation failed",
-        queryValidation.error.errors,
-      );
-      return res.status(400).json({
-        success: false,
-        error: "Invalid query parameters",
-        details: queryValidation.error.errors,
-      });
-    }
-    const { chunk_size, chunk_overlap } = queryValidation.data;
-    console.log("[UPLOAD-FILE] Query parameters validated", {
+    console.log("[UPLOAD-FILE] Using validated data", {
+      teamId,
       chunk_size,
       chunk_overlap,
     });
 
-    if (!req.file) {
-      console.log("[UPLOAD-FILE] No file provided in request");
-      return res.status(400).json({
-        success: false,
-        error: "No file provided",
-      });
-    }
-
-    const buffer = req.file.buffer;
+    const buffer = file.buffer;
     const fileId = randomUUID();
-    const isTextFile = req.file.mimetype === "text/plain";
-    const isMarkdownFile = req.file.mimetype === "text/markdown" ||
-      req.file.originalname.endsWith(".md");
+    const isTextFile = file.mimetype === "text/plain";
+    const isMarkdownFile = file.mimetype === "text/markdown" ||
+      file.originalname.endsWith(".md");
     const fileExtension = isTextFile ? "txt" : isMarkdownFile ? "md" : "pdf";
-    const fileName = req.file.originalname;
+    const fileName = file.originalname;
     const tempFileName = `${fileId}.${fileExtension}`;
     const tempFilePath = join(tmpdir(), tempFileName);
     console.log("[UPLOAD-FILE] File details", {
@@ -160,8 +126,8 @@ export const uploadFile = async (req: Request, res: Response) => {
     // Split text into chunks
     console.log("[UPLOAD-FILE] Splitting content into chunks");
     const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: chunk_size ?? DEFAULT_CHUNK_SIZE,
-      chunkOverlap: chunk_overlap ?? DEFAULT_CHUNK_OVERLAP,
+      chunkSize: chunk_size,
+      chunkOverlap: chunk_overlap,
     });
     const chunks = await splitter.splitDocuments(documents);
     console.log("[UPLOAD-FILE] Content split into chunks", {
@@ -242,8 +208,8 @@ export const uploadFile = async (req: Request, res: Response) => {
         file_name: fileName,
         file_id: fileId,
         chunks: chunks.length,
-        chunk_size: chunk_size ?? DEFAULT_CHUNK_SIZE,
-        chunk_overlap: chunk_overlap ?? DEFAULT_CHUNK_OVERLAP,
+        chunk_size: chunk_size,
+        chunk_overlap: chunk_overlap,
       });
     } catch (vectorError) {
       console.log("[UPLOAD-FILE] Error processing vectors", {

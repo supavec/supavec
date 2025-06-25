@@ -4,8 +4,6 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 
-console.log("[USER-FILES] Module loaded");
-
 const requestSchema = z.object({
   pagination: z
     .object({

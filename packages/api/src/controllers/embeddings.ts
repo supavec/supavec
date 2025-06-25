@@ -6,8 +6,6 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 
-console.log("[EMBEDDINGS] Module loaded");
-
 const embeddingsSchema = z.object({
   query: z.string().min(1, "Query is required"),
   k: z.number().int().positive().default(3),

@@ -6,8 +6,6 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 
-console.log("[SEARCH] Module loaded");
-
 type MatchDocumentResult = {
   id: number;
   content: string;

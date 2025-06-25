@@ -1,5 +1,5 @@
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
@@ -7,13 +7,7 @@ import { supabase } from "../utils/supabase";
 import { ValidatedChatRequest } from "../middleware/chat/validate-request";
 import { google } from "@ai-sdk/google";
 import { generateText, pipeDataStreamToResponse, streamText } from "ai";
-
-console.log("[CHAT] Module loaded");
-
-export interface AuthenticatedRequest extends Request {
-  apiKey: string;
-  userId: string;
-}
+import { AuthenticatedRequest } from "../middleware/auth";
 
 export const chat = async (req: AuthenticatedRequest, res: Response) => {
   console.log("[CHAT] Request received");
@@ -162,7 +156,7 @@ ${query}
 
     logApiUsageAsync({
       endpoint: "/chat",
-      userId: req.userId,
+      userId: req.userId || "",
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     });
