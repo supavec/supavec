@@ -6,8 +6,8 @@ const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 
 const uploadQuerySchema = z.object({
-  chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
-  chunk_overlap: z.number()
+  chunk_size: z.coerce.number().positive().default(DEFAULT_CHUNK_SIZE),
+  chunk_overlap: z.coerce.number()
     .positive()
     .default(DEFAULT_CHUNK_OVERLAP),
 }).refine(
