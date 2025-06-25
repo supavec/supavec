@@ -6,8 +6,6 @@ import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
 
-console.log("[OVERWRITE-TEXT] Module loaded");
-
 type ValidatedRequest = Request & {
   body: {
     validatedData: {

@@ -13,8 +13,6 @@ import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
 
-console.log("[UPLOAD-FILE] Module loaded");
-
 const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 

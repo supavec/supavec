@@ -3,8 +3,6 @@ import { client } from "../utils/posthog";
 import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 
-console.log("[DELETE-FILE] Module loaded");
-
 type ValidatedRequest = Request & {
   body: {
     validatedData: {

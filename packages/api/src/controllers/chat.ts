@@ -8,8 +8,6 @@ import { ValidatedChatRequest } from "../middleware/chat/validate-request";
 import { google } from "@ai-sdk/google";
 import { generateText, pipeDataStreamToResponse, streamText } from "ai";
 
-console.log("[CHAT] Module loaded");
-
 export interface AuthenticatedRequest extends Request {
   apiKey: string;
   userId: string;

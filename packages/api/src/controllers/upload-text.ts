@@ -9,8 +9,6 @@ import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
 import { type Document } from "@langchain/core/documents";
 
-console.log("[UPLOAD-TEXT] Module loaded");
-
 const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 
