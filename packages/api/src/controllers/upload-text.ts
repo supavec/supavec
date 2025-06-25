@@ -1,6 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { z } from "zod";
 import { randomUUID } from "crypto";
 import { updateLoopsContact } from "../utils/loops";
 import { client } from "../utils/posthog";
@@ -8,90 +7,49 @@ import { logApiUsageAsync } from "../utils/async-logger";
 import { supabase } from "../utils/supabase";
 import { storeDocumentsWithFileId } from "../utils/vector-store";
 import { type Document } from "@langchain/core/documents";
+import { AuthenticatedRequest } from "../middleware/auth";
 
 const DEFAULT_CHUNK_SIZE = 1000;
 const DEFAULT_CHUNK_OVERLAP = 200;
 
-const uploadTextSchema = z.object({
-  // OPTION A – raw text
-  contents: z.string().min(5, "Content must be at least 5 characters long")
-    .optional(),
+type ValidatedUploadTextRequest = AuthenticatedRequest & {
+  body: {
+    validatedData: {
+      contents?: string;
+      segments?: Array<{
+        content: string;
+        metadata?: Record<string, unknown>;
+      }>;
+      name: string;
+      chunk_size: number;
+      chunk_overlap: number;
+      teamId: string;
+      apiKeyData: {
+        team_id: string;
+        user_id: string | null;
+        profiles: {
+          email: string | null;
+        } | null;
+      };
+    };
+  };
+};
 
-  // OPTION B – caller‑provided, already‑chunked segments
-  segments: z.array(
-    z.object({
-      content: z.string().min(1),
-      metadata: z.record(z.any()).optional(),
-    }),
-  ).optional(),
-
-  name: z.string().min(1).optional().default("Untitled Document"),
-
-  // legacy split knobs (only used when `contents` is present)
-  chunk_size: z.number().positive().default(DEFAULT_CHUNK_SIZE),
-  chunk_overlap: z.number().positive().default(DEFAULT_CHUNK_OVERLAP),
-})
-  // require ONE of contents or segments
-  .refine(
-    (d) => Boolean(d.contents) !== Boolean(d.segments),
-    {
-      message:
-        "Must provide either `contents` (raw text) or `segments` (pre-chunked), but not both.",
-    },
-  )
-  // overlap rule only matters when splitting raw contents
-  .refine(
-    (d) => !d.contents || d.chunk_overlap < d.chunk_size,
-    {
-      message: "chunk_overlap must be less than chunk_size",
-      path: ["chunk_overlap"],
-    },
-  );
-
-export const uploadText = async (req: Request, res: Response) => {
+export const uploadText = async (
+  req: ValidatedUploadTextRequest,
+  res: Response,
+) => {
   console.log("[UPLOAD-TEXT] Request received");
   try {
-    // Validate body parameters
-    console.log("[UPLOAD-TEXT] Validating request body");
-    const bodyValidation = uploadTextSchema.safeParse(req.body);
-    if (!bodyValidation.success) {
-      console.log(
-        "[UPLOAD-TEXT] Validation failed",
-        bodyValidation.error.issues,
-      );
-      return res.status(400).json({
-        success: false,
-        error: bodyValidation.error.issues,
-      });
-    }
-
-    const apiKey = req.headers.authorization as string;
-    // Get team ID from API key
-    console.log("[UPLOAD-TEXT] Verifying API key");
-    const { data: apiKeyData, error: apiKeyError } = await supabase
-      .from("api_keys")
-      .select("team_id, user_id, profiles(email)")
-      .match({ api_key: apiKey })
-      .single();
-
-    if (apiKeyError || !apiKeyData?.team_id) {
-      console.log("[UPLOAD-TEXT] Invalid API key", { error: apiKeyError });
-      return res.status(401).json({
-        success: false,
-        error: "Invalid API key",
-      });
-    }
-
-    const teamId = apiKeyData.team_id as string;
-    console.log("[UPLOAD-TEXT] Team ID retrieved", { teamId });
-
     const {
       contents,
       segments,
       name,
-      chunk_size = DEFAULT_CHUNK_SIZE,
-      chunk_overlap = DEFAULT_CHUNK_OVERLAP,
-    } = bodyValidation.data;
+      chunk_size,
+      chunk_overlap,
+      teamId,
+      apiKeyData,
+    } = req.body.validatedData;
     console.log("[UPLOAD-TEXT] Processing text upload", {
       name,
       payloadLength: contents?.length || JSON.stringify(segments).length,
@@ -111,7 +69,9 @@ export const uploadText = async (req: Request, res: Response) => {
 
     if (segments?.length) {
       console.log("[UPLOAD-TEXT] Using caller provided segments");
-      docs = segments.map((seg) => ({
+      docs = segments.map((
+        seg: { content: string; metadata?: Record<string, unknown> },
+      ) => ({
         pageContent: seg.content,
         metadata: {
           ...(seg.metadata ?? {}),
@@ -119,7 +79,8 @@ export const uploadText = async (req: Request, res: Response) => {
           file_id: fileId,
         },
       }));
-      storagePayload = segments.map((seg) => seg.content).join("\n\n");
+      storagePayload = segments.map((seg: { content: string }) => seg.content)
+        .join("\n\n");
     } else {
       console.log(
         "[UPLOAD-TEXT] Splitting raw contents with RecursiveCharacterTextSplitter",
@@ -205,8 +166,11 @@ export const uploadText = async (req: Request, res: Response) => {
       properties: {
         file_name: fileName,
         file_type: "text",
-        file_size: contents?.length || segments?.reduce((sum, seg) =>
-          sum + seg.content.length, 0) ||
+        file_size: contents?.length ||
+          segments?.reduce(
+            (sum: number, seg: { content: string }) => sum + seg.content.length,
+            0,
+          ) ||
           0,
         segment_count: segments?.length ?? docs.length,
         processing_mode: segments ? "segments" : "chunks",

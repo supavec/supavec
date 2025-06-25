@@ -17,6 +17,7 @@ import { validateRequestMiddleware as validateResyncRequestMiddleware } from "..
 import { validateRequestMiddleware as validateOverwriteRequestMiddleware } from "../middleware/overwrite-text/validate-request";
 import { validateRequestMiddleware as validateChatRequestMiddleware } from "../middleware/chat/validate-request";
 import { validateRequestMiddleware as validateUploadRequestMiddleware } from "../middleware/upload-file/validate-request";
+import { validateRequestMiddleware as validateUploadTextRequestMiddleware } from "../middleware/upload-text/validate-request";
 
 export const router: IRouter = Router();
 
@@ -28,7 +29,13 @@ router.post(
   validateUploadRequestMiddleware(),
   uploadFile,
 );
-router.post("/upload_text", apiKeyAuth(), apiUsageLimit(), uploadText);
+router.post(
+  "/upload_text",
+  apiKeyAuth(),
+  apiUsageLimit(),
+  validateUploadTextRequestMiddleware(),
+  uploadText,
+);
 router.post(
   "/resync_file",
   apiKeyAuth(),
