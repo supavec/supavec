@@ -39,17 +39,16 @@ https://github.com/taishikato/supavec/blob/main/packages/api/README.md
 
 ---
 
-## Architecture & Design Philosophy
+## Architecture & Design Philosophy
 
-### Scalable Multi‑Tenant Design
-- **Row‑Level Security (RLS)** for team‑level data isolation  
-- **Usage‑based billing** Free 100 → Basic 750 → Ent 5 000 req/mo  
-- **Batch embeddings** OpenAI cost **‑65 %**
+### Scalable Multi-Tenant Design
+- **Row-Level Security (RLS)** for team-level data isolation  
+- **Usage‑based billing**: Free 100 → Basic 750 → Ent 5000 req/mo  
+- **Batch embeddings**: OpenAI cost **-65 %**
 
 ### Vector Search Optimisation
 - **Configurable chunk & overlap** (+12 pts recall)  
 - **Hybrid filter** (file_id + cosine) P95 **210 ms**  
-- **pgvector on PostgreSQL 16** 10 k docs/min ingest
 
 ## Performance & Observability
 
@@ -75,12 +74,12 @@ const response = await fetch('/chat', {
 });
 ```
 
-## Developer Experience
+## Developer Experience
 
-- **Visual debugging** live embedding preview in chat UI  
-- **Progressive disclosure** guided onboarding & contextual states  
-- **API‑first design** REST endpoints + comprehensive errors  
-- **Redis‑backed rate limiting** sliding‑window strategy
+- **Visual debugging**: live embedding preview in chat UI  
+- **Progressive disclosure**: guided onboarding & contextual states  
+- **API-first design**: REST endpoints + comprehensive errors  
+- **Redis-backed rate limiting**: sliding-window strategy
 
 
 ---
