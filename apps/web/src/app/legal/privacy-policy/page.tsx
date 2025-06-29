@@ -118,7 +118,7 @@ export default function PrivacyPolicy() {
         </p>
         <p className="mb-4">
           You can request deletion of your account and associated data at any
-          time by contacting us at hello@supavec.com.
+          time by contacting us at taishi@supavec.com.
         </p>
       </section>
 
@@ -211,7 +211,7 @@ export default function PrivacyPolicy() {
           <li>The right to withdraw consent</li>
         </ul>
         <p className="mb-4">
-          To exercise these rights, please contact us at hello@supavec.com.
+          To exercise these rights, please contact us at taishi@supavec.com.
         </p>
       </section>
 
@@ -267,10 +267,10 @@ export default function PrivacyPolicy() {
           <li>
             By email:{" "}
             <a
-              href="mailto:hello@supavec.com"
+              href="mailto:taishi@supavec.com"
               className="text-blue-600 hover:underline"
             >
-              hello@supavec.com
+              taishi@supavec.com
             </a>
           </li>
           <li>

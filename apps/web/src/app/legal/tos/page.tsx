@@ -325,10 +325,10 @@ export default function TermsOfService() {
         <p className="mb-4">
           You may terminate your account at any time by contacting us at{" "}
           <a
-            href="mailto:hello@supavec.com"
+            href="mailto:taishi@supavec.com"
             className="text-blue-600 hover:underline"
           >
-            hello@supavec.com
+            taishi@supavec.com
           </a>
           .
         </p>
@@ -456,10 +456,10 @@ export default function TermsOfService() {
           <li>
             By email:{" "}
             <a
-              href="mailto:hello@supavec.com"
+              href="mailto:taishi@supavec.com"
               className="text-blue-600 hover:underline"
             >
-              hello@supavec.com
+              taishi@supavec.com
             </a>
           </li>
           <li>

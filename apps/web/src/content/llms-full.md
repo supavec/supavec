@@ -204,7 +204,7 @@ These Terms remain in effect while you use the Service. Either party may termina
 ### 14-18. Additional Provisions
 The Terms may be modified with notice. They're governed by Delaware law, with disputes resolved through binding arbitration. No class actions are permitted.
 
-Contact us at hello@supavec.com or https://go.supavec.com/discord for questions.
+Contact us at taishi@supavec.com or https://go.supavec.com/discord for questions.
 
 ## Privacy Policy
 
@@ -246,7 +246,7 @@ We may share information with:
 - Stripe: Payment processing
 
 ### Your Rights
-Depending on your location, you may have rights to access, correct, delete, restrict processing, or port your data. Contact us at hello@supavec.com to exercise these rights.
+Depending on your location, you may have rights to access, correct, delete, restrict processing, or port your data. Contact us at taishi@supavec.com to exercise these rights.
 
 ### Additional Information
 - Not intended for children under 18
@@ -254,11 +254,11 @@ Depending on your location, you may have rights to access, correct, delete, rest
 - California residents have specific rights under CCPA
 - We may update this policy with notice
 
-Contact us at hello@supavec.com or https://go.supavec.com/discord for questions about privacy.
+Contact us at taishi@supavec.com or https://go.supavec.com/discord for questions about privacy.
 
 ## Contact Information
 
-- Email: hello@supavec.com
+- Email: taishi@supavec.com
 - Discord: https://go.supavec.com/discord
 - GitHub: https://github.com/taishikato/supavec
 - Website: https://www.supavec.com
