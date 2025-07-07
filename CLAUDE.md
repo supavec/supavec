@@ -125,3 +125,7 @@ CACHE_SEMANTIC_THRESHOLD=0.95
 - Request-level tracing with unique IDs
 - Cache statistics endpoint for monitoring hit rates
 - Async usage logging for billing and analytics
+
+## Code Style and Best Practices
+
+- Try to use types instead of interfaces
