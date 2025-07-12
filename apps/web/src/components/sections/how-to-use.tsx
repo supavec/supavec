@@ -2,7 +2,7 @@ import { APP_NAME } from "@/app/consts";
 import { Section } from "@/components/section";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Zap, Rocket, Users } from "lucide-react";
-import { Link } from "../link";
+import Link from "next/link";
 
 type StepOption = {
   id: number;
