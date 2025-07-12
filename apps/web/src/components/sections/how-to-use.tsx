@@ -106,7 +106,7 @@ export async function HowToUse({ className }: { className?: string }) {
             <Link href="/login" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
               Start for free
             </Link>
-            <Link href="https://go.supavec.com/docs" target="_blank" className="inline-flex items-center justify-center rounded-md border border-border bg-background px-6 py-2 text-sm font-medium hover:bg-muted transition-colors">
+            <Link href="https://go.supavec.com/docs" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md border border-border bg-background px-6 py-2 text-sm font-medium hover:bg-muted transition-colors">
               View documentation
             </Link>
           </div>
