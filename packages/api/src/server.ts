@@ -14,6 +14,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { router } from "./routes";
+import mcpRouter from "./routes/mcp";
 import { errorHandler } from "./middleware/errorHandler";
 import { rateLimit } from "./middleware/rate-limit";
 import { client as posthogClient } from "./utils/posthog";
@@ -43,6 +44,7 @@ app.use(express.json());
 app.use(rateLimit());
 
 app.use("/", router);
+app.use("/mcp", mcpRouter);
 
 app.use(errorHandler);
 
