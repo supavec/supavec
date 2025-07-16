@@ -148,20 +148,20 @@ mcpRouter.post("/message", async (req: Request, res: Response) => {
   try {
     // The SSE transport will handle the message processing
     // This endpoint is used by the SSE transport internally
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
     console.error(
       `[MCP] Error handling message for connection ${connectionId}:`,
       error,
     );
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to process MCP message",
     });
   }
 });
 
 // Options endpoint for CORS preflight
-mcpRouter.options("/sse", (req: Request, res: Response) => {
+mcpRouter.options("/sse", (_req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -171,7 +171,7 @@ mcpRouter.options("/sse", (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-mcpRouter.options("/message", (req: Request, res: Response) => {
+mcpRouter.options("/message", (_req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -182,7 +182,7 @@ mcpRouter.options("/message", (req: Request, res: Response) => {
 });
 
 // Health check endpoint
-mcpRouter.get("/health", (req: Request, res: Response) => {
+mcpRouter.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "healthy",
     activeConnections: activeServers.size,
