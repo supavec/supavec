@@ -74,10 +74,18 @@ function createMCPServer(connectionId: string): Server {
 
 // SSE endpoint handler function
 async function handleSSEConnection(req: Request, res: Response) {
-  const connectionId = req.headers["x-connection-id"] as string ||
-    `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const headerConnectionId = req.headers["x-connection-id"] as string;
+  const sessionId = req.query.sessionId as string;
+  
+  // Prioritize session-based connection ID for consistency with message endpoint
+  const connectionId = headerConnectionId || 
+    (sessionId ? `session_${sessionId}` : `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
-  console.log(`[MCP] SSE connection established: ${connectionId}`);
+  console.log(`[MCP] SSE connection established: ${connectionId}`, {
+    headerConnectionId,
+    sessionId,
+    usingSessionBased: !!sessionId && !headerConnectionId
+  });
 
   // Set up SSE headers
   res.writeHead(200, {
@@ -104,6 +112,7 @@ async function handleSSEConnection(req: Request, res: Response) {
     await server.connect(transport);
 
     console.log(`[MCP] Server connected for connection: ${connectionId}`);
+    console.log(`[MCP] Active servers after connection:`, Array.from(activeServers.keys()));
 
     // Handle client disconnect
     req.on("close", () => {
@@ -162,27 +171,32 @@ mcpRouter.post("/message", async (req: Request, res: Response) => {
 
   if (!connectionId) {
     console.log("[MCP] Missing x-connection-id header");
-    // Instead of returning an error, try to use sessionId or create a temporary connection
-    if (sessionId) {
-      console.log(`[MCP] Using sessionId as fallback: ${sessionId}`);
-      // Try to find existing connection or create a new one
-      const fallbackConnectionId = `session_${sessionId}`;
-      if (!activeServers.has(fallbackConnectionId)) {
-        console.log(`[MCP] Creating temporary server for session: ${sessionId}`);
-        createMCPServer(fallbackConnectionId);
-      }
-      // Continue with fallback connection
-    } else {
+    if (!sessionId) {
       return res.status(400).json({
         error: "Missing x-connection-id header and no sessionId provided",
       });
     }
+    console.log(`[MCP] Using sessionId as fallback: ${sessionId}`);
   }
 
   const actualConnectionId = connectionId || `session_${sessionId}`;
-  const server = activeServers.get(actualConnectionId);
+  let server = activeServers.get(actualConnectionId);
+  
+  // If no server exists, check if there's a regular connection ID we can use
+  if (!server && sessionId) {
+    // Try to find any existing connection that might be for this session
+    for (const [existingId, existingServer] of activeServers.entries()) {
+      if (existingId.startsWith('conn_')) {
+        console.log(`[MCP] Using existing connection ${existingId} for session ${sessionId}`);
+        server = existingServer;
+        break;
+      }
+    }
+  }
+  
   if (!server) {
     console.log(`[MCP] Server not found for connection: ${actualConnectionId}`);
+    console.log(`[MCP] Available servers:`, Array.from(activeServers.keys()));
     return res.status(404).json({
       error: "MCP server not found for this connection",
     });
