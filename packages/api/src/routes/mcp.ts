@@ -152,22 +152,37 @@ mcpRouter.post("/sse", handleSSEConnection);
 // Message handling endpoint
 mcpRouter.post("/message", async (req: Request, res: Response) => {
   const connectionId = req.headers["x-connection-id"] as string;
+  const sessionId = req.query.sessionId as string;
 
   console.log(`[MCP] Message received for connection: ${connectionId}`, {
     hasBody: !!req.body,
     bodyType: typeof req.body,
+    sessionId,
   });
 
   if (!connectionId) {
     console.log("[MCP] Missing x-connection-id header");
-    return res.status(400).json({
-      error: "Missing x-connection-id header",
-    });
+    // Instead of returning an error, try to use sessionId or create a temporary connection
+    if (sessionId) {
+      console.log(`[MCP] Using sessionId as fallback: ${sessionId}`);
+      // Try to find existing connection or create a new one
+      const fallbackConnectionId = `session_${sessionId}`;
+      if (!activeServers.has(fallbackConnectionId)) {
+        console.log(`[MCP] Creating temporary server for session: ${sessionId}`);
+        createMCPServer(fallbackConnectionId);
+      }
+      // Continue with fallback connection
+    } else {
+      return res.status(400).json({
+        error: "Missing x-connection-id header and no sessionId provided",
+      });
+    }
   }
 
-  const server = activeServers.get(connectionId);
+  const actualConnectionId = connectionId || `session_${sessionId}`;
+  const server = activeServers.get(actualConnectionId);
   if (!server) {
-    console.log(`[MCP] Server not found for connection: ${connectionId}`);
+    console.log(`[MCP] Server not found for connection: ${actualConnectionId}`);
     return res.status(404).json({
       error: "MCP server not found for this connection",
     });
@@ -176,11 +191,11 @@ mcpRouter.post("/message", async (req: Request, res: Response) => {
   try {
     // The SSE transport will handle the message processing
     // This endpoint is used by the SSE transport internally
-    console.log(`[MCP] Successfully processed message for connection: ${connectionId}`);
+    console.log(`[MCP] Successfully processed message for connection: ${actualConnectionId}`);
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error(
-      `[MCP] Error handling message for connection ${connectionId}:`,
+      `[MCP] Error handling message for connection ${actualConnectionId}:`,
       error,
     );
     return res.status(500).json({
