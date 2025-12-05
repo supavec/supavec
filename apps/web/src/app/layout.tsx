@@ -7,6 +7,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CSPostHogProvider } from "./providers";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -44,6 +45,11 @@ export default function RootLayout({
         </body>
       </CSPostHogProvider>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS!} />
+      <Script
+        defer
+        data-domain="supavec.com"
+        src="https://plausible-analytics.up.railway.app/js/script.js"
+      />
     </html>
   );
 }
